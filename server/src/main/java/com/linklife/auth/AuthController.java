@@ -1,8 +1,11 @@
 package com.linklife.auth;
 
 import com.linklife.auth.dto.AuthTokens;
+import com.linklife.auth.dto.BindRequest;
+import com.linklife.auth.dto.BindingCodeVO;
 import com.linklife.auth.dto.LoginRequest;
 import com.linklife.auth.dto.RefreshRequest;
+import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final BindingCodeService bindingCodeService;
 
     @PostMapping("/wx-login")
     public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request) {
@@ -26,5 +30,15 @@ public class AuthController {
     @PostMapping("/refresh")
     public Result<AuthTokens> refresh(@Valid @RequestBody RefreshRequest request) {
         return Result.ok(authService.refresh(request.refreshToken()));
+    }
+
+    @PostMapping("/binding-code")
+    public Result<BindingCodeVO> bindingCode() {
+        return Result.ok(bindingCodeService.create(UserContext.requireUserId()));
+    }
+
+    @PostMapping("/bind")
+    public Result<AuthTokens> bind(@Valid @RequestBody BindRequest request) {
+        return Result.ok(bindingCodeService.bind(request.code()));
     }
 }
