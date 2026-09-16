@@ -23,5 +23,6 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.url", MYSQL::getJdbcUrl);
         registry.add("spring.datasource.username", MYSQL::getUsername);
         registry.add("spring.datasource.password", MYSQL::getPassword);
+        registry.add("spring.ai.deepseek.api-key", () -> "test-key");
     }
 }

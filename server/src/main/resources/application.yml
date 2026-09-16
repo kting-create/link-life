@@ -9,6 +9,12 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+  ai:
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY:}
+      chat:
+        options:
+          model: ${DEEPSEEK_MODEL:deepseek-chat}
 
 link:
   jwt:
