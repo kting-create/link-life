@@ -4,4 +4,13 @@ logs/
 *.log
 .idea/
 *.iml
+.vscode/
 .DS_Store
+deploy/.env
+web-dist/*
+data/*
+node_modules/
+!web-dist/.gitkeep
+!data/images/
+data/images/*
+!data/images/.gitkeep
