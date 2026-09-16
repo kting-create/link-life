@@ -4,12 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.linklife.IntegrationTestBase;
 import com.linklife.common.web.Result;
 import jakarta.validation.constraints.Min;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.annotation.Validated;
@@ -17,11 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootTest
-@AutoConfigureMockMvc
 @Import({GlobalExceptionHandlerTest.ThrowController.class,
         GlobalExceptionHandlerTest.BuiltInValidationController.class})
-class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest extends IntegrationTestBase {
 
     @Validated
     @RestController
