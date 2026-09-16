@@ -43,8 +43,9 @@ public class BindingCodeService {
         if (bc == null || bc.getExpiresAt().isBefore(LocalDateTime.now())) {
             throw new BusinessException(ErrorCode.BINDING_CODE_INVALID);
         }
-        bc.setUsedAt(LocalDateTime.now());
-        bindingCodeMapper.updateById(bc);
+        if (bindingCodeMapper.markUsed(bc.getId()) == 0) {
+            throw new BusinessException(ErrorCode.BINDING_CODE_INVALID);
+        }
 
         User user = userMapper.selectById(bc.getUserId());
         return new AuthTokens(
