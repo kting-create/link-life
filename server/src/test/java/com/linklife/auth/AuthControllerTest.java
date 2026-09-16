@@ -66,6 +66,15 @@ class AuthControllerTest extends IntegrationTestBase {
     }
 
     @Test
+    void refreshRejectsGarbageTokenWith2002() throws Exception {
+        mockMvc.perform(post("/api/auth/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"refreshToken\":\"not-a-jwt\"}"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(2002));
+    }
+
+    @Test
     void accessTokenCannotRefresh() throws Exception {
         when(weChatClient.code2Session(anyString()))
                 .thenReturn(new WxSession("openid-new-3", "unionid-3"));

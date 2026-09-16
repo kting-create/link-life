@@ -10,6 +10,7 @@ import com.linklife.common.exception.BusinessException;
 import com.linklife.common.exception.ErrorCode;
 import com.linklife.user.entity.User;
 import com.linklife.user.mapper.UserMapper;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,12 @@ public class AuthService {
     }
 
     public AuthTokens refresh(String refreshToken) {
-        TokenInfo info = jwtService.parse(refreshToken);
+        TokenInfo info;
+        try {
+            info = jwtService.parse(refreshToken);
+        } catch (JwtException e) {
+            throw new BusinessException(ErrorCode.INVALID_TOKEN);
+        }
         if (!"refresh".equals(info.type())) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
