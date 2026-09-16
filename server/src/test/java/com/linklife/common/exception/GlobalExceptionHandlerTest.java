@@ -1,6 +1,7 @@
 package com.linklife.common.exception;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -85,5 +86,21 @@ class GlobalExceptionHandlerTest extends IntegrationTestBase {
                 .header("Authorization", authHeader()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(400));
+    }
+
+    @Test
+    void unknownPathMappedTo404() throws Exception {
+        // Unknown paths go through JwtAuthFilter (non-public path), so a valid Bearer
+        // access token is provided to make the test deterministic (otherwise 401).
+        mockMvc.perform(get("/api/nonexistent").header("Authorization", authHeader()))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value(404));
+    }
+
+    @Test
+    void wrongMethodOnHealthMappedTo405() throws Exception {
+        mockMvc.perform(post("/api/health"))
+                .andExpect(status().isMethodNotAllowed())
+                .andExpect(jsonPath("$.code").value(405));
     }
 }
