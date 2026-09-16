@@ -5,20 +5,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.linklife.common.web.Result;
+import jakarta.validation.constraints.Min;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(GlobalExceptionHandlerTest.ThrowController.class)
+@Import({GlobalExceptionHandlerTest.ThrowController.class,
+        GlobalExceptionHandlerTest.BuiltInValidationController.class})
 class GlobalExceptionHandlerTest {
 
+    @Validated
     @RestController
     static class ThrowController {
         @GetMapping("/test/biz-error")
@@ -28,6 +33,18 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/raw-error")
         public Result<Void> raw() {
             throw new IllegalStateException("boom");
+        }
+        @GetMapping("/test/param-validation")
+        public Result<Void> paramValidation(@RequestParam @Min(0) long id) {
+            return Result.ok();
+        }
+    }
+
+    @RestController
+    static class BuiltInValidationController {
+        @GetMapping("/test/param-validation-builtin")
+        public Result<Void> paramValidation(@RequestParam @Min(0) long id) {
+            return Result.ok();
         }
     }
 
@@ -47,5 +64,19 @@ class GlobalExceptionHandlerTest {
         mockMvc.perform(get("/test/raw-error"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.code").value(500));
+    }
+
+    @Test
+    void paramValidationErrorMapped() throws Exception {
+        mockMvc.perform(get("/test/param-validation").param("id", "-5"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400));
+    }
+
+    @Test
+    void builtInParamValidationErrorMapped() throws Exception {
+        mockMvc.perform(get("/test/param-validation-builtin").param("id", "-5"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(400));
     }
 }
