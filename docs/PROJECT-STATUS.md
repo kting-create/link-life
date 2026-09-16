@@ -65,7 +65,9 @@ deploy/backup.sh
 
 ## 6. 下一步（进入新会话时从这里继续）
 
-**P1 计划尚未编写**。流程：用 brainstorming 细化 P1 范围（清单数据模型、share_token 分享、认领状态机、小程序/Web 端壳）→ writing-plans 写实施计划 → subagent-driven-development 执行。设计输入：spec 第 4 节（点单清单模块）已定稿的数据模型与分享机制。
+**全量待办清单在 `docs/TODO.md`**（含 P1~P5 所有任务 + 🧑 标记的需本人线下办理事项，做完勾选）。新会话：读本文件 → 读 TODO.md 第一个未勾选项 → 继续执行。
+
+P1 开发流程：brainstorming 细化范围 → writing-plans 写实施计划 → subagent-driven-development 执行。设计输入：spec 第 4 节（点单清单模块）已定稿的数据模型与分享机制。
 
 ---
 
