@@ -19,7 +19,7 @@ DB_PASSWORD=你的数据库密码
 JWT_SECRET=至少32字节的随机字符串
 WX_APPID=小程序appid
 WX_SECRET=小程序secret
-DEEPSEEK_API_KEY=后续AI功能用
+DEEPSEEK_API_KEY=后续AI功能用（可选；不配置时启动会注入占位 key，AI 调用会失败并记录 ai_call_log，不影响其他功能，后续阶段需要真实 key 才能调用 AI）
 ```
 
 3. 启动：
