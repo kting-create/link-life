@@ -12,9 +12,12 @@ import com.linklife.user.entity.User;
 import com.linklife.user.mapper.UserMapper;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -25,7 +28,15 @@ public class AuthService {
 
     @Transactional
     public AuthTokens wxLogin(String jsCode) {
-        WxSession session = weChatClient.code2Session(jsCode);
+        WxSession session;
+        try {
+            session = weChatClient.code2Session(jsCode);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (RestClientException e) {
+            log.warn("wx login transport error: {}", e.getMessage());
+            throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
+        }
         User user = userMapper.selectByOpenid(session.openid());
         if (user == null) {
             user = new User();

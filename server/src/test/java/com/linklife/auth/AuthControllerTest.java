@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.client.RestClientException;
 
 class AuthControllerTest extends IntegrationTestBase {
 
@@ -42,6 +43,18 @@ class AuthControllerTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.data.accessToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.refreshToken").isNotEmpty())
                 .andExpect(jsonPath("$.data.user.id").isNumber());
+    }
+
+    @Test
+    void wxLoginMapsTransportErrorTo401() throws Exception {
+        when(weChatClient.code2Session(anyString()))
+                .thenThrow(new RestClientException("connection refused"));
+
+        mockMvc.perform(post("/api/auth/wx-login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(wxLoginBody()))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value(2001));
     }
 
     @Test
