@@ -15,18 +15,21 @@
       <button class="action-btn" size="mini" bindtap="joinCircle">加入圈子</button>
     </view>
     <view wx:if="{{loading}}" class="hint">加载中...</view>
-    <view wx:elif="{{!circles.length}}" class="hint">还没有圈子，先创建或加入一个吧</view>
-    <view
-      wx:else
-      class="circle-item"
-      wx:for="{{circles}}"
-      wx:key="id"
-      data-id="{{item.id}}"
-      bindtap="onCircleTap"
-    >
-      <view class="circle-name">{{item.name}}</view>
-      <view class="circle-code">邀请码：{{item.inviteCode}}</view>
-    </view>
+    <block wx:elif="{{!circles.length}}">
+      <view class="hint">还没有圈子，先创建或加入一个吧</view>
+    </block>
+    <block wx:else>
+      <view
+        class="circle-item"
+        wx:for="{{circles}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onCircleTap"
+      >
+        <view class="circle-name">{{item.name}}</view>
+        <view class="circle-code">邀请码：{{item.inviteCode}}</view>
+      </view>
+    </block>
   </block>
 
   <block wx:else>
@@ -40,11 +43,13 @@
       >{{item.name}}</view>
     </view>
     <view wx:if="{{!members.length}}" class="hint">选择一个圈子查看成员</view>
-    <view wx:else class="member-item" wx:for="{{members}}" wx:key="userId">
-      <image wx:if="{{item.avatar}}" class="member-avatar" src="{{item.avatar}}" />
-      <view wx:else class="member-avatar member-avatar-placeholder">{{item.nickname[0]}}</view>
-      <view class="member-name">{{item.nickname}}</view>
-      <view class="member-role">{{item.role === 'OWNER' ? '圈主' : '成员'}}</view>
-    </view>
+    <block wx:else>
+      <view class="member-item" wx:for="{{members}}" wx:key="userId">
+        <image wx:if="{{item.avatar}}" class="member-avatar" src="{{item.avatar}}" />
+        <view wx:else class="member-avatar member-avatar-placeholder">{{item.nickname[0]}}</view>
+        <view class="member-name">{{item.nickname}}</view>
+        <view class="member-role">{{item.role === 'OWNER' ? '圈主' : '成员'}}</view>
+      </view>
+    </block>
   </block>
 </view>

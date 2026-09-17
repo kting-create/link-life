@@ -65,8 +65,12 @@ deploy/backup.sh
 
 **全量待办清单在 `docs/TODO.md`**（含 P1~P5 所有任务 + 🧑 标记的需本人线下办理事项，做完勾选）。新会话：读本文件 → 读 TODO.md 第一个未勾选项 → 继续执行。
 
-P1（点单清单 MVP）已完成：后端 order/清单/认领/分享、小程序端、Web 端、nginx 静态资源与免登录分享路由均已贯通（compose 冒烟通过）。下一步进入 **P2 推送模块**：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（微信订阅消息/飞书/Bark）→ Web 轮询兜底。设计输入：spec 第 6 节推送模块；🧑 前置：小程序后台开通订阅消息模板、飞书群机器人 Webhook（见 TODO.md 第 0 节）。
+P1（点单清单 MVP）已完成并经 PR #1 合入 main，且已通过**本地全链路手工验证**（小程序测试号登录、建圈、点单、认领/收单状态机、绑定码登录 Web、Web/小程序分享落地、限流 429）。验证期间修复：WXML `wx:else` 兼容写法、小程序 BASE_URL 走 nginx 80 代理、`jscode2session` text/plain 响应解析（67ed235）。
+
+本地验证环境：`deploy/.env` 已配小程序**测试号** WX_APPID/WX_SECRET（正式注册后替换）；启动 `cd deploy && docker compose up -d --build`，入口 `http://localhost`。
+
+下一步进入 **P2 推送模块**：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（微信订阅消息/飞书/Bark）→ Web 轮询兜底。设计输入：spec 第 6 节推送模块；🧑 前置：小程序后台开通订阅消息模板、飞书群机器人 Webhook（见 TODO.md 第 0 节）。
 
 ---
 
-*最后更新：2026-09-17（P1 完成）*
+*最后更新：2026-09-17（P1 合并 + 本地手工验证完成）*
