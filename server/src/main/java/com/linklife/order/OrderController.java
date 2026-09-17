@@ -41,6 +41,11 @@ public class OrderController {
         return Result.ok(orderService.getSheet(UserContext.requireUserId(), id));
     }
 
+    @PostMapping("/sheets/{id}/complete")
+    public Result<SheetDetailVO> completeSheet(@PathVariable long id) {
+        return Result.ok(orderService.completeSheet(UserContext.requireUserId(), id));
+    }
+
     @PostMapping("/items")
     public Result<ItemVO> addItem(@Valid @RequestBody AddItemRequest request) {
         return Result.ok(orderService.addItem(

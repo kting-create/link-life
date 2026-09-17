@@ -169,6 +169,18 @@ public class OrderService {
         return toItemVO(item);
     }
 
+    @Transactional
+    public SheetDetailVO completeSheet(long userId, long sheetId) {
+        OrderSheet sheet = requireSheet(sheetId);
+        if (!Objects.equals(sheet.getCreatorId(), userId)) {
+            throw new BusinessException(ErrorCode.NOT_ITEM_CLAIMANT);
+        }
+        requireSheetNotCompleted(sheet);
+        sheet.setStatus(STATUS_COMPLETED);
+        orderSheetMapper.updateById(sheet);
+        return toDetailVO(sheet);
+    }
+
     private OrderSheet requireSheet(long sheetId) {
         OrderSheet sheet = orderSheetMapper.selectById(sheetId);
         if (sheet == null) {
@@ -225,7 +237,7 @@ public class OrderService {
         return sb.toString();
     }
 
-    private SheetDetailVO toDetailVO(OrderSheet sheet) {
+    SheetDetailVO toDetailVO(OrderSheet sheet) {
         List<OrderItem> items = orderItemMapper.selectList(
                 new LambdaQueryWrapper<OrderItem>().eq(OrderItem::getSheetId, sheet.getId()));
         Map<Long, String> nicknames = loadNicknames(items.stream().map(OrderItem::getClaimantId).toList());
