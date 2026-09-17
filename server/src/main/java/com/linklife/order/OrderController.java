@@ -2,8 +2,11 @@ package com.linklife.order;
 
 import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
+import com.linklife.order.dto.AddItemRequest;
 import com.linklife.order.dto.CreateSheetRequest;
 import com.linklife.order.dto.SheetDetailVO;
+import com.linklife.order.dto.ItemVO;
+import com.linklife.order.dto.UpdateItemStatusRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +39,28 @@ public class OrderController {
     @GetMapping("/sheets/{id}")
     public Result<SheetDetailVO> getSheet(@PathVariable long id) {
         return Result.ok(orderService.getSheet(UserContext.requireUserId(), id));
+    }
+
+    @PostMapping("/items")
+    public Result<ItemVO> addItem(@Valid @RequestBody AddItemRequest request) {
+        return Result.ok(orderService.addItem(
+                UserContext.requireUserId(), request.sheetId(), request.dishName(), request.note()));
+    }
+
+    @PostMapping("/items/{id}/claim")
+    public Result<ItemVO> claim(@PathVariable long id) {
+        return Result.ok(orderService.claim(UserContext.requireUserId(), id));
+    }
+
+    @PostMapping("/items/{id}/release")
+    public Result<ItemVO> release(@PathVariable long id) {
+        return Result.ok(orderService.release(UserContext.requireUserId(), id));
+    }
+
+    @PostMapping("/items/{id}/status")
+    public Result<ItemVO> updateItemStatus(@PathVariable long id,
+            @Valid @RequestBody UpdateItemStatusRequest request) {
+        return Result.ok(orderService.updateItemStatus(
+                UserContext.requireUserId(), id, request.itemStatus()));
     }
 }
