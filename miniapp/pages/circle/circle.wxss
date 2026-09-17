@@ -1,1 +1,129 @@
-/* circle */
+.circle-page {
+  padding: 24rpx;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.topbar-title {
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.topbar-profile {
+  font-size: 28rpx;
+  color: #07c160;
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: 24rpx;
+  background: #ffffff;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  color: #999999;
+}
+
+.tab-active {
+  color: #07c160;
+  font-weight: bold;
+  border-bottom: 4rpx solid #07c160;
+}
+
+.actions {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 24rpx;
+}
+
+.action-btn {
+  margin-right: 20rpx;
+}
+
+.circle-item {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.circle-name {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.circle-code {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.member-circles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.member-circle-chip {
+  padding: 10rpx 28rpx;
+  background: #ffffff;
+  border-radius: 32rpx;
+  font-size: 26rpx;
+  color: #666666;
+}
+
+.chip-active {
+  background: #07c160;
+  color: #ffffff;
+}
+
+.member-item {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.member-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.member-avatar-placeholder {
+  background: #07c160;
+  color: #ffffff;
+  text-align: center;
+  line-height: 72rpx;
+  font-size: 32rpx;
+}
+
+.member-name {
+  flex: 1;
+  font-size: 30rpx;
+}
+
+.member-role {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.hint {
+  text-align: center;
+  color: #999999;
+  padding: 60rpx 0;
+}

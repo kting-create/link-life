@@ -1,1 +1,50 @@
-<view class="circle-page"></view>
+<view class="circle-page">
+  <view class="topbar">
+    <view class="topbar-title">Link-Life</view>
+    <view class="topbar-profile" bindtap="goProfile">我的</view>
+  </view>
+
+  <view class="tabs">
+    <view class="tab {{tab === 'circles' ? 'tab-active' : ''}}" data-tab="circles" bindtap="switchTab">圈子</view>
+    <view class="tab {{tab === 'members' ? 'tab-active' : ''}}" data-tab="members" bindtap="switchTab">成员</view>
+  </view>
+
+  <block wx:if="{{tab === 'circles'}}">
+    <view class="actions">
+      <button class="action-btn" type="primary" size="mini" bindtap="createCircle">建圈</button>
+      <button class="action-btn" size="mini" bindtap="joinCircle">加入圈子</button>
+    </view>
+    <view wx:if="{{loading}}" class="hint">加载中...</view>
+    <view wx:elif="{{!circles.length}}" class="hint">还没有圈子，先创建或加入一个吧</view>
+    <view
+      wx:else
+      class="circle-item"
+      wx:for="{{circles}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onCircleTap"
+    >
+      <view class="circle-name">{{item.name}}</view>
+      <view class="circle-code">邀请码：{{item.inviteCode}}</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view wx:if="{{circles.length}}" class="member-circles">
+      <view
+        class="member-circle-chip {{memberCircleId === item.id ? 'chip-active' : ''}}"
+        wx:for="{{circles}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="selectMemberCircle"
+      >{{item.name}}</view>
+    </view>
+    <view wx:if="{{!members.length}}" class="hint">选择一个圈子查看成员</view>
+    <view wx:else class="member-item" wx:for="{{members}}" wx:key="userId">
+      <image wx:if="{{item.avatar}}" class="member-avatar" src="{{item.avatar}}" />
+      <view wx:else class="member-avatar member-avatar-placeholder">{{item.nickname[0]}}</view>
+      <view class="member-name">{{item.nickname}}</view>
+      <view class="member-role">{{item.role === 'OWNER' ? '圈主' : '成员'}}</view>
+    </view>
+  </block>
+</view>

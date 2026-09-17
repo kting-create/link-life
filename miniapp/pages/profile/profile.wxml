@@ -1,1 +1,26 @@
-<view class="profile-page"></view>
+<view class="profile-page">
+  <view class="profile-card">
+    <image wx:if="{{avatar}}" class="avatar" src="{{avatar}}" />
+    <view wx:else class="avatar avatar-placeholder">我</view>
+
+    <view class="field">
+      <text class="field-label">昵称</text>
+      <input class="field-input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="请输入昵称" />
+    </view>
+    <button class="save-btn" type="primary" size="mini" loading="{{saving}}" bindtap="saveProfile">保存</button>
+  </view>
+
+  <view class="binding-card">
+    <view class="binding-title">账号绑定</view>
+    <view class="binding-desc">在 Web 端输入绑定码，可绑定同一账号</view>
+    <button size="mini" bindtap="generateBindingCode">生成绑定码</button>
+    <view wx:if="{{bindingCode}}" class="binding-result">
+      <view class="binding-code">{{bindingCode}}</view>
+      <view class="binding-expires">有效期至 {{expiresText}}</view>
+    </view>
+  </view>
+
+  <view class="nav-card">
+    <view class="nav-link" bindtap="goCircle">返回圈子列表</view>
+  </view>
+</view>
