@@ -4,6 +4,7 @@ import com.linklife.circle.dto.CircleVO;
 import com.linklife.circle.dto.CreateCircleRequest;
 import com.linklife.circle.dto.JoinCircleRequest;
 import com.linklife.circle.dto.MemberVO;
+import com.linklife.common.ratelimit.RateLimiter;
 import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CircleController {
 
     private final CircleService circleService;
+    private final RateLimiter rateLimiter;
 
     @PostMapping
     public Result<CircleVO> create(@Valid @RequestBody CreateCircleRequest request) {
@@ -30,6 +32,7 @@ public class CircleController {
 
     @PostMapping("/join")
     public Result<CircleVO> join(@Valid @RequestBody JoinCircleRequest request) {
+        rateLimiter.check(UserContext.requireUserId() + ":join");
         return Result.ok(circleService.join(UserContext.requireUserId(), request.inviteCode()));
     }
 
