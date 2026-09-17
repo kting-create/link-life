@@ -1,1 +1,65 @@
-/* order-create */
+.order-create-page {
+  padding: 24rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+}
+
+.field-label {
+  font-size: 28rpx;
+  color: #666666;
+  margin-bottom: 16rpx;
+}
+
+.title-input {
+  border-bottom: 2rpx solid #eeeeee;
+  padding: 12rpx 0;
+  font-size: 30rpx;
+}
+
+.item-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.item-inputs {
+  flex: 1;
+}
+
+.dish-input {
+  border-bottom: 2rpx solid #eeeeee;
+  padding: 12rpx 0;
+  font-size: 30rpx;
+}
+
+.note-input {
+  border-bottom: 2rpx solid #eeeeee;
+  padding: 8rpx 0;
+  font-size: 26rpx;
+  color: #999999;
+}
+
+.row-remove {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  color: #fa5151;
+  font-size: 26rpx;
+}
+
+.add-row {
+  text-align: center;
+  color: #07c160;
+  font-size: 28rpx;
+  padding: 16rpx 0;
+}
+
+.submit-btn {
+  margin-top: 40rpx;
+}
