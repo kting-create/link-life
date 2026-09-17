@@ -1,5 +1,7 @@
 package com.linklife.auth.wechat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linklife.common.exception.BusinessException;
 import com.linklife.common.exception.ErrorCode;
 import java.net.URI;
@@ -18,9 +20,11 @@ public class WeChatClient {
 
     private final WeChatProperties props;
     private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
-    public WeChatClient(WeChatProperties props) {
+    public WeChatClient(WeChatProperties props, ObjectMapper objectMapper) {
         this.props = props;
+        this.objectMapper = objectMapper;
         HttpClient httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(5))
                 .build();
@@ -37,19 +41,32 @@ public class WeChatClient {
                 .queryParam("js_code", jsCode)
                 .queryParam("grant_type", "authorization_code")
                 .build().toUri();
-        WxSessionResponse resp;
+        // 微信该接口返回 Content-Type: text/plain 的 JSON 体，不能直接反序列化，先取原始字符串
+        String body;
         try {
-            resp = restClient.get().uri(uri)
-                    .retrieve().body(WxSessionResponse.class);
+            body = restClient.get().uri(uri).retrieve().body(String.class);
         } catch (RestClientException e) {
             log.warn("wx code2session transport error: {}", e.getMessage());
             throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
         }
+        WxSessionResponse resp = parse(body);
         if (resp == null || resp.errcode() != null && resp.errcode() != 0) {
-            log.warn("wx code2session failed: {}", resp);
+            log.warn("wx code2session failed: {}", body);
             throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
         }
         return new WxSession(resp.openid(), resp.unionid());
+    }
+
+    private WxSessionResponse parse(String body) {
+        if (body == null || body.isBlank()) {
+            return null;
+        }
+        try {
+            return objectMapper.readValue(body, WxSessionResponse.class);
+        } catch (JsonProcessingException e) {
+            log.warn("wx code2session invalid response body: {}", body);
+            throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
+        }
     }
 
     record WxSessionResponse(String openid, String unionid, Integer errcode, String errmsg) {
