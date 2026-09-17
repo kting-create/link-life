@@ -25,6 +25,14 @@ link:
     appid: ${WX_APPID:}
     secret: ${WX_SECRET:}
     api-base: ${WX_API_BASE:https://api.weixin.qq.com}
+  notify:
+    feishu:
+      enabled: ${FEISHU_NOTIFY_ENABLED:false}
+      webhook-url: ${FEISHU_WEBHOOK_URL:}
+    wx-subscribe:
+      enabled: ${WX_SUBSCRIBE_ENABLED:false}
+      template-id: ${WX_SUBSCRIBE_TEMPLATE_ID:}
+      page: pages/sheet-detail/sheet-detail
 
 logging:
   file:

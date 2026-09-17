@@ -7,9 +7,13 @@ Page({
     bindingCode: '',
     expiresText: '',
     saving: false,
+    unread: 0,
   },
 
   onShow() {
+    request('/api/notifications/unread-count')
+      .then((d) => this.setData({ unread: d.unreadCount }))
+      .catch(() => {});
     request('/api/me')
       .then((user) => {
         this.setData({ nickname: user.nickname || '', avatar: user.avatar || '' });
@@ -65,6 +69,10 @@ Page({
       return m[1] + '-' + m[2] + '-' + m[3] + ' ' + m[4] + ':' + m[5];
     }
     return s;
+  },
+
+  goNotifications() {
+    wx.navigateTo({ url: '/pages/notifications/notifications' });
   },
 
   goCircle() {

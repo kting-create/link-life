@@ -2,8 +2,13 @@
   <div class="app">
     <header v-if="showNav" class="topbar">
       <span class="brand">Link-Life</span>
-      <span v-if="user" class="nickname">{{ user.nickname }}</span>
-      <button v-if="user" class="btn btn-small" @click="logout">退出</button>
+      <span class="topbar-right">
+        <router-link v-if="user" to="/notifications" class="nav-notif">
+          通知<span v-if="unread > 0" class="badge">{{ unread > 99 ? '99+' : unread }}</span>
+        </router-link>
+        <span v-if="user" class="nickname">{{ user.nickname }}</span>
+        <button v-if="user" class="btn btn-small" @click="logout">退出</button>
+      </span>
     </header>
     <main class="main">
       <router-view :key="route.fullPath" />
@@ -16,6 +21,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { request, clearTokens } from './api/request'
+import { fetchUnreadCount } from './api/notifications'
 import { toast } from './utils/toast'
 
 export default {
@@ -34,23 +40,51 @@ export default {
       }
     }
 
+    const unread = ref(0)
+    let pollTimer = null
+
+    async function refreshUnread() {
+      if (document.hidden || !localStorage.getItem('accessToken')) return
+      try {
+        const data = await fetchUnreadCount()
+        unread.value = data.unreadCount
+      } catch (err) {
+        // 401 等错误静默，请求封装已处理刷新/跳登录
+      }
+    }
+
+    function startPolling() {
+      if (pollTimer) return
+      refreshUnread()
+      pollTimer = setInterval(refreshUnread, 30000)
+    }
+
+    function stopPolling() {
+      if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
+      unread.value = 0
+    }
+
     function logout() {
       clearTokens()
+      stopPolling()
       user.value = null
       router.push('/login')
     }
 
     watch(
       () => route.path,
-      (path) => {
-        if (path !== '/login' && localStorage.getItem('accessToken') && !user.value) {
-          loadUser()
+      () => {
+        if (route.meta.requiresAuth && localStorage.getItem('accessToken')) {
+          if (!user.value) loadUser()
+          startPolling()
+        } else {
+          stopPolling()
         }
       },
       { immediate: true }
     )
 
-    return { route, user, showNav, logout, toast }
+    return { route, user, showNav, unread, logout, toast }
   },
 }
 </script>
@@ -84,8 +118,28 @@ body {
   font-weight: 600;
   color: #4f7cff;
 }
-.nickname {
+.topbar-right {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-notif {
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+.nav-notif .badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: #ff4d4f;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+}
+.nickname {
   color: #666;
 }
 .btn {

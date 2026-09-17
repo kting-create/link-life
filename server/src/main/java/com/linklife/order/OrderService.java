@@ -12,6 +12,10 @@ import com.linklife.order.entity.OrderItem;
 import com.linklife.order.entity.OrderSheet;
 import com.linklife.order.mapper.OrderItemMapper;
 import com.linklife.order.mapper.OrderSheetMapper;
+import com.linklife.notify.event.ItemClaimedEvent;
+import com.linklife.notify.event.ItemDoneEvent;
+import com.linklife.notify.event.SheetCompletedEvent;
+import com.linklife.notify.event.SheetSharedEvent;
 import com.linklife.user.UserService;
 import java.security.SecureRandom;
 import java.util.Collection;
@@ -21,6 +25,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +43,7 @@ public class OrderService {
     private final OrderItemMapper orderItemMapper;
     private final CircleService circleService;
     private final UserService userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final String STATUS_SHARED = "SHARED";
     private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
@@ -66,6 +72,8 @@ public class OrderService {
             orderItem.setItemStatus("OPEN");
             orderItemMapper.insert(orderItem);
         }
+        eventPublisher.publishEvent(new SheetSharedEvent(
+                circleId, sheet.getId(), title, userId, items.size()));
         return toDetailVO(sheet);
     }
 
@@ -130,6 +138,9 @@ public class OrderService {
                     .eq(OrderSheet::getStatus, STATUS_SHARED)
                     .set(OrderSheet::getStatus, STATUS_IN_PROGRESS));
         }
+        eventPublisher.publishEvent(new ItemClaimedEvent(
+                sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
+                userId, sheet.getCreatorId()));
         return toItemVO(item);
     }
 
@@ -166,6 +177,11 @@ public class OrderService {
         }
         item.setItemStatus(target);
         orderItemMapper.updateById(item);
+        if (ITEM_DONE.equals(target)) {
+            eventPublisher.publishEvent(new ItemDoneEvent(
+                    sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
+                    userId, sheet.getCreatorId()));
+        }
         return toItemVO(item);
     }
 
@@ -178,6 +194,8 @@ public class OrderService {
         requireSheetNotCompleted(sheet);
         sheet.setStatus(STATUS_COMPLETED);
         orderSheetMapper.updateById(sheet);
+        eventPublisher.publishEvent(new SheetCompletedEvent(
+                sheet.getCircleId(), sheet.getId(), sheet.getTitle(), userId));
         return toDetailVO(sheet);
     }
 

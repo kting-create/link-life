@@ -47,7 +47,7 @@ deploy/backup.sh
 |---|---|---|
 | P0 基础框架 | 工程骨架、用户/圈子、JWT 鉴权、AI 网关骨架、Docker Compose 部署 | ✅ **已完成并合入 main（2026-09-16，24 测试全绿）** |
 | P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ✅ **已完成（2026-09-17，分支审查后合并）** |
-| P2 推送 | 微信订阅消息 + 飞书/Bark webhook、事件驱动（NotificationService 多通道） | ⬜ **下一步** |
+| P2 推送 | 站内通知 + 事件驱动多通道（飞书 Webhook、微信订阅消息，config 门控默认关）+ Web/小程序通知页 | ✅ **开发完成（2026-09-17，50 测试全绿，分支审查中/待合并）** |
 | P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ⬜ |
 | P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ |
 | P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ |
@@ -60,6 +60,7 @@ deploy/backup.sh
 - refresh-token 吊销机制未设计；Caffeine 缓存决策未落地
 - JWT_SECRET 生产 fail-fast（当前仅 compose 层要求）；backup.sh 路径/密码硬编码
 - P1 前端启动后需填 `web-dist/`（nginx 已挂载）与小程序 appid 配置
+- P2：Bark/Server酱通道延后、小程序订阅授权埋点延后（等模板开通）
 
 ## 6. 下一步（进入新会话时从这里继续）
 
@@ -69,8 +70,10 @@ P1（点单清单 MVP）已完成并经 PR #1 合入 main，且已通过**本地
 
 本地验证环境：`deploy/.env` 已配小程序**测试号** WX_APPID/WX_SECRET（正式注册后替换）；启动 `cd deploy && docker compose up -d --build`，入口 `http://localhost`。
 
-下一步进入 **P2 推送模块**：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（微信订阅消息/飞书/Bark）→ Web 轮询兜底。设计输入：spec 第 6 节推送模块；🧑 前置：小程序后台开通订阅消息模板、飞书群机器人 Webhook（见 TODO.md 第 0 节）。
+P2（推送模块）已完成：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（飞书 Webhook、微信订阅消息，config 门控默认关、缺配置静默降级）→ Web 端通知页 + 未读角标轮询 → 小程序端通知页。分支 `p2-notification-20260917`，50 测试全绿，待全分支终审后合并。🧑 延后：飞书群 Webhook 配置后验证、微信订阅模板开通后单独小迭代（订阅授权埋点 + 真机验证，见 TODO.md 随手记录区）。
+
+下一步进入 **P3 AI 菜谱引擎**：recipe 表版本化 → AiGatewayService 结构化输出生成菜谱 → 口感反馈迭代闭环 → 自定义调味/食材/命名 → 流式输出。设计输入：spec 第 7 节；🧑 前置：DeepSeek API Key 充值配置（见 TODO.md 第 3 节）。
 
 ---
 
-*最后更新：2026-09-17（P1 合并 + 本地手工验证完成）*
+*最后更新：2026-09-17（P2 开发完成待终审合并）*

@@ -20,6 +20,12 @@ JWT_SECRET=至少32字节的随机字符串
 WX_APPID=小程序appid
 WX_SECRET=小程序secret
 DEEPSEEK_API_KEY=后续AI功能用（可选；不配置时启动会注入占位 key，AI 调用会失败并记录 ai_call_log，不影响其他功能，后续阶段需要真实 key 才能调用 AI）
+
+# P2 推送通道（可选，默认关闭，不配置不影响启动）
+# FEISHU_NOTIFY_ENABLED=true
+# FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/xxx
+# WX_SUBSCRIBE_ENABLED=true
+# WX_SUBSCRIBE_TEMPLATE_ID=订阅消息模板ID
 ```
 
 3. 启动：
@@ -47,6 +53,23 @@ cd web && npm install && npm run build
 - **认领状态机**：清单内菜品认领（OPEN → CLAIMED → COOKING → DONE），支持 claim / release / 标记完成
 - **分享**：清单生成 share_token，微信小程序分享卡片 + Web 只读分享页 `/s/{token}`（免登录可看，错误码 3001 表示清单不存在）
 - **双端壳**：微信小程序（登录、圈子、点单、清单、我的）与 Web 端（绑定码登录 + 功能对齐页面）
+
+## P2 功能（推送模块）
+
+事件驱动的多通道通知（站内信 + 外部通道），两外部通道默认关闭、缺配置静默降级不影响启动：
+
+- **站内通知**：清单生成/认领/收单等事件异步写入站内信，Web 端通知页 + 未读角标（30s 轮询），小程序端通知页 + 角标
+- **飞书群机器人**：事件摘要推送到飞书群 Webhook（`FEISHU_NOTIFY_ENABLED=true` + Webhook 地址时启用）
+- **微信订阅消息**：一次性订阅消息推送（`WX_SUBSCRIBE_ENABLED=true` + 模板 ID 时启用；需小程序后台开通模板）
+
+### 推送通道环境变量
+
+| 变量名 | 作用 | 默认值 | 缺省行为 |
+|---|---|---|---|
+| `FEISHU_NOTIFY_ENABLED` | 飞书通道总开关 | `false` | 通道禁用，不发送 |
+| `FEISHU_WEBHOOK_URL` | 飞书群机器人 Webhook 地址 | 空 | 通道降级跳过，不报错 |
+| `WX_SUBSCRIBE_ENABLED` | 微信订阅消息总开关 | `false` | 通道禁用，不发送 |
+| `WX_SUBSCRIBE_TEMPLATE_ID` | 订阅消息模板 ID | 空 | 通道降级跳过，不报错 |
 
 ## 进度
 
