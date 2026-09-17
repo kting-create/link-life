@@ -17,6 +17,7 @@ import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,14 @@ public class OrderService {
     private final OrderItemMapper orderItemMapper;
     private final CircleService circleService;
     private final UserService userService;
+
+    private static final String STATUS_SHARED = "SHARED";
+    private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
+    private static final String STATUS_COMPLETED = "COMPLETED";
+    private static final String ITEM_OPEN = "OPEN";
+    private static final String ITEM_CLAIMED = "CLAIMED";
+    private static final String ITEM_COOKING = "COOKING";
+    private static final String ITEM_DONE = "DONE";
 
     @Transactional
     public SheetDetailVO createSheet(long userId, long circleId, String title, List<ItemInput> items) {
@@ -89,14 +98,6 @@ public class OrderService {
         return toDetailVO(sheet);
     }
 
-    private static final String STATUS_SHARED = "SHARED";
-    private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
-    private static final String STATUS_COMPLETED = "COMPLETED";
-    private static final String ITEM_OPEN = "OPEN";
-    private static final String ITEM_CLAIMED = "CLAIMED";
-    private static final String ITEM_COOKING = "COOKING";
-    private static final String ITEM_DONE = "DONE";
-
     @Transactional
     public ItemVO addItem(long userId, long sheetId, String dishName, String note) {
         OrderSheet sheet = requireSheet(sheetId);
@@ -141,9 +142,11 @@ public class OrderService {
         if (!ITEM_CLAIMED.equals(item.getItemStatus()) && !ITEM_COOKING.equals(item.getItemStatus())) {
             throw new BusinessException(ErrorCode.ITEM_STATUS_INVALID);
         }
-        item.setClaimantId(null);
         item.setItemStatus(ITEM_OPEN);
-        orderItemMapper.updateById(item);
+        orderItemMapper.update(null, new LambdaUpdateWrapper<OrderItem>()
+                .eq(OrderItem::getId, item.getId())
+                .set(OrderItem::getClaimantId, null)
+                .set(OrderItem::getItemStatus, ITEM_OPEN));
         return toItemVO(item);
     }
 
@@ -188,7 +191,7 @@ public class OrderService {
     }
 
     private void requireClaimant(long userId, OrderItem item) {
-        if (item.getClaimantId() == null || item.getClaimantId() != userId) {
+        if (!Objects.equals(item.getClaimantId(), userId)) {
             throw new BusinessException(ErrorCode.NOT_ITEM_CLAIMANT);
         }
     }

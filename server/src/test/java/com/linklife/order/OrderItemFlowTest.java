@@ -159,7 +159,12 @@ class OrderItemFlowTest extends IntegrationTestBase {
                 .andExpect(jsonPath("$.data.itemStatus").value("OPEN"));
         mockMvc.perform(get("/api/order/sheets/" + sheetId)
                         .header("Authorization", "Bearer " + alice))
-                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"));
+                .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"))
+                .andExpect(jsonPath("$.data.items[0].itemStatus").value("OPEN"))
+                .andExpect(jsonPath("$.data.items[0].claimantId").value(
+                        org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.data.items[0].claimantNickname").value(
+                        org.hamcrest.Matchers.nullValue()));
     }
 
     @Test
