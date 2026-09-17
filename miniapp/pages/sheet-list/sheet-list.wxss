@@ -1,0 +1,77 @@
+.sheet-list-page {
+  padding: 24rpx;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.circle-name {
+  font-size: 34rpx;
+  font-weight: bold;
+}
+
+.add-btn {
+  width: 64rpx;
+  height: 64rpx;
+  line-height: 60rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: #07c160;
+  color: #ffffff;
+  font-size: 40rpx;
+}
+
+.sheet-item {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.sheet-title {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.sheet-meta {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 16rpx;
+}
+
+.badge {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+}
+
+.badge-shared {
+  background: #e8f7ef;
+  color: #07c160;
+}
+
+.badge-in_progress {
+  background: #eef3ff;
+  color: #4a7cf6;
+}
+
+.badge-completed {
+  background: #f2f2f2;
+  color: #999999;
+}
+
+.progress {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.hint {
+  text-align: center;
+  color: #999999;
+  padding: 60rpx 0;
+}

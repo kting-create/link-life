@@ -1,0 +1,24 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.login-logo {
+  font-size: 64rpx;
+  font-weight: bold;
+  color: #07c160;
+}
+
+.login-subtitle {
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  color: #999999;
+}
+
+.login-btn {
+  margin-top: 120rpx;
+  width: 80%;
+}

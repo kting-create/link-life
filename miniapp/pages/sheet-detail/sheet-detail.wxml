@@ -1,0 +1,67 @@
+<view class="sheet-detail-page" wx:if="{{sheet}}">
+  <view class="card">
+    <view class="sheet-title">{{sheet.title}}</view>
+    <view class="sheet-meta">
+      <view class="badge">{{statusText}}</view>
+      <view class="progress" wx:if="{{totalCount}}">{{claimedCount}}/{{totalCount}} 已认领</view>
+    </view>
+    <view class="readonly-tip" wx:if="{{readonly}}">当前为只读预览，登录后可参与认领</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">菜品清单</view>
+    <view wx:if="{{!items.length}}" class="hint">还没有菜品</view>
+    <view class="item-row" wx:for="{{items}}" wx:key="id">
+      <view class="item-main">
+        <view class="dish-name">{{item.dishName}}</view>
+        <view class="dish-note" wx:if="{{item.note}}">备注：{{item.note}}</view>
+        <view class="item-status">
+          <text class="status-text">{{item.statusText}}</text>
+          <text wx:if="{{item.claimantNickname}}" class="claimant">· {{item.claimantNickname}}{{item.mine ? '（我）' : ''}}</text>
+        </view>
+      </view>
+      <view class="item-actions">
+        <button
+          wx:if="{{item.canClaim}}"
+          class="mini-btn"
+          type="primary"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="claimItem"
+        >认领</button>
+        <button
+          wx:if="{{item.canCook}}"
+          class="mini-btn"
+          type="primary"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="startCook"
+        >开始烹饪</button>
+        <button
+          wx:if="{{item.canFinish}}"
+          class="mini-btn"
+          type="primary"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="finishItem"
+        >完成</button>
+        <button
+          wx:if="{{item.canRelease}}"
+          class="mini-btn"
+          size="mini"
+          data-id="{{item.id}}"
+          bindtap="releaseItem"
+        >释放</button>
+      </view>
+    </view>
+  </view>
+
+  <button
+    wx:if="{{showComplete}}"
+    class="complete-btn"
+    type="warn"
+    loading="{{acting}}"
+    bindtap="completeSheet"
+  >收单</button>
+</view>
+<view wx:else class="hint">加载中...</view>

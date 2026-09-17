@@ -5,8 +5,10 @@ import com.linklife.auth.dto.BindRequest;
 import com.linklife.auth.dto.BindingCodeVO;
 import com.linklife.auth.dto.LoginRequest;
 import com.linklife.auth.dto.RefreshRequest;
+import com.linklife.common.ratelimit.RateLimiter;
 import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +23,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final BindingCodeService bindingCodeService;
+    private final RateLimiter rateLimiter;
 
     @PostMapping("/wx-login")
     public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request) {
@@ -38,7 +41,10 @@ public class AuthController {
     }
 
     @PostMapping("/bind")
-    public Result<AuthTokens> bind(@Valid @RequestBody BindRequest request) {
+    public Result<AuthTokens> bind(@Valid @RequestBody BindRequest request, HttpServletRequest httpRequest) {
+        // bind 端点在 JwtAuthFilter 中为免登录路径（JwtAuthFilter.shouldNotFilter），
+        // 无 JWT 上下文可用，因此按客户端 IP 限流（每 IP 每分钟 5 次）。
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":bind");
         return Result.ok(bindingCodeService.bind(request.code()));
     }
 }

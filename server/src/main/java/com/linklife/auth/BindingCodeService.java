@@ -7,8 +7,8 @@ import com.linklife.auth.jwt.JwtService;
 import com.linklife.auth.mapper.BindingCodeMapper;
 import com.linklife.common.exception.BusinessException;
 import com.linklife.common.exception.ErrorCode;
+import com.linklife.user.UserService;
 import com.linklife.user.entity.User;
-import com.linklife.user.mapper.UserMapper;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,8 @@ public class BindingCodeService {
     private static final int TTL_MINUTES = 10;
 
     private final BindingCodeMapper bindingCodeMapper;
-    private final UserMapper userMapper;
+    private final UserService userService;
     private final JwtService jwtService;
-    private final AuthService authService;
 
     @Transactional
     public BindingCodeVO create(long userId) {
@@ -47,10 +46,10 @@ public class BindingCodeService {
             throw new BusinessException(ErrorCode.BINDING_CODE_INVALID);
         }
 
-        User user = userMapper.selectById(bc.getUserId());
+        User user = userService.getUserById(bc.getUserId());
         return new AuthTokens(
                 jwtService.generateAccessToken(user.getId()),
                 jwtService.generateRefreshToken(user.getId()),
-                authService.toVO(user));
+                userService.toVO(user));
     }
 }

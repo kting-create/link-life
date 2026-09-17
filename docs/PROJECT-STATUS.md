@@ -46,8 +46,8 @@ deploy/backup.sh
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | P0 基础框架 | 工程骨架、用户/圈子、JWT 鉴权、AI 网关骨架、Docker Compose 部署 | ✅ **已完成并合入 main（2026-09-16，24 测试全绿）** |
-| P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ⬜ **下一步** |
-| P2 推送 | 微信订阅消息 + 飞书/Bark webhook、事件驱动（NotificationService 多通道） | ⬜ |
+| P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ✅ **已完成（2026-09-17，分支审查后合并）** |
+| P2 推送 | 微信订阅消息 + 飞书/Bark webhook、事件驱动（NotificationService 多通道） | ⬜ **下一步** |
 | P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ⬜ |
 | P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ |
 | P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ |
@@ -55,11 +55,9 @@ deploy/backup.sh
 ## 5. 已知延后项（P1 起择机处理）
 
 - `wxLogin` 并发首次注册竞争：DuplicateKeyException → 500（唯一键兜底，建议 catch 后 re-select）
-- `/api/auth/bind` 无限流（6 位码 10 分钟窗口，暴力破解面）；邀请码端点同理
 - 邀请码碰撞无重试（概率 ~1e-13）；`uk_unionid`/`uk_code` 实为普通 KEY（命名误导）
 - `JwtService` 用默认 charset 取 secret 字节（应 UTF_8）；AiGatewayService 未记 prompt/completion tokens、userId 恒 null
 - refresh-token 吊销机制未设计；Caffeine 缓存决策未落地
-- 引入 `UserService` 解除 user↔auth 包循环依赖（P1 加 order 模块前做）
 - JWT_SECRET 生产 fail-fast（当前仅 compose 层要求）；backup.sh 路径/密码硬编码
 - P1 前端启动后需填 `web-dist/`（nginx 已挂载）与小程序 appid 配置
 
@@ -67,8 +65,8 @@ deploy/backup.sh
 
 **全量待办清单在 `docs/TODO.md`**（含 P1~P5 所有任务 + 🧑 标记的需本人线下办理事项，做完勾选）。新会话：读本文件 → 读 TODO.md 第一个未勾选项 → 继续执行。
 
-P1 开发流程：brainstorming 细化范围 → writing-plans 写实施计划 → subagent-driven-development 执行。设计输入：spec 第 4 节（点单清单模块）已定稿的数据模型与分享机制。
+P1（点单清单 MVP）已完成：后端 order/清单/认领/分享、小程序端、Web 端、nginx 静态资源与免登录分享路由均已贯通（compose 冒烟通过）。下一步进入 **P2 推送模块**：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（微信订阅消息/飞书/Bark）→ Web 轮询兜底。设计输入：spec 第 6 节推送模块；🧑 前置：小程序后台开通订阅消息模板、飞书群机器人 Webhook（见 TODO.md 第 0 节）。
 
 ---
 
-*最后更新：2026-09-16（P0 完成合并）*
+*最后更新：2026-09-17（P1 完成）*

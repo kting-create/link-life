@@ -22,36 +22,37 @@
 ## 1. P1 点单清单 MVP（下一个开发阶段）
 
 ### 1.1 开发前置
-- [ ] brainstorming 会话细化 P1 范围：清单数据模型、share_token 分享、认领状态机、双端壳范围 → 产出 spec 增量
-- [ ] writing-plans 写 P1 实施计划到 `docs/superpowers/plans/`
+- [x] brainstorming 会话细化 P1 范围：清单数据模型、share_token 分享、认领状态机、双端壳范围 → 产出 spec 增量
+- [x] writing-plans 写 P1 实施计划到 `docs/superpowers/plans/`
 - [ ] 🧑 提供 AppID/AppSecret 给 `deploy/.env`（WX_APPID/WX_SECRET），注册小程序服务器域名白名单（你的域名）
 
 ### 1.2 后端（server/）
-- [ ] 引入 `UserService` 解除 user↔auth 包循环依赖（终审遗留）
-- [ ] Flyway V2：`order_sheet`、`order_item`、`dish` 表（spec 第 4 节已定字段）
-- [ ] order 模块：创建点单（选菜/自由输入）→ 生成清单（DRAFT→SHARED 状态机）
-- [ ] 清单分享：share_token 生成 + 只读分享接口（圈外可读、圈内可操作）
-- [ ] 认领：claim / release / 标记完成（OPEN→CLAIMED→COOKING→DONE）
-- [ ] 清单列表/详情/状态流转 API + 集成测试
-- [ ] `/api/auth/bind` 与邀请码端点加简单限流（如 Caffeine 计数器，每用户每分钟 N 次）
+- [x] 引入 `UserService` 解除 user↔auth 包循环依赖（终审遗留）
+- [x] Flyway V2：`order_sheet`、`order_item`、`dish` 表（spec 第 4 节已定字段）
+- [x] order 模块：创建点单（选菜/自由输入）→ 生成清单（DRAFT→SHARED 状态机）
+- [x] 清单分享：share_token 生成 + 只读分享接口（圈外可读、圈内可操作）
+- [x] 认领：claim / release / 标记完成（OPEN→CLAIMED→COOKING→DONE）
+- [x] 清单列表/详情/状态流转 API + 集成测试
+- [x] `/api/auth/bind` 与邀请码端点加简单限流（如 Caffeine 计数器，每用户每分钟 N 次）
 
 ### 1.3 微信小程序端（miniapp/，新建目录）
-- [ ] 原生小程序工程骨架（登录、请求封装：JWT 存 storage、401 统一刷新重试）
-- [ ] 圈子页：建圈、邀请码加入、成员列表
-- [ ] 点单页：选菜/输入菜名生成清单
-- [ ] 清单页：分享卡片（onShareAppMessage 带 share_token）、认领/标记完成
-- [ ] 我的页：昵称头像修改、生成绑定码
+- [x] 原生小程序工程骨架（登录、请求封装：JWT 存 storage、401 统一刷新重试）
+- [x] 圈子页：建圈、邀请码加入、成员列表
+- [x] 点单页：选菜/输入菜名生成清单
+- [x] 清单页：分享卡片（onShareAppMessage 带 share_token）、认领/标记完成
+- [x] 我的页：昵称头像修改、生成绑定码
 - [ ] 🧑 微信开发者工具真机预览验证
+- [ ] 🧑 上线前将 miniapp/config.js 的 BASE_URL 改为生产 https 域名
 
 ### 1.4 Web 端（web/，新建目录，Vue 3 + Vite）
-- [ ] 工程骨架 + 请求封装（同后端 API，JWT 同规则）
-- [ ] 登录页（绑定码登录）、圈子/点单/清单页（与小程序功能对齐）
-- [ ] 分享只读页 `/s/{token}`（未登录可看）
-- [ ] `npm run build` 产物输出到 `web-dist/`（nginx 已挂载）
+- [x] 工程骨架 + 请求封装（同后端 API，JWT 同规则）
+- [x] 登录页（绑定码登录）、圈子/点单/清单页（与小程序功能对齐）
+- [x] 分享只读页 `/s/{token}`（未登录可看）
+- [x] `npm run build` 产物输出到 `web-dist/`（nginx 已挂载）
 
 ### 1.5 部署与收尾
-- [ ] 更新 `deploy/nginx.conf` 确认 web 静态资源生效；更新 README
-- [ ] 全量测试 + 更新 PROJECT-STATUS 路线图（P1 ✅）+ 合并推送
+- [x] 更新 `deploy/nginx.conf` 确认 web 静态资源生效；更新 README
+- [x] 全量测试 + 更新 PROJECT-STATUS 路线图（P1 ✅）+ 合并推送
 - [ ] 🧑 服务器上首次正式部署（按 README 步骤）
 
 ---
