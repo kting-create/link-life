@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8080';
+const { BASE_URL } = require('../config');
 
 function raw(path, method, data, token) {
   return new Promise((resolve, reject) => {

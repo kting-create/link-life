@@ -42,6 +42,7 @@
 - [x] 清单页：分享卡片（onShareAppMessage 带 share_token）、认领/标记完成
 - [x] 我的页：昵称头像修改、生成绑定码
 - [ ] 🧑 微信开发者工具真机预览验证
+- [ ] 🧑 上线前将 miniapp/config.js 的 BASE_URL 改为生产 https 域名
 
 ### 1.4 Web 端（web/，新建目录，Vue 3 + Vite）
 - [x] 工程骨架 + 请求封装（同后端 API，JWT 同规则）

@@ -44,7 +44,7 @@ public class AuthController {
     public Result<AuthTokens> bind(@Valid @RequestBody BindRequest request, HttpServletRequest httpRequest) {
         // bind 端点在 JwtAuthFilter 中为免登录路径（JwtAuthFilter.shouldNotFilter），
         // 无 JWT 上下文可用，因此按客户端 IP 限流（每 IP 每分钟 5 次）。
-        rateLimiter.check(httpRequest.getRemoteAddr() + ":bind");
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":bind");
         return Result.ok(bindingCodeService.bind(request.code()));
     }
 }
