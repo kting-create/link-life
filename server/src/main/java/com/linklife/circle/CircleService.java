@@ -97,6 +97,12 @@ public class CircleService {
         }
     }
 
+    public List<Long> listMemberIds(long circleId) {
+        return circleMemberMapper.selectList(
+                        new LambdaQueryWrapper<CircleMember>().eq(CircleMember::getCircleId, circleId))
+                .stream().map(CircleMember::getUserId).toList();
+    }
+
     private String generateCode() {
         StringBuilder sb = new StringBuilder(8);
         for (int i = 0; i < 8; i++) {
