@@ -1,0 +1,13 @@
+{
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "link-life-miniapp",
+  "libVersion": "3.0.0",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  }
+}

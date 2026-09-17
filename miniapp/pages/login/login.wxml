@@ -1,0 +1,5 @@
+<view class="login-container">
+  <view class="login-logo">Link-Life</view>
+  <view class="login-subtitle">链接生活</view>
+  <button class="login-btn" type="primary" loading="{{loading}}" bindtap="login">微信一键登录</button>
+</view>
