@@ -24,7 +24,7 @@
 ### 1.1 开发前置
 - [x] brainstorming 会话细化 P1 范围：清单数据模型、share_token 分享、认领状态机、双端壳范围 → 产出 spec 增量
 - [x] writing-plans 写 P1 实施计划到 `docs/superpowers/plans/`
-- [ ] 🧑 提供 AppID/AppSecret 给 `deploy/.env`（WX_APPID/WX_SECRET），注册小程序服务器域名白名单（你的域名）
+- [x] 本地验证用小程序测试号申请（AppID/Secret 已配 `deploy/.env`；正式小程序注册与域名白名单见第 0 节 🧑 项）
 
 ### 1.2 后端（server/）
 - [x] 引入 `UserService` 解除 user↔auth 包循环依赖（终审遗留）
