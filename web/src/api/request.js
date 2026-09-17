@@ -36,6 +36,13 @@ async function refresh() {
   return body.data.accessToken
 }
 
+export async function publicRequest(path, options = {}) {
+  const method = options.method || 'GET'
+  const body = await raw(path, method, options.data, null)
+  if (body.code === 0) return body.data
+  throw body
+}
+
 export async function request(path, options = {}) {
   const method = options.method || 'GET'
   const token = localStorage.getItem('accessToken')
