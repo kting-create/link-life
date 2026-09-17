@@ -5,19 +5,22 @@
   </view>
 
   <view wx:if="{{loading}}" class="hint">加载中...</view>
-  <view wx:elif="{{!sheets.length}}" class="hint">还没有点单，点右上角 ＋ 发起一个吧</view>
-  <view
-    wx:else
-    class="sheet-item"
-    wx:for="{{sheets}}"
-    wx:key="id"
-    data-id="{{item.id}}"
-    bindtap="openSheet"
-  >
-    <view class="sheet-title">{{item.title}}</view>
-    <view class="sheet-meta">
-      <view class="badge {{item.statusClass}}">{{item.statusText}}</view>
-      <view class="progress">{{item.claimedCount}}/{{item.totalCount}} 已认领</view>
+  <block wx:elif="{{!sheets.length}}">
+    <view class="hint">还没有点单，点右上角 ＋ 发起一个吧</view>
+  </block>
+  <block wx:else>
+    <view
+      class="sheet-item"
+      wx:for="{{sheets}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="openSheet"
+    >
+      <view class="sheet-title">{{item.title}}</view>
+      <view class="sheet-meta">
+        <view class="badge {{item.statusClass}}">{{item.statusText}}</view>
+        <view class="progress">{{item.claimedCount}}/{{item.totalCount}} 已认领</view>
+      </view>
     </view>
-  </view>
+  </block>
 </view>
