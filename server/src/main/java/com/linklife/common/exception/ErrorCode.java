@@ -15,6 +15,7 @@ public enum ErrorCode {
     ITEM_STATUS_INVALID(3003, "当前状态不允许该操作", HttpStatus.BAD_REQUEST),
     SHEET_COMPLETED(3004, "清单已收单", HttpStatus.BAD_REQUEST),
     NOT_ITEM_CLAIMANT(3005, "仅认领人可操作", HttpStatus.FORBIDDEN),
+    NOTIFICATION_NOT_FOUND(3006, "通知不存在", HttpStatus.BAD_REQUEST),
     RATE_LIMITED(4001, "请求过于频繁", HttpStatus.TOO_MANY_REQUESTS);
 
     public final int code;
