@@ -5,6 +5,7 @@
     "pages/order-create/order-create",
     "pages/sheet-list/sheet-list",
     "pages/sheet-detail/sheet-detail",
+    "pages/notifications/notifications",
     "pages/profile/profile"
   ],
   "window": {

@@ -92,3 +92,23 @@
   text-align: center;
   color: #07c160;
 }
+
+.nav-link-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24rpx;
+}
+
+.badge {
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 10rpx;
+  border-radius: 16rpx;
+  background: #ff4d4f;
+  color: #ffffff;
+  font-size: 22rpx;
+  line-height: 32rpx;
+  text-align: center;
+  margin-left: 12rpx;
+}
