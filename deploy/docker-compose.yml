@@ -10,6 +10,10 @@ services:
       WX_APPID: ${WX_APPID:-}
       WX_SECRET: ${WX_SECRET:-}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-sk-placeholder-configure-real-key}
+      FEISHU_NOTIFY_ENABLED: ${FEISHU_NOTIFY_ENABLED:-false}
+      FEISHU_WEBHOOK_URL: ${FEISHU_WEBHOOK_URL:-}
+      WX_SUBSCRIBE_ENABLED: ${WX_SUBSCRIBE_ENABLED:-false}
+      WX_SUBSCRIBE_TEMPLATE_ID: ${WX_SUBSCRIBE_TEMPLATE_ID:-}
     depends_on:
       mysql:
         condition: service_healthy
