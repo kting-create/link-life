@@ -20,6 +20,7 @@
 
 <script>
 import { listNotifications, markAllRead, markRead } from '../api/notifications'
+import { showToast } from '../utils/toast'
 
 export default {
   data() {
@@ -30,9 +31,14 @@ export default {
   },
   methods: {
     async load() {
-      const data = await listNotifications(null)
-      this.items = data.items
-      this.allDone = data.unreadCount === 0
+      try {
+        const data = await listNotifications(null)
+        this.items = data.items
+        this.allDone = data.unreadCount === 0
+      } catch (e) {
+        console.error('load notifications failed', e)
+        showToast('加载通知失败')
+      }
     },
     async loadMore() {
       const last = this.items.length ? this.items[this.items.length - 1].id : null
@@ -41,15 +47,24 @@ export default {
     },
     async open(n) {
       if (!n.read) {
-        await markRead(n.id)
-        n.read = true
+        try {
+          await markRead(n.id)
+          n.read = true
+        } catch (e) {
+          console.error('mark notification read failed', e)
+        }
       }
       if (n.sheetId) this.$router.push('/sheets/' + n.sheetId)
     },
     async onReadAll() {
-      await markAllRead()
-      this.items.forEach((n) => { n.read = true })
-      this.allDone = true
+      try {
+        await markAllRead()
+        this.items.forEach((n) => { n.read = true })
+        this.allDone = true
+      } catch (e) {
+        console.error('mark all read failed', e)
+        showToast('操作失败')
+      }
     },
   },
 }

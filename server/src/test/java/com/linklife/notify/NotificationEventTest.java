@@ -177,6 +177,29 @@ class NotificationEventTest extends IntegrationTestBase {
     }
 
     @Test
+    void longSheetTitleStillDeliversNotifications() throws Exception {
+        String alice = login("evt-alice-4");
+        String bob = login("evt-bob-4");
+        long circleId = createCircle(alice);
+        join(bob, inviteCode(alice, circleId));
+
+        String longTitle = "长标题测试".repeat(12); // 60 chars, within @Size(max=64)
+        createSheet(alice, circleId, longTitle);
+
+        awaitUnread(bob, 1);
+        MvcResult list = mockMvc.perform(get("/api/notifications")
+                        .header("Authorization", "Bearer " + bob))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.items[0].type").value("SHEET_SHARED"))
+                .andReturn();
+        String title = JsonPath.read(list.getResponse()
+                .getContentAsString(java.nio.charset.StandardCharsets.UTF_8),
+                "$.data.items[0].title");
+        org.junit.jupiter.api.Assertions.assertTrue(title.contains(longTitle),
+                "persisted title should keep the full sheet title: " + title);
+    }
+
+    @Test
     void creatorClaimingOwnItemGeneratesNoNotification() throws Exception {
         String alice = login("evt-alice-3");
         long circleId = createCircle(alice);

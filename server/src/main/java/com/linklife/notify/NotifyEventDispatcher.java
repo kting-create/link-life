@@ -66,8 +66,14 @@ public class NotifyEventDispatcher {
         List<Long> recipients = circleService.listMemberIds(circleId).stream()
                 .filter(id -> id != actorId).toList();
         List<Notification> notifications = new ArrayList<>();
+        String safeTitle = truncate(title, 255);
+        String safeContent = truncate(content, 255);
         for (Long userId : recipients) {
-            notifications.add(notificationService.persist(userId, type, title, content, sheetId, circleId));
+            try {
+                notifications.add(notificationService.persist(userId, type, safeTitle, safeContent, sheetId, circleId));
+            } catch (Exception ex) {
+                log.warn("notify persist failed for recipient {} type {}", userId, type, ex);
+            }
         }
         dispatchPersonal(notifications);
     }
@@ -79,7 +85,8 @@ public class NotifyEventDispatcher {
         }
         String title = nickname(claimantId) + " " + verb + "「" + dishName + "」";
         String content = "点单「" + sheetTitle + "」";
-        Notification n = notificationService.persist(creatorId, type, title, content, sheetId, null);
+        Notification n = notificationService.persist(creatorId, type,
+                truncate(title, 255), truncate(content, 255), sheetId, null);
         dispatchPersonal(List.of(n));
         broadcast(title + "，" + content);
     }
@@ -93,8 +100,8 @@ public class NotifyEventDispatcher {
                 try {
                     channel.send(n);
                 } catch (Exception ex) {
-                    log.warn("notify channel {} send failed: {}",
-                            channel.getClass().getSimpleName(), ex.getMessage());
+                    log.warn("notify channel {} send failed",
+                            channel.getClass().getSimpleName(), ex);
                 }
             }
         }
@@ -108,13 +115,20 @@ public class NotifyEventDispatcher {
             try {
                 channel.broadcast(summary);
             } catch (Exception ex) {
-                log.warn("notify channel {} broadcast failed: {}",
-                        channel.getClass().getSimpleName(), ex.getMessage());
+                log.warn("notify channel {} broadcast failed",
+                        channel.getClass().getSimpleName(), ex);
             }
         }
     }
 
     private String nickname(long userId) {
         return userService.getNicknames(List.of(userId)).getOrDefault(userId, "用户" + userId);
+    }
+
+    private String truncate(String value, int limit) {
+        if (value == null) {
+            return "";
+        }
+        return value.length() <= limit ? value : value.substring(0, limit);
     }
 }
