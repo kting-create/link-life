@@ -19,7 +19,7 @@
 <script>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { request } from '../api/request'
+import { request, saveTokens } from '../api/request'
 import { showToast } from '../utils/toast'
 
 export default {
@@ -38,8 +38,7 @@ export default {
       submitting.value = true
       try {
         const data = await request('/api/auth/bind', { method: 'POST', data: { code: value } })
-        localStorage.setItem('accessToken', data.accessToken)
-        localStorage.setItem('refreshToken', data.refreshToken)
+        saveTokens(data)
         showToast('登录成功')
         router.push('/circles')
       } catch (err) {

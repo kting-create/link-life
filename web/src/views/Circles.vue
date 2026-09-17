@@ -86,12 +86,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { showToast } from '../utils/toast'
-
-const sheetStatusText = {
-  SHARED: '分享中',
-  IN_PROGRESS: '进行中',
-  COMPLETED: '已收单',
-}
+import { sheetStatusText } from '../utils/sheet'
 
 export default {
   setup() {

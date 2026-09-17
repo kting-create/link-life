@@ -39,12 +39,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { request } from '../api/request'
 import { showToast } from '../utils/toast'
-
-const sheetStatusText = {
-  SHARED: '分享中',
-  IN_PROGRESS: '进行中',
-  COMPLETED: '已收单',
-}
+import { sheetStatusText, claimedCount } from '../utils/sheet'
 
 const itemStatusText = {
   OPEN: '待认领',
@@ -131,9 +126,7 @@ export default {
 
     reload()
 
-    const claimedCount = computed(
-      () => items.value.filter((it) => it.claimantId).length
-    )
+    const claimed = computed(() => claimedCount(items.value))
 
     return {
       sheet,
@@ -141,7 +134,7 @@ export default {
       showComplete,
       loading,
       sheetStatusText,
-      claimedCount,
+      claimedCount: claimed,
       claimItem,
       startCook,
       finishItem,

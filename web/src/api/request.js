@@ -8,7 +8,7 @@ const http = axios.create({
   validateStatus: () => true,
 })
 
-function saveTokens(data) {
+export function saveTokens(data) {
   localStorage.setItem('accessToken', data.accessToken)
   localStorage.setItem('refreshToken', data.refreshToken)
 }
