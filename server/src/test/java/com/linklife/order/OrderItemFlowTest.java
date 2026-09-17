@@ -156,7 +156,11 @@ class OrderItemFlowTest extends IntegrationTestBase {
         // 认领人可释放回 OPEN，且 sheet 不回退（保持 IN_PROGRESS）
         mockMvc.perform(post("/api/order/items/" + itemId + "/release")
                         .header("Authorization", "Bearer " + carol))
-                .andExpect(jsonPath("$.data.itemStatus").value("OPEN"));
+                .andExpect(jsonPath("$.data.itemStatus").value("OPEN"))
+                .andExpect(jsonPath("$.data.claimantId").value(
+                        org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.data.claimantNickname").value(
+                        org.hamcrest.Matchers.nullValue()));
         mockMvc.perform(get("/api/order/sheets/" + sheetId)
                         .header("Authorization", "Bearer " + alice))
                 .andExpect(jsonPath("$.data.status").value("IN_PROGRESS"))

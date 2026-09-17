@@ -142,6 +142,7 @@ public class OrderService {
         if (!ITEM_CLAIMED.equals(item.getItemStatus()) && !ITEM_COOKING.equals(item.getItemStatus())) {
             throw new BusinessException(ErrorCode.ITEM_STATUS_INVALID);
         }
+        item.setClaimantId(null);
         item.setItemStatus(ITEM_OPEN);
         orderItemMapper.update(null, new LambdaUpdateWrapper<OrderItem>()
                 .eq(OrderItem::getId, item.getId())
