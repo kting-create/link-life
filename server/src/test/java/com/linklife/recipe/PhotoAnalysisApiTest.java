@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jayway.jsonpath.JsonPath;
 import com.linklife.IntegrationTestBase;
@@ -11,8 +13,10 @@ import com.linklife.ai.gateway.AiCallLogger;
 import com.linklife.auth.wechat.WeChatClient;
 import com.linklife.auth.wechat.WxSession;
 import com.linklife.recipe.entity.Recipe;
+import com.linklife.recipe.entity.RecipePhoto;
 import com.linklife.recipe.entity.RecipeVersion;
 import com.linklife.recipe.mapper.RecipeMapper;
+import com.linklife.recipe.mapper.RecipePhotoMapper;
 import com.linklife.recipe.mapper.RecipeVersionMapper;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -66,6 +70,8 @@ class PhotoAnalysisApiTest extends IntegrationTestBase {
     private RecipeMapper recipeMapper;
     @Autowired
     private RecipeVersionMapper recipeVersionMapper;
+    @Autowired
+    private RecipePhotoMapper photoMapper;
 
     JdbcTemplate jdbc;
     long recipeId;
@@ -142,7 +148,15 @@ class PhotoAnalysisApiTest extends IntegrationTestBase {
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.advice").value("盐放多了，建议减半"))
-                .andExpect(jsonPath("$.data.changes[0].stepNo").value(1));    }
+                .andExpect(jsonPath("$.data.changes[0].stepNo").value(1));
+
+        RecipePhoto photo = photoMapper.selectById(photoId);
+        assertNotNull(photo);
+        assertNotNull(photo.getAnalysis());
+        assertTrue(photo.getAnalysis().contains("盐放多了"));
+        assertTrue(photo.getAnalysis().contains("changes"));
+        assertNotNull(photo.getAnalyzedAt());
+    }
 
     @Test
     void analyzeWrapsAiFailureAs6005() throws Exception {
