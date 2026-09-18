@@ -49,7 +49,7 @@ deploy/backup.sh
 | P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ✅ **已完成（2026-09-17，分支审查后合并）** |
 | P2 推送 | 站内通知 + 事件驱动多通道（飞书 Webhook、微信订阅消息，config 门控默认关）+ Web/小程序通知页 | ✅ **已完成并合入 main（2026-09-17，PR #2，51 测试全绿）** |
 | P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ✅ **P3 开发完成（2026-09-18，分支已推送 origin，PR 未建）** |
-| P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ **下一个开发阶段，在 feature/p3-recipe-engine 分支上继续** |
+| P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ✅ **P4 开发完成（2026-09-18，feature/p3-recipe-engine 分支，分支级终审待做）** |
 | P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ **P4 之后同分支继续，最后统一验证 + 一次性合并** |
 
 ## 5. 已知延后项（P1 起择机处理）
@@ -80,10 +80,10 @@ P2（推送模块）已完成并经 PR #2 合入 main：Flyway V3 站内通知�
 **用户决策（2026-09-18）：P4、P5 与 P3 不分批合并——在同一分支（feature/p3-recipe-engine）上把后续功能全部做完，最后统一验证、一次性合并。** 因此 P3 的 PR 暂不创建。
 
 **下一步（按序）**：
-1. **P4（烹饪引导）**：分步趣味计时引擎（类 Keep：步骤倒计时/进度动画/提示音）、小程序烹饪模式页（亮屏常亮 wx.setKeepScreenOn）、过程拍照上传（本地卷 + nginx `/images/` 静态服务，注意 client_max_body_size）、AI 视觉分析（多模态模型接入，`AiGatewayService` 扩展 image 接口，分析结果反馈到当前步骤并写入菜谱迭代数据）。流程同 P3：brainstorming 细化范围 → spec 增量 → writing-plans → subagent-driven-development → 分支级审查。
+1. **P4 分支级终审**：P4（烹饪引导）开发已完成（2026-09-18，feature/p3-recipe-engine 分支，102 测试全绿、Web 构建通过、compose 冒烟通过——health OK、`/data/images` 卷挂载 app 可写/nginx 只读可见），待分支级终审。实现内容：分步计时烹饪模式双端（类 Keep 倒计时/进度动画/提示音、小程序亮屏常亮）、过程拍照上传本地卷（nginx `/images/` 静态服务）、AI 视觉分析（Qwen3-VL 多模态）分析结果反馈当前步骤并生成 PHOTO_ANALYSIS 菜谱版本、应用/回滚可用。🧑 DASHSCOPE_API_KEY 待配置到 deploy/.env（缺省注入占位 key、视觉分析 6005 降级）。
 2. **P5（打磨）**：口味画像沉淀展示、UI 打磨、Caffeine 缓存落地（热点清单/菜谱）、`wxLogin` 并发竞争 catch-reselect、备份恢复演练、性能小压测 + 安全清单。
 3. **统一验证**：`cd deploy && docker compose up -d --build` 全链路 compose 冒烟（P1~P5 所有功能）→ 🧑 DeepSeek Key 配好后按 `scripts/recipe-sample-validation.md` 真跑小样本 → 🧑 小程序真机验证（流式 + 烹饪模式）→ 一个 PR 合并全部。
 
 ---
 
-*最后更新：2026-09-18（P3 开发完成且终审通过，分支已推送 origin、PR 未建；用户决策 P4/P5 同分支继续、最后统一验证一次性合并；当前 85 测试全绿）*
+*最后更新：2026-09-18（P3/P4 开发完成，P4 分支级终审待做；分支已推送 origin、PR 未建；用户决策 P3/P4/P5 同分支、最后统一验证一次性合并；当前 102 测试全绿、compose 冒烟通过）*
