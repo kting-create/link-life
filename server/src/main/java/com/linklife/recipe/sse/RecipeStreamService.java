@@ -25,6 +25,18 @@ public class RecipeStreamService {
         return new SseEmitter(TIMEOUT_MS);
     }
 
+    /** 注册 90s 容器超时兜底：超时先尝试发 error 再 complete，避免前端悬挂。 */
+    public void wireTimeoutGuard(SseEmitter emitter) {
+        emitter.onTimeout(() -> handleTimeout(emitter));
+    }
+
+    /** 包内可见，便于单测直接触发超时处理逻辑。 */
+    void handleTimeout(SseEmitter emitter) {
+        log.warn("recipe sse emitter timeout after {}ms", TIMEOUT_MS);
+        sendError(emitter, ErrorCode.RECIPE_AI_FAILED);
+        complete(emitter);
+    }
+
     public void runAsync(SseEmitter emitter, Runnable work) {
         recipeExecutor.execute(() -> {
             try {

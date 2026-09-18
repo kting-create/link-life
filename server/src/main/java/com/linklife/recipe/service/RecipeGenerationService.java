@@ -65,6 +65,7 @@ public class RecipeGenerationService {
 
     private SseEmitter stream(long userId, String scene, String prompt, PersistFn persist) {
         SseEmitter emitter = streamService.newEmitter();
+        streamService.wireTimeoutGuard(emitter);
         streamService.runAsync(emitter, () -> doStream(userId, scene, prompt, persist, emitter));
         return emitter;
     }

@@ -1,4 +1,4 @@
-function handleFrame(frame, handlers) {
+function handleFrame(frame, handlers, state) {
   let event = 'message'
   let data = ''
   frame.split('\n').forEach((line) => {
@@ -13,8 +13,8 @@ function handleFrame(frame, handlers) {
     return
   }
   if (event === 'delta' && handlers.onDelta) handlers.onDelta(payload.text)
-  else if (event === 'done' && handlers.onDone) handlers.onDone(payload)
-  else if (event === 'error' && handlers.onError) handlers.onError(payload)
+  else if (event === 'done') { state.finished = true; if (handlers.onDone) handlers.onDone(payload) }
+  else if (event === 'error') { state.finished = true; if (handlers.onError) handlers.onError(payload) }
 }
 
 /**
@@ -49,6 +49,7 @@ export async function streamRequest(path, data, handlers) {
   }
   const reader = res.body.getReader()
   const decoder = new TextDecoder('utf-8')
+  const state = { finished: false }
   let buf = ''
   for (;;) {
     const { done, value } = await reader.read()
@@ -58,7 +59,11 @@ export async function streamRequest(path, data, handlers) {
     while ((idx = buf.indexOf('\n\n')) >= 0) {
       const frame = buf.slice(0, idx)
       buf = buf.slice(idx + 2)
-      handleFrame(frame, handlers)
+      handleFrame(frame, handlers, state)
     }
+  }
+  // 流结束却没收到 done/error 终端帧（如超时被服务端掐断），主动报错避免 UI 悬挂
+  if (!state.finished && handlers.onError) {
+    handlers.onError({ code: -1, message: '连接中断' })
   }
 }
