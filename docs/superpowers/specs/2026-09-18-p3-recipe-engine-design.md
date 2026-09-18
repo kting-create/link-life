@@ -108,6 +108,7 @@ POST /api/recipes/{id}/iterate        ← SSE 流式，反馈迭代新版本
      body {comment}（评分经 feedback 接口单独提交；迭代时取该 recipe 最近反馈喂 AI）
 POST /api/recipes/{id}/feedback       ← 提交评价 {score, comment}，不触发 AI
 GET  /api/recipes/{id}                ← 当前版本详情（含 custom_name、版本元信息列表）
+GET  /api/recipes/by-dish             ← ?circleId=&dishName= 按圈内菜名查菜谱详情，未建返回 5001（双端 item 入口判断"查看/生成"用）
 GET  /api/recipes/{id}/versions       ← 版本列表（元信息，不含 content）
 GET  /api/recipes/{id}/versions/{v}   ← 某版本 content
 PUT  /api/recipes/{id}                ← 手动编辑 {content?, customName?, changeNote}
