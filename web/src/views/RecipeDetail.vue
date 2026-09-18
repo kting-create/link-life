@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getRecipe, getVersions, submitFeedback, editRecipe, rollback } from '../api/recipe'
+import { getRecipe, getVersions, submitFeedback, editRecipe, rollback, listPhotos, deletePhoto, uploadPhoto } from '../api/recipe'
 import { showToast } from '../utils/toast'
 
 const route = useRoute()
@@ -13,7 +13,7 @@ const myComment = ref('')
 const nameInput = ref('')
 const atLimit = computed(() => versions.value.length >= 5)
 
-const SOURCE_TEXT = { AI_GENERATE: 'AI 生成', AI_ITERATE: 'AI 迭代', MANUAL_EDIT: '手动编辑' }
+const SOURCE_TEXT = { AI_GENERATE: 'AI 生成', AI_ITERATE: 'AI 迭代', MANUAL_EDIT: '手动编辑', PHOTO_ANALYSIS: '拍照修正' }
 
 const loadFailed = ref(false)
 
@@ -26,6 +26,7 @@ async function load() {
       sourceText: SOURCE_TEXT[v.source] || v.source,
       createdAtText: (v.createdAt || '').replace('T', ' ').slice(0, 16),
     }))
+    await loadPhotos()
     loadFailed.value = false
   } catch (e) {
     loadFailed.value = true
@@ -109,6 +110,33 @@ async function saveName() {
     await load()
   } catch (e) { showToast(e.message || '保存失败') }
 }
+
+const photos = ref([])
+
+async function loadPhotos() {
+  try { photos.value = await listPhotos(id) } catch (e) { /* 静默 */ }
+}
+loadPhotos()
+
+async function onPhotoFile(e, stepNo) {
+  const file = e.target.files[0]
+  if (!file) return
+  try {
+    await uploadPhoto(id, stepNo, file)
+    showToast('已上传')
+    await loadPhotos()
+  } catch (err) { showToast(err.message || '上传失败') }
+  e.target.value = ''
+}
+
+async function doDeletePhoto(photoId) {
+  try {
+    await deletePhoto(photoId)
+    await loadPhotos()
+  } catch (e) { showToast(e.message || '删除失败') }
+}
+
+function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepNo) }
 </script>
 
 <template>
@@ -126,6 +154,7 @@ async function saveName() {
         约 {{ recipe.content.totalMinutes }} 分钟 · {{ recipe.content.servings }} 人食</p>
       <button class="edit-toggle" @click="editMode ? (editMode = false) : startEdit()">
         {{ editMode ? '取消编辑' : '编辑菜谱' }}</button>
+      <button class="edit-toggle" @click="$router.push(`/recipes/${id}/cook`)">开始烹饪</button>
     </div>
 
     <div class="card" v-if="editMode && editForm">
@@ -181,6 +210,17 @@ async function saveName() {
           <p class="duration" v-if="s.durationSec">约
             {{ s.durationSec >= 60 ? Math.round(s.durationSec / 60) + ' 分钟' : s.durationSec + ' 秒' }}</p>
         </div>
+        <div class="photos" v-if="photosOf(s.no).length">
+          <div class="photo-item" v-for="p in photosOf(s.no)" :key="p.id">
+            <img :src="p.url" />
+            <a href="#" @click.prevent="doDeletePhoto(p.id)">删</a>
+          </div>
+        </div>
+        <label class="photo-upload">
+          + 拍照
+          <input type="file" accept="image/*" capture="environment" hidden
+                 @change="onPhotoFile($event, s.no)" />
+        </label>
       </div>
       <p v-if="recipe.content.tips" class="meta">小贴士：{{ recipe.content.tips }}</p>
     </div>
@@ -246,4 +286,8 @@ textarea { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box
 .edit-row .no { width: 22px; text-align: center; color: #07c160; flex-shrink: 0; }
 .edit-row .del, h4 .add { color: #07c160; font-size: 12px; flex-shrink: 0; }
 h4 { margin: 12px 0 4px; }
+.photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.photo-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; display: block; }
+.photo-item a { color: #e66; font-size: 12px; }
+.photo-upload { color: #07c160; font-size: 12px; cursor: pointer; align-self: center; }
 </style>

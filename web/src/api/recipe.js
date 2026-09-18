@@ -14,3 +14,22 @@ export const rollback = (id, version) =>
 export const listPantry = () => request('/api/me/pantry')
 export const addPantry = (data) => request('/api/me/pantry', { method: 'POST', data })
 export const deletePantry = (id) => request('/api/me/pantry/' + id, { method: 'DELETE' })
+export const listPhotos = (id) => request('/api/recipes/' + id + '/photos')
+export const deletePhoto = (photoId) =>
+  request('/api/photos/' + photoId, { method: 'DELETE' })
+export const analyzePhoto = (photoId) =>
+  request('/api/photos/' + photoId + '/analysis', { method: 'POST' })
+export const applyPhoto = (photoId) =>
+  request('/api/photos/' + photoId + '/apply', { method: 'POST' })
+export async function uploadPhoto(id, stepNo, file) {
+  const fd = new FormData()
+  fd.append('file', file)
+  const res = await fetch(`/api/recipes/${id}/steps/${stepNo}/photos`, {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') },
+    body: fd,
+  })
+  const body = await res.json()
+  if (body.code === 0) return body.data
+  throw body
+}
