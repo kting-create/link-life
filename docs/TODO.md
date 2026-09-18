@@ -75,9 +75,10 @@
 - [x] 自定义能力：新增调味方法/食材、自定义菜谱与个性化命名
 - [x] 流式输出接口（生成体验）；ai_call_log 补 tokens 统计与真实 userId
 - [x] 提示词调优脚本交付（真实调用小样本清单见 scripts/recipe-sample-validation.md）
-- [ ] 🧑 试吃反馈 😄（按 scripts/recipe-sample-validation.md 真实调用验证，Key 就绪后执行）
+- [ ] 🧑 试吃反馈 😄（按 scripts/recipe-sample-validation.md 真实调用验证，Key 就绪后执行；统一验证阶段执行）
+- [ ] P3 代码已推送 origin/feature/p3-recipe-engine 并通过分支终审；**按用户决策与 P4/P5 同分支，最后统一验证后一个 PR 合并**
 
-## 4. P4 烹饪引导
+## 4. P4 烹饪引导（下一个开发阶段，feature/p3-recipe-engine 分支继续）
 
 - [ ] 分步计时引擎（类 Keep 趣味计时：步骤倒计时、进度动画、提示音）
 - [ ] 小程序烹饪模式页（亮屏常亮、步骤切换）

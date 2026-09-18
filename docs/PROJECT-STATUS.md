@@ -48,9 +48,9 @@ deploy/backup.sh
 | P0 基础框架 | 工程骨架、用户/圈子、JWT 鉴权、AI 网关骨架、Docker Compose 部署 | ✅ **已完成并合入 main（2026-09-16，24 测试全绿）** |
 | P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ✅ **已完成（2026-09-17，分支审查后合并）** |
 | P2 推送 | 站内通知 + 事件驱动多通道（飞书 Webhook、微信订阅消息，config 门控默认关）+ Web/小程序通知页 | ✅ **已完成并合入 main（2026-09-17，PR #2，51 测试全绿）** |
-| P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ✅ **P3 开发完成（2026-09-18，待终审合并）** |
-| P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ |
-| P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ |
+| P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ✅ **P3 开发完成（2026-09-18，分支已推送 origin，PR 未建）** |
+| P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ **下一个开发阶段，在 feature/p3-recipe-engine 分支上继续** |
+| P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ **P4 之后同分支继续，最后统一验证 + 一次性合并** |
 
 ## 5. 已知延后项（P1 起择机处理）
 
@@ -62,6 +62,8 @@ deploy/backup.sh
 - P1 前端启动后需填 `web-dist/`（nginx 已挂载）与小程序 appid 配置
 - P2：Bark/Server酱通道延后、小程序订阅授权埋点延后（等模板开通）；双端通知 UI 手工验证延后（单机环境无第二设备，API 级验证已覆盖核心链路）
 - 🧑 P3 双端真机流式验证延后（需微信开发者工具真机预览，enableChunked 需基础库 ≥2.20.1；API 级 SSE 已有测试覆盖）
+- P3 终审延后 Minor（可随版发布，见 PR 评审记录）：`RecipeService.edit` 未调 `content.validate()`；小程序编辑无 atLimit 预检查；durationSec 为 null 时详情页显示"0 秒"；Web `/recipes/generate` 直达无参数无守卫；SSE 双端 data: 多行帧拼接缺 `\n`（后端单行 JSON，暂无影响）
+- P3 关键裁决记录（实现依据）：spec §1"手动编辑全做"优先于 §7 UI 清单（双端已补编辑入口）；SSE emitter 完成时机必须在 Flux 终态回调（runAsync finally-complete 会截断真实异步流）；`IterationResult` 需 `@JsonProperty("taste_summary")`（AI snake_case 键映射）
 
 ## 6. 下一步（进入新会话时从这里继续）
 
@@ -73,14 +75,15 @@ P1（点单清单 MVP）已完成并经 PR #1 合入 main，且已通过**本地
 
 P2（推送模块）已完成并经 PR #2 合入 main：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（飞书 Webhook、微信订阅消息，config 门控默认关、缺配置静默降级）→ Web 端通知页 + 未读角标轮询 → 小程序端通知页。全分支终审通过（修复：通知 title 列扩为 VARCHAR(255)+截断兜底+逐收件人容错、Web 错误处理、通道日志带堆栈），51 测试全绿。**API 级验证已通过**（4 事件/自认领/长标题溢出/越权 3006/游标分页/已读幂等/通道故障隔离，compose 冒烟含降级路径与飞书错误码隔离）；双端 UI 手工验证延后（单机环境，见第 5 节）。🧑 延后：飞书群 Webhook 配置后真跑验证、微信订阅模板开通后单独小迭代（订阅授权埋点 + 真机验证，见 TODO.md 随手记录区）。
 
-**P3（AI 菜谱引擎）开发完成（2026-09-18，feature/p3-recipe-engine 分支，待终审合并）**：Flyway V4 菜谱表（recipe + recipe_version 版本化，指针回滚、上限 5 版）→ 调料架/食材柜 CRUD（生成时注入约束）→ 口感画像（taste-profile，反馈沉淀 summary/tags）→ `AiGatewayService` 结构化输出生成菜谱（JSON content schema，解析失败 error 5004）→ 反馈评分 + AI 迭代新版本（change_note 记录）→ 手动编辑（MANUAL_EDIT）/回滚/版本列表 → SSE 流式生成/迭代（打字机推进，nginx 不缓冲）→ 提示词模板收口 → 小程序生成/详情/调料架页 + Web 菜谱视图。`AiGatewayService` 已补 tokens 统计与真实 userId（ai_call_log 记录完整），82 测试全绿。
+**P3（AI 菜谱引擎）开发完成（2026-09-18，feature/p3-recipe-engine 分支，已推送 origin，PR 未建）**：Flyway V4 菜谱表（recipe + recipe_version 版本化，指针回滚、上限 5 版）→ 调料架/食材柜 CRUD（生成时注入约束）→ 口感画像（taste-profile，反馈沉淀 summary/tags）→ `AiGatewayService` 结构化输出生成菜谱（JSON content schema，解析失败 error 5004）→ 反馈评分 + AI 迭代新版本（change_note 记录）→ 手动编辑（MANUAL_EDIT）/回滚/版本列表 → SSE 流式生成/迭代（打字机推进，nginx 不缓冲）→ 提示词模板收口 → 小程序生成/详情/调料架页 + Web 菜谱视图。`AiGatewayService` 已补 tokens 统计与真实 userId。**全分支终审已通过（1 轮修复波：change_note 255 溢出、流中断前端挂死+90s 超时 error 事件、双端手动编辑 UI 补齐、Web 详情页错误处理、openRecipe 仅 5001 进生成页）**，85 测试全绿，Web 构建通过。
 
-**下一步**：
-1. P3 分支终审 → 合入 main。
-2. 🧑 DeepSeek API Key 配置到服务器 `.env` 后，按 `scripts/recipe-sample-validation.md` 跑小样本真实调用验证（生成 3~5 道菜逐项检查流式/约束/迭代/回滚/ai_call_log），结果记录到 TODO.md 随手记录区。
-3. 🧑 微信开发者工具真机流式验证（见第 5 节延后项）。
-4. P4 展望（烹饪引导）：分步趣味计时引擎（类 Keep：步骤倒计时/进度动画/提示音）、小程序烹饪模式页（亮屏常亮）、过程拍照上传（本地卷 + nginx 静态服务，注意 client_max_body_size）、AI 视觉分析（多模态模型接入，`AiGatewayService` 扩展 image 接口，分析结果反馈到当前步骤并写入菜谱迭代数据）。
+**用户决策（2026-09-18）：P4、P5 与 P3 不分批合并——在同一分支（feature/p3-recipe-engine）上把后续功能全部做完，最后统一验证、一次性合并。** 因此 P3 的 PR 暂不创建。
+
+**下一步（按序）**：
+1. **P4（烹饪引导）**：分步趣味计时引擎（类 Keep：步骤倒计时/进度动画/提示音）、小程序烹饪模式页（亮屏常亮 wx.setKeepScreenOn）、过程拍照上传（本地卷 + nginx `/images/` 静态服务，注意 client_max_body_size）、AI 视觉分析（多模态模型接入，`AiGatewayService` 扩展 image 接口，分析结果反馈到当前步骤并写入菜谱迭代数据）。流程同 P3：brainstorming 细化范围 → spec 增量 → writing-plans → subagent-driven-development → 分支级审查。
+2. **P5（打磨）**：口味画像沉淀展示、UI 打磨、Caffeine 缓存落地（热点清单/菜谱）、`wxLogin` 并发竞争 catch-reselect、备份恢复演练、性能小压测 + 安全清单。
+3. **统一验证**：`cd deploy && docker compose up -d --build` 全链路 compose 冒烟（P1~P5 所有功能）→ 🧑 DeepSeek Key 配好后按 `scripts/recipe-sample-validation.md` 真跑小样本 → 🧑 小程序真机验证（流式 + 烹饪模式）→ 一个 PR 合并全部。
 
 ---
 
-*最后更新：2026-09-18（P3 开发完成于 feature/p3-recipe-engine，82 测试全绿，待终审合并；真实调用小样本验证清单见 scripts/recipe-sample-validation.md）*
+*最后更新：2026-09-18（P3 开发完成且终审通过，分支已推送 origin、PR 未建；用户决策 P4/P5 同分支继续、最后统一验证一次性合并；当前 85 测试全绿）*
