@@ -27,7 +27,7 @@ const remainText = computed(() => {
 })
 const progressPct = computed(() => {
   const total = step.value.durationSec || 1
-  return Math.round(((total - remainSec.value) / total) * 100)
+  return Math.max(0, Math.round(((total - remainSec.value) / total) * 100))
 })
 
 function beep() {
@@ -75,8 +75,8 @@ async function load() {
   try {
     recipe.value = await getRecipe(id)
     steps.value = (recipe.value.content.steps || []).map((s) => ({ ...s }))
-    remainSec.value = steps.value[0]?.durationSec || 0
-    if (remainSec.value > 0) startTimer()
+    current.value = Math.min(current.value, Math.max(steps.value.length - 1, 0))
+    enterStep(current.value)
     const photos = await listPhotos(id)
     const byStep = {}
     photos.forEach((p) => { (byStep[p.stepNo] = byStep[p.stepNo] || []).push(p) })
