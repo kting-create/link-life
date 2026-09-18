@@ -42,4 +42,4 @@ function request(path, options = {}) {
   });
 }
 
-module.exports = { request, BASE_URL };
+module.exports = { request, BASE_URL, refresh };
