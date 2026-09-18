@@ -162,6 +162,26 @@ class AiGatewayServiceTest extends IntegrationTestBase {
         assertEquals(6005, e.getErrorCode().code);
     }
 
+    @Test
+    void callStructuredWithImageParseFailureLogsParseFailedAndThrowsVisionError() {
+        ChatClient.ChatClientRequestSpec requestSpec = mock(ChatClient.ChatClientRequestSpec.class,
+                Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+        ChatClient.CallResponseSpec visionCallSpec = mock(ChatClient.CallResponseSpec.class,
+                Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+        doReturn(visionCallSpec).when(requestSpec).call();
+        doReturn(deepChatResponse("这不是 JSON", null, null)).when(visionCallSpec).chatResponse();
+        doReturn(requestSpec).when(FakeChatConfig.visionClient).prompt(Mockito.any(Prompt.class));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> aiGatewayService.callStructuredWithImage(
+                        42L, "photo_analysis", "prompt",
+                        new byte[]{1, 2, 3}, "image/jpeg", RecipeContent.class));
+        assertEquals(6005, e.getErrorCode().code);
+
+        verify(aiCallLogger).log(eq(42L), eq("photo_analysis"), anyString(), anyString(),
+                eq(false), Mockito.contains("PARSE_FAILED"), isNull(), isNull());
+    }
+
     /** 深桩 ChatResponse：output text 与 usage 两链。 */
     private static ChatResponse deepChatResponse(String text, Integer promptTokens,
                                                  Integer completionTokens) {
