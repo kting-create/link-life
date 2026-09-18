@@ -47,7 +47,7 @@ link:
       template-id: ${WX_SUBSCRIBE_TEMPLATE_ID:}
       page: pages/sheet-detail/sheet-detail
   images:
-    base-dir: ${IMAGE_BASE_DIR:/data/images}
+    base-dir: ${IMAGE_BASE_DIR:/data}
 
 logging:
   file:

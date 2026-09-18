@@ -36,7 +36,9 @@ public class ImageStorageService {
             Path dir = baseDir.resolve("images").resolve("recipes").resolve(String.valueOf(recipeId));
             Files.createDirectories(dir);
             String name = UUID.randomUUID() + "." + ext;
-            Files.write(dir.resolve(name), bytes);
+            Path target = dir.resolve(name);
+            requireInsideBase(target);
+            Files.write(target, bytes);
             return "images/recipes/" + recipeId + "/" + name;
         } catch (IOException e) {
             throw new UncheckedIOException("save image failed", e);
@@ -45,7 +47,7 @@ public class ImageStorageService {
 
     public byte[] read(String filePath) {
         try {
-            return Files.readAllBytes(baseDir.resolve(filePath));
+            return Files.readAllBytes(resolveSafely(filePath));
         } catch (IOException e) {
             throw new UncheckedIOException("read image failed", e);
         }
@@ -53,10 +55,22 @@ public class ImageStorageService {
 
     public void delete(String filePath) {
         try {
-            Files.deleteIfExists(baseDir.resolve(filePath));
+            Files.deleteIfExists(resolveSafely(filePath));
         } catch (IOException e) {
             throw new UncheckedIOException("delete image failed", e);
         }
+    }
+
+    private void requireInsideBase(Path target) {
+        if (!target.normalize().startsWith(baseDir.toAbsolutePath().normalize())) {
+            throw new BusinessException(ErrorCode.FILE_TYPE_INVALID);
+        }
+    }
+
+    private Path resolveSafely(String filePath) {
+        Path target = baseDir.resolve(filePath).normalize();
+        requireInsideBase(target);
+        return target;
     }
 
     public static void validate(byte[] bytes, String originalFilename) {
