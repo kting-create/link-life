@@ -49,7 +49,18 @@ function streamRequest(path, data, handlers) {
       { 'Content-Type': 'application/json' },
       token ? { Authorization: 'Bearer ' + token } : {}
     ),
-    success: () => {},
+    success: (res) => {
+      if (res.statusCode === 200) return;
+      // HTTP 层失败（401/400/429 等）返回 JSON 而非 SSE 帧，需显式报错，
+      // 否则页面会一直停在生成中直到超时。enableChunked 下 res.data 可能不完整，
+      // 取不到 message 时退回通用文案。
+      let message = '请求失败(' + res.statusCode + ')';
+      try {
+        const body = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+        if (body && body.message) message = body.message;
+      } catch (e) {}
+      if (handlers.onError) handlers.onError({ code: res.statusCode, message });
+    },
     fail: (err) => {
       if (handlers.onError) handlers.onError({ code: -1, message: err.errMsg || '网络错误' });
     },
