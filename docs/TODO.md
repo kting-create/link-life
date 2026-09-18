@@ -99,3 +99,5 @@
 - 🧑 开通微信订阅消息模板后需单独小迭代（订阅授权埋点 + wx-subscribe 模板字段映射真机验证）
 - 🧑 飞书群机器人 Webhook 待配置（第 0 节待办保留），配置后需真跑一遍"建单 → 认领 → 收单"确认飞书群收到 3 条摘要
 - Bark/Server酱通道延后
+- P2 双端通知 UI 手工验证延后（单机环境无第二设备；API 级已验证，步骤见 PROJECT-STATUS 第 6 节）
+- 本地 compose DB 有 P2 验证残留数据（verify-user-A/B、29 张单、27 条通知），不需要可 `docker compose down -v` 清空

@@ -60,7 +60,7 @@ deploy/backup.sh
 - refresh-token 吊销机制未设计；Caffeine 缓存决策未落地
 - JWT_SECRET 生产 fail-fast（当前仅 compose 层要求）；backup.sh 路径/密码硬编码
 - P1 前端启动后需填 `web-dist/`（nginx 已挂载）与小程序 appid 配置
-- P2：Bark/Server酱通道延后、小程序订阅授权埋点延后（等模板开通）
+- P2：Bark/Server酱通道延后、小程序订阅授权埋点延后（等模板开通）；双端通知 UI 手工验证延后（单机环境无第二设备，API 级验证已覆盖核心链路）
 
 ## 6. 下一步（进入新会话时从这里继续）
 
@@ -70,10 +70,10 @@ P1（点单清单 MVP）已完成并经 PR #1 合入 main，且已通过**本地
 
 本地验证环境：`deploy/.env` 已配小程序**测试号** WX_APPID/WX_SECRET（正式注册后替换）；启动 `cd deploy && docker compose up -d --build`，入口 `http://localhost`。
 
-P2（推送模块）已完成并经 PR #2 合入 main：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（飞书 Webhook、微信订阅消息，config 门控默认关、缺配置静默降级）→ Web 端通知页 + 未读角标轮询 → 小程序端通知页。全分支终审通过（修复：通知 title 列扩为 VARCHAR(255)+截断兜底+逐收件人容错、Web 错误处理、通道日志带堆栈），51 测试全绿。🧑 延后：飞书群 Webhook 配置后验证、微信订阅模板开通后单独小迭代（订阅授权埋点 + 真机验证，见 TODO.md 随手记录区）。
+P2（推送模块）已完成并经 PR #2 合入 main：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（飞书 Webhook、微信订阅消息，config 门控默认关、缺配置静默降级）→ Web 端通知页 + 未读角标轮询 → 小程序端通知页。全分支终审通过（修复：通知 title 列扩为 VARCHAR(255)+截断兜底+逐收件人容错、Web 错误处理、通道日志带堆栈），51 测试全绿。**API 级验证已通过**（4 事件/自认领/长标题溢出/越权 3006/游标分页/已读幂等/通道故障隔离，compose 冒烟含降级路径与飞书错误码隔离）；双端 UI 手工验证延后（单机环境，见第 5 节）。🧑 延后：飞书群 Webhook 配置后真跑验证、微信订阅模板开通后单独小迭代（订阅授权埋点 + 真机验证，见 TODO.md 随手记录区）。
 
 下一步进入 **P3 AI 菜谱引擎**：recipe 表版本化 → AiGatewayService 结构化输出生成菜谱 → 口感反馈迭代闭环 → 自定义调味/食材/命名 → 流式输出。设计输入：spec 第 7 节；🧑 前置：DeepSeek API Key 充值配置（见 TODO.md 第 3 节）。
 
 ---
 
-*最后更新：2026-09-18（P2 已合入 main；API 级全链路验证通过——4 事件/自认领/长标题溢出/越权 3006/游标分页/已读幂等/通道故障隔离；UI 渲染与小程序端待 DevTools/浏览器手工确认）*
+*最后更新：2026-09-18（P2 已合入 main，API 级验证通过；UI 手工验证延后；下一步 P3）*
