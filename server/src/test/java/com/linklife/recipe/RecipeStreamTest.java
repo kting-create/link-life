@@ -174,7 +174,7 @@ class RecipeStreamTest extends IntegrationTestBase {
                 .andExpect(content().string(
                         org.hamcrest.Matchers.containsString("event:error")))
                 .andExpect(content().string(
-                        org.hamcrest.Matchers.containsString("5004")));
+                        org.hamcrest.Matchers.containsString("\"code\":5004")));
 
         assertEquals(0, dishMapper.selectCount(new LambdaQueryWrapper<Dish>()
                 .eq(Dish::getCircleId, circleId).eq(Dish::getName, "黑暗料理")));
@@ -233,6 +233,41 @@ class RecipeStreamTest extends IntegrationTestBase {
                 String.class, currentUserId);
         assertNotNull(tastePrefs);
         assertTrue(tastePrefs.contains("忌甜"));
+    }
+
+    @Test
+    void generateWithAsyncFluxStillDeliversDeltasAndDone() throws Exception {
+        // 异步发射：验证 emitter 不会在流结束前被提前 complete（回归：runAsync finally 提前收尾）
+        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+                .thenReturn(Flux.just("{\"servings\":2,\"totalMinutes\":30,",
+                                "\"ingredients\":[{\"name\":\"鸡蛋\",\"amount\":\"3个\"}],",
+                                "\"seasonings\":[],\"steps\":[{\"no\":1,\"text\":\"打蛋\","
+                                        + "\"durationSec\":60}],\"tips\":\"\"}")
+                        .delayElements(java.time.Duration.ofMillis(50)));
+        String token = token("stream-async");
+        long circleId = circleIdOf(token);
+
+        MvcResult result = awaitAsync(mockMvc.perform(post("/api/recipes/generate")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"circleId\":" + circleId + ",\"dishName\":\"异步菜\"}"))
+                .andExpect(request().asyncStarted())
+                .andReturn());
+
+        mockMvc.perform(asyncDispatch(result))
+                .andExpect(status().isOk())
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("event:delta")))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("event:done")))
+                .andExpect(content().string(
+                        org.hamcrest.Matchers.containsString("\"recipeId\":")));
+
+        Dish dish = dishMapper.selectOne(new LambdaQueryWrapper<Dish>()
+                .eq(Dish::getCircleId, circleId).eq(Dish::getName, "异步菜"));
+        assertNotNull(dish);
+        assertNotNull(dish.getRecipeId());
+        assertEquals(1, recipeMapper.selectById(dish.getRecipeId()).getCurrentVersion());
     }
 
     @Test

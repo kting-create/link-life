@@ -87,7 +87,11 @@ public class RecipeGenerationService {
                         buffer.append(chunk);
                         streamService.sendDelta(emitter, chunk);
                     },
-                    err -> streamService.sendError(emitter, ErrorCode.RECIPE_AI_FAILED),
+                    err -> {
+                        log.warn("recipe stream error, scene={}", scene, err);
+                        streamService.sendError(emitter, ErrorCode.RECIPE_AI_FAILED);
+                        streamService.complete(emitter);
+                    },
                     () -> {
                         try {
                             long[] ids = persist.apply(buffer.toString());
@@ -99,12 +103,15 @@ public class RecipeGenerationService {
                             ErrorCode code = e instanceof BusinessException be
                                     ? be.getErrorCode() : ErrorCode.RECIPE_PARSE_FAILED;
                             streamService.sendError(emitter, code);
+                        } finally {
+                            streamService.complete(emitter);
                         }
                     }));
         } catch (Exception e) {
+            // 单一错误路径：发送 error 并收尾，不向上抛，避免 runAsync 兜底再发一次
             aiGatewayService.logFailure(userId, scene, "SUBSCRIBE_FAILED: " + e.getMessage());
             streamService.sendError(emitter, ErrorCode.RECIPE_AI_FAILED);
-            throw e;
+            streamService.complete(emitter);
         }
     }
 }

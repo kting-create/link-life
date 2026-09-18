@@ -30,12 +30,21 @@ public class RecipeStreamService {
             try {
                 work.run();
             } catch (Exception e) {
+                // 仅兜底同步异常；正常完成由流式编排的终端回调负责 complete
                 log.error("recipe stream failed", e);
                 sendError(emitter, ErrorCode.RECIPE_AI_FAILED);
-            } finally {
-                emitter.complete();
+                complete(emitter);
             }
         });
+    }
+
+    /** 幂等收尾：重复 complete 或完成后 send 抛出的异常一律吞掉记 warn。 */
+    public void complete(SseEmitter emitter) {
+        try {
+            emitter.complete();
+        } catch (Exception e) {
+            log.warn("sse complete failed", e);
+        }
     }
 
     public void sendDelta(SseEmitter emitter, String text) {
