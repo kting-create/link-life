@@ -69,12 +69,13 @@
 ## 3. P3 AI 菜谱引擎
 
 - [ ] 🧑 确认 DeepSeek API Key 已配置到服务器 .env
-- [ ] 菜谱数据模型：recipe 表 + 版本化（recipe_version），挂到 dish
-- [ ] 菜谱生成：AiGatewayService 结构化输出 → 菜谱对象（食材/步骤/用量/时长）
-- [ ] 口感反馈闭环：用户评价 → AI 迭代菜谱新版本；反馈沉淀 user_profile.taste_prefs
-- [ ] 自定义能力：新增调味方法/食材、自定义菜谱与个性化命名
-- [ ] 流式输出接口（生成体验）；ai_call_log 补 tokens 统计与真实 userId
-- [ ] 提示词调优 + 小样本验证（🧑 试吃反馈 😄）
+- [x] 菜谱数据模型：recipe 表 + 版本化（recipe_version），挂到 dish
+- [x] 菜谱生成：AiGatewayService 结构化输出 → 菜谱对象（食材/步骤/用量/时长）
+- [x] 口感反馈闭环：用户评价 → AI 迭代菜谱新版本；反馈沉淀 user_profile.taste_prefs
+- [x] 自定义能力：新增调味方法/食材、自定义菜谱与个性化命名
+- [x] 流式输出接口（生成体验）；ai_call_log 补 tokens 统计与真实 userId
+- [x] 提示词调优脚本交付（真实调用小样本清单见 scripts/recipe-sample-validation.md）
+- [ ] 🧑 试吃反馈 😄（按 scripts/recipe-sample-validation.md 真实调用验证，Key 就绪后执行）
 
 ## 4. P4 烹饪引导
 
@@ -101,3 +102,5 @@
 - Bark/Server酱通道延后
 - P2 双端通知 UI 手工验证延后（单机环境无第二设备；API 级已验证，步骤见 PROJECT-STATUS 第 6 节）
 - 本地 compose DB 有 P2 验证残留数据（verify-user-A/B、29 张单、27 条通知），不需要可 `docker compose down -v` 清空
+- 🧑 微信开发者工具真机流式验证待做（SSE enableChunked，需基础库 ≥2.20.1；P3 生成/迭代流式输出真机预览）
+- 小样本真实验证清单见 `scripts/recipe-sample-validation.md`（DeepSeek Key 就绪后执行，结果追加到本区）

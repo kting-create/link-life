@@ -48,7 +48,7 @@ deploy/backup.sh
 | P0 基础框架 | 工程骨架、用户/圈子、JWT 鉴权、AI 网关骨架、Docker Compose 部署 | ✅ **已完成并合入 main（2026-09-16，24 测试全绿）** |
 | P1 点单清单 MVP | 点单/清单/认领/分享、小程序端 + Web 端壳 | ✅ **已完成（2026-09-17，分支审查后合并）** |
 | P2 推送 | 站内通知 + 事件驱动多通道（飞书 Webhook、微信订阅消息，config 门控默认关）+ Web/小程序通知页 | ✅ **已完成并合入 main（2026-09-17，PR #2，51 测试全绿）** |
-| P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ⬜ |
+| P3 AI 菜谱引擎 | 菜谱生成、口感反馈迭代、自定义调味/食材/命名、菜谱版本化（挂 AiGatewayService） | ✅ **P3 开发完成（2026-09-18，待终审合并）** |
 | P4 烹饪引导 | 分步趣味计时、过程拍照上传、AI 视觉分析反馈（多模态） | ⬜ |
 | P5 打磨 | 口味画像沉淀、UI 打磨、性能优化 | ⬜ |
 
@@ -56,11 +56,12 @@ deploy/backup.sh
 
 - `wxLogin` 并发首次注册竞争：DuplicateKeyException → 500（唯一键兜底，建议 catch 后 re-select）
 - 邀请码碰撞无重试（概率 ~1e-13）；`uk_unionid`/`uk_code` 实为普通 KEY（命名误导）
-- `JwtService` 用默认 charset 取 secret 字节（应 UTF_8）；AiGatewayService 未记 prompt/completion tokens、userId 恒 null
+- `JwtService` 用默认 charset 取 secret 字节
 - refresh-token 吊销机制未设计；Caffeine 缓存决策未落地
 - JWT_SECRET 生产 fail-fast（当前仅 compose 层要求）；backup.sh 路径/密码硬编码
 - P1 前端启动后需填 `web-dist/`（nginx 已挂载）与小程序 appid 配置
 - P2：Bark/Server酱通道延后、小程序订阅授权埋点延后（等模板开通）；双端通知 UI 手工验证延后（单机环境无第二设备，API 级验证已覆盖核心链路）
+- 🧑 P3 双端真机流式验证延后（需微信开发者工具真机预览，enableChunked 需基础库 ≥2.20.1；API 级 SSE 已有测试覆盖）
 
 ## 6. 下一步（进入新会话时从这里继续）
 
@@ -72,8 +73,14 @@ P1（点单清单 MVP）已完成并经 PR #1 合入 main，且已通过**本地
 
 P2（推送模块）已完成并经 PR #2 合入 main：Flyway V3 站内通知表 → `NotificationService` + Spring Event 多通道（飞书 Webhook、微信订阅消息，config 门控默认关、缺配置静默降级）→ Web 端通知页 + 未读角标轮询 → 小程序端通知页。全分支终审通过（修复：通知 title 列扩为 VARCHAR(255)+截断兜底+逐收件人容错、Web 错误处理、通道日志带堆栈），51 测试全绿。**API 级验证已通过**（4 事件/自认领/长标题溢出/越权 3006/游标分页/已读幂等/通道故障隔离，compose 冒烟含降级路径与飞书错误码隔离）；双端 UI 手工验证延后（单机环境，见第 5 节）。🧑 延后：飞书群 Webhook 配置后真跑验证、微信订阅模板开通后单独小迭代（订阅授权埋点 + 真机验证，见 TODO.md 随手记录区）。
 
-下一步进入 **P3 AI 菜谱引擎**：recipe 表版本化 → AiGatewayService 结构化输出生成菜谱 → 口感反馈迭代闭环 → 自定义调味/食材/命名 → 流式输出。设计输入：spec 第 7 节；🧑 前置：DeepSeek API Key 充值配置（见 TODO.md 第 3 节）。
+**P3（AI 菜谱引擎）开发完成（2026-09-18，feature/p3-recipe-engine 分支，待终审合并）**：Flyway V4 菜谱表（recipe + recipe_version 版本化，指针回滚、上限 5 版）→ 调料架/食材柜 CRUD（生成时注入约束）→ 口感画像（taste-profile，反馈沉淀 summary/tags）→ `AiGatewayService` 结构化输出生成菜谱（JSON content schema，解析失败 error 5004）→ 反馈评分 + AI 迭代新版本（change_note 记录）→ 手动编辑（MANUAL_EDIT）/回滚/版本列表 → SSE 流式生成/迭代（打字机推进，nginx 不缓冲）→ 提示词模板收口 → 小程序生成/详情/调料架页 + Web 菜谱视图。`AiGatewayService` 已补 tokens 统计与真实 userId（ai_call_log 记录完整），82 测试全绿。
+
+**下一步**：
+1. P3 分支终审 → 合入 main。
+2. 🧑 DeepSeek API Key 配置到服务器 `.env` 后，按 `scripts/recipe-sample-validation.md` 跑小样本真实调用验证（生成 3~5 道菜逐项检查流式/约束/迭代/回滚/ai_call_log），结果记录到 TODO.md 随手记录区。
+3. 🧑 微信开发者工具真机流式验证（见第 5 节延后项）。
+4. P4 展望（烹饪引导）：分步趣味计时引擎（类 Keep：步骤倒计时/进度动画/提示音）、小程序烹饪模式页（亮屏常亮）、过程拍照上传（本地卷 + nginx 静态服务，注意 client_max_body_size）、AI 视觉分析（多模态模型接入，`AiGatewayService` 扩展 image 接口，分析结果反馈到当前步骤并写入菜谱迭代数据）。
 
 ---
 
-*最后更新：2026-09-18（P2 已合入 main，API 级验证通过；UI 手工验证延后；下一步 P3）*
+*最后更新：2026-09-18（P3 开发完成于 feature/p3-recipe-engine，82 测试全绿，待终审合并；真实调用小样本验证清单见 scripts/recipe-sample-validation.md）*
