@@ -1,4 +1,5 @@
-<view class="cook" wx:if="{{recipe && steps.length}}">
+<view class="cook" wx:if="{{recipe && steps.length}}"
+      bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
   <view class="progress-line">
     <view class="progress-inner" style="width: {{progressPct}}%"></view>
   </view>

@@ -15,6 +15,7 @@ import com.linklife.recipe.entity.Recipe;
 import com.linklife.recipe.entity.RecipeVersion;
 import com.linklife.recipe.mapper.RecipeMapper;
 import com.linklife.recipe.mapper.RecipeVersionMapper;
+import com.linklife.recipe.service.PhotoService;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 class PhotoApiTest extends IntegrationTestBase {
 
@@ -43,6 +46,8 @@ class PhotoApiTest extends IntegrationTestBase {
     private RecipeMapper recipeMapper;
     @Autowired
     private RecipeVersionMapper recipeVersionMapper;
+    @Autowired
+    private PhotoService photoService;
 
     JdbcTemplate jdbc;
     long recipeId;
@@ -186,5 +191,55 @@ class PhotoApiTest extends IntegrationTestBase {
         mockMvc.perform(delete("/api/photos/" + photoId)
                         .header("Authorization", "Bearer " + outsider))
                 .andExpect(jsonPath("$.code").value(5001));
+    }
+
+    @Test
+    void memberCannotDeleteOthersPhoto() throws Exception {
+        String uploader = tokenOfMember("photo-member-b");
+        MvcResult up = mockMvc.perform(multipart("/api/recipes/" + recipeId + "/steps/1/photos")
+                        .file(new MockMultipartFile("file", "b.jpg", MediaType.IMAGE_JPEG_VALUE, JPG))
+                        .header("Authorization", "Bearer " + uploader))
+                .andExpect(status().isOk()).andReturn();
+        long photoId = Long.parseLong(JsonPath.read(
+                up.getResponse().getContentAsString(), "$.data.id").toString());
+        String anotherMember = tokenOfMember("photo-member-c");
+        mockMvc.perform(delete("/api/photos/" + photoId)
+                        .header("Authorization", "Bearer " + anotherMember))
+                .andExpect(jsonPath("$.code").value(6007));
+    }
+
+    @Test
+    void circleOwnerCanDeleteOthersPhoto() throws Exception {
+        String uploader = tokenOfMember("photo-member-d");
+        MvcResult up = mockMvc.perform(multipart("/api/recipes/" + recipeId + "/steps/1/photos")
+                        .file(new MockMultipartFile("file", "d.jpg", MediaType.IMAGE_JPEG_VALUE, JPG))
+                        .header("Authorization", "Bearer " + uploader))
+                .andExpect(status().isOk()).andReturn();
+        long photoId = Long.parseLong(JsonPath.read(
+                up.getResponse().getContentAsString(), "$.data.id").toString());
+        jdbc.update("INSERT INTO circle_member (circle_id, user_id, role) VALUES (?, 1, 'OWNER')",
+                circleId);
+        assertDoesNotThrow(() -> photoService.delete(1L, photoId));
+        Number count = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM recipe_photo WHERE id = ?", Number.class, photoId);
+        org.junit.jupiter.api.Assertions.assertEquals(0, count.intValue());
+    }
+
+    @Test
+    void uploadRejectsWhenPhotoLimitReached() throws Exception {
+        String token = tokenOfMember("photo-limit-user");
+        String url = "/api/recipes/" + recipeId + "/steps/1/photos";
+        for (int i = 0; i < PhotoService.MAX_PHOTOS_PER_RECIPE; i++) {
+            mockMvc.perform(multipart(url)
+                            .file(new MockMultipartFile("file", "p" + i + ".jpg",
+                                    MediaType.IMAGE_JPEG_VALUE, JPG))
+                            .header("Authorization", "Bearer " + token))
+                    .andExpect(status().isOk());
+        }
+        mockMvc.perform(multipart(url)
+                        .file(new MockMultipartFile("file", "over.jpg",
+                                MediaType.IMAGE_JPEG_VALUE, JPG))
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(jsonPath("$.code").value(6003));
     }
 }

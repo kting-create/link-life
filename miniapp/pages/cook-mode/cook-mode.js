@@ -154,6 +154,19 @@ Page({
     }
   },
 
+  onTouchStart(e) {
+    this.touchX = e.touches[0].clientX;
+    this.touchY = e.touches[0].clientY;
+  },
+
+  onTouchEnd(e) {
+    const dx = e.changedTouches[0].clientX - this.touchX;
+    const dy = e.changedTouches[0].clientY - this.touchY;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > 60) return;
+    if (dx < 0) this.nextStep();
+    else this.prevStep();
+  },
+
   takePhoto() {
     const self = this;
     const stepNo = this.data.steps[this.data.current].no;
