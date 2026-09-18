@@ -16,6 +16,7 @@
     <div v-for="it in items" :key="it.id" class="card">
       <div class="row">
         <strong>{{ it.dishName }}</strong>
+        <a class="recipe-link" @click.prevent="openRecipe(it.dishName)" href="#">菜谱</a>
         <span class="tag" :class="it.mine ? 'tag-mine' : ''">{{ it.statusText }}</span>
       </div>
       <div v-if="it.note" class="muted">备注：{{ it.note }}</div>
@@ -36,8 +37,9 @@
 
 <script>
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { request } from '../api/request'
+import { getByDish } from '../api/recipe'
 import { showToast } from '../utils/toast'
 import { sheetStatusText, claimedCount } from '../utils/sheet'
 
@@ -51,6 +53,7 @@ const itemStatusText = {
 export default {
   setup() {
     const route = useRoute()
+    const router = useRouter()
     const sheet = ref(null)
     const items = ref([])
     const userId = ref(null)
@@ -124,6 +127,20 @@ export default {
       act('/api/order/sheets/' + route.params.id + '/complete', '已收单')
     }
 
+    async function openRecipe(dishName) {
+      try {
+        const recipe = await getByDish(sheet.value.circleId, dishName)
+        router.push('/recipes/' + recipe.id)
+      } catch (err) {
+        if (err && err.code === 5001) {
+          router.push({ path: '/recipes/generate',
+            query: { circleId: sheet.value.circleId, dishName } })
+        } else {
+          showToast((err && err.message) || '查询菜谱失败')
+        }
+      }
+    }
+
     reload()
 
     const claimed = computed(() => claimedCount(items.value))
@@ -140,6 +157,7 @@ export default {
       finishItem,
       releaseItem,
       completeSheet,
+      openRecipe,
     }
   },
 }
@@ -157,6 +175,10 @@ export default {
 }
 .actions {
   margin-top: 8px;
+}
+.recipe-link {
+  color: #4f7cff;
+  font-size: 13px;
 }
 .tag-mine {
   background: #4f7cff;
