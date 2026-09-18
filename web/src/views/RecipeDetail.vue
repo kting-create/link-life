@@ -15,14 +15,22 @@ const atLimit = computed(() => versions.value.length >= 5)
 
 const SOURCE_TEXT = { AI_GENERATE: 'AI 生成', AI_ITERATE: 'AI 迭代', MANUAL_EDIT: '手动编辑' }
 
+const loadFailed = ref(false)
+
 async function load() {
-  recipe.value = await getRecipe(id)
-  nameInput.value = recipe.value.customName || ''
-  versions.value = (await getVersions(id)).map((v) => ({
-    ...v,
-    sourceText: SOURCE_TEXT[v.source] || v.source,
-    createdAtText: (v.createdAt || '').replace('T', ' ').slice(0, 16),
-  }))
+  try {
+    recipe.value = await getRecipe(id)
+    nameInput.value = recipe.value.customName || ''
+    versions.value = (await getVersions(id)).map((v) => ({
+      ...v,
+      sourceText: SOURCE_TEXT[v.source] || v.source,
+      createdAtText: (v.createdAt || '').replace('T', ' ').slice(0, 16),
+    }))
+    loadFailed.value = false
+  } catch (e) {
+    loadFailed.value = true
+    showToast(e.message || '加载失败')
+  }
 }
 load()
 
@@ -104,7 +112,13 @@ async function saveName() {
 </script>
 
 <template>
-  <div class="detail" v-if="recipe">
+  <div class="detail" v-if="loadFailed && !recipe">
+    <div class="card">
+      <p class="meta">加载失败，请稍后再试</p>
+      <button @click="load">重试</button>
+    </div>
+  </div>
+  <div class="detail" v-else-if="recipe">
     <div class="card">
       <h2>{{ recipe.customName || recipe.dishName }}</h2>
       <p v-if="recipe.customName" class="meta">原名：{{ recipe.dishName }}</p>

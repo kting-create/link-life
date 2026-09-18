@@ -132,11 +132,16 @@ Page({
       .then((recipe) => {
         wx.navigateTo({ url: '/pages/recipe-detail/recipe-detail?id=' + recipe.id });
       })
-      .catch(() => {
-        wx.navigateTo({
-          url: '/pages/recipe-generate/recipe-generate?circleId=' + circleId +
-            '&dishName=' + encodeURIComponent(dishName),
-        });
+      .catch((err) => {
+        // 仅"菜谱不存在"才引导去生成；其余错误（网络/权限等）就地提示
+        if (err && err.code === 5001) {
+          wx.navigateTo({
+            url: '/pages/recipe-generate/recipe-generate?circleId=' + circleId +
+              '&dishName=' + encodeURIComponent(dishName),
+          });
+        } else {
+          wx.showToast({ title: (err && err.message) || '查询菜谱失败', icon: 'none' });
+        }
       });
   },
 
