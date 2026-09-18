@@ -16,7 +16,14 @@ public enum ErrorCode {
     SHEET_COMPLETED(3004, "清单已收单", HttpStatus.BAD_REQUEST),
     NOT_ITEM_CLAIMANT(3005, "仅认领人可操作", HttpStatus.FORBIDDEN),
     NOTIFICATION_NOT_FOUND(3006, "通知不存在", HttpStatus.BAD_REQUEST),
-    RATE_LIMITED(4001, "请求过于频繁", HttpStatus.TOO_MANY_REQUESTS);
+    RATE_LIMITED(4001, "请求过于频繁", HttpStatus.TOO_MANY_REQUESTS),
+    RECIPE_NOT_FOUND(5001, "菜谱不存在", HttpStatus.NOT_FOUND),
+    RECIPE_VERSION_LIMIT(5002, "已达版本上限，请先回滚旧版本", HttpStatus.BAD_REQUEST),
+    RECIPE_AI_FAILED(5003, "AI 生成失败，请重试", HttpStatus.INTERNAL_SERVER_ERROR),
+    RECIPE_PARSE_FAILED(5004, "AI 返回内容解析失败", HttpStatus.INTERNAL_SERVER_ERROR),
+    PANTRY_ITEM_EXISTS(5005, "该条目已存在", HttpStatus.BAD_REQUEST),
+    RECIPE_ALREADY_EXISTS(5006, "该菜品已有菜谱", HttpStatus.CONFLICT),
+    PANTRY_ITEM_NOT_FOUND(5007, "条目不存在", HttpStatus.NOT_FOUND);
 
     public final int code;
     public final String message;
