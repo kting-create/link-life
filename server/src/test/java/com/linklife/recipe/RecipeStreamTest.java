@@ -51,8 +51,9 @@ class RecipeStreamTest extends IntegrationTestBase {
     @TestConfiguration
     static class FakeChatConfig {
         @Bean
-        ChatClient.Builder chatClientBuilder() {
-            return Mockito.mock(ChatClient.Builder.class,
+        @org.springframework.context.annotation.Primary
+        ChatClient deepseekChatClient() {
+            return Mockito.mock(ChatClient.class,
                     Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
         }
     }
@@ -67,7 +68,7 @@ class RecipeStreamTest extends IntegrationTestBase {
     @Autowired
     private ApplicationContext context;
     @Autowired
-    private ChatClient.Builder chatClientBuilder;
+    private ChatClient chatClient;
     @Autowired
     private DishMapper dishMapper;
     @Autowired
@@ -115,7 +116,7 @@ class RecipeStreamTest extends IntegrationTestBase {
 
     @Test
     void generateStreamsDeltaThenDoneAndPersists() throws Exception {
-        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+        when(chatClient.prompt().user(anyString()).stream().content())
                 .thenReturn(Flux.just("{\"serv", "ings\":2,\"totalMinutes\":30,"
                         + "\"ingredients\":[{\"name\":\"鸡蛋\",\"amount\":\"3个\"}],"
                         + "\"seasonings\":[],\"steps\":[{\"no\":1,\"text\":\"打蛋\","
@@ -157,7 +158,7 @@ class RecipeStreamTest extends IntegrationTestBase {
 
     @Test
     void generateParseFailureEmitsErrorAndPersistsNothing() throws Exception {
-        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+        when(chatClient.prompt().user(anyString()).stream().content())
                 .thenReturn(Flux.just("抱歉，我无法生成菜谱"));
         String token = token("stream-user-2");
         long circleId = circleIdOf(token);
@@ -185,7 +186,7 @@ class RecipeStreamTest extends IntegrationTestBase {
 
     @Test
     void iterateCreatesNewVersionAndUpdatesTastePrefs() throws Exception {
-        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+        when(chatClient.prompt().user(anyString()).stream().content())
                 .thenReturn(Flux.just(FULL_JSON));
         String token = token("stream-user-3");
         long circleId = circleIdOf(token);
@@ -209,7 +210,7 @@ class RecipeStreamTest extends IntegrationTestBase {
         // 迭代：dual output JSON
         String iterationJson = "{\"recipe\":" + FULL_JSON
                 + ",\"taste_summary\":{\"summary\":\"口味偏咸、忌甜\",\"tags\":[\"咸\",\"忌甜\"]}}";
-        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+        when(chatClient.prompt().user(anyString()).stream().content())
                 .thenReturn(Flux.just(iterationJson));
         MvcResult iterResult = awaitAsync(mockMvc.perform(
                         post("/api/recipes/" + recipeId + "/iterate")
@@ -238,7 +239,7 @@ class RecipeStreamTest extends IntegrationTestBase {
     @Test
     void generateWithAsyncFluxStillDeliversDeltasAndDone() throws Exception {
         // 异步发射：验证 emitter 不会在流结束前被提前 complete（回归：runAsync finally 提前收尾）
-        when(chatClientBuilder.build().prompt().user(anyString()).stream().content())
+        when(chatClient.prompt().user(anyString()).stream().content())
                 .thenReturn(Flux.just("{\"servings\":2,\"totalMinutes\":30,",
                                 "\"ingredients\":[{\"name\":\"鸡蛋\",\"amount\":\"3个\"}],",
                                 "\"seasonings\":[],\"steps\":[{\"no\":1,\"text\":\"打蛋\","

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import com.linklife.IntegrationTestBase;
 import com.linklife.ai.gateway.AiCallLogger;
 import com.linklife.ai.gateway.AiGatewayService;
+import com.linklife.common.exception.BusinessException;
 import com.linklife.recipe.dto.RecipeContent;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.ai.chat.metadata.Usage;
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -42,15 +44,25 @@ class AiGatewayServiceTest extends IntegrationTestBase {
 
         static ChatClient.CallResponseSpec callSpec;
         static ChatClient.StreamResponseSpec streamSpec;
+        static ChatClient visionClient;
 
         @Bean
-        ChatClient.Builder chatClientBuilder() {
-            ChatClient.Builder builder = Mockito.mock(ChatClient.Builder.class,
+        @org.springframework.context.annotation.Primary
+        ChatClient deepseekChatClient() {
+            ChatClient client = Mockito.mock(ChatClient.class,
                     Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
-            ChatClient.ChatClientRequestSpec requestSpec = builder.build().prompt().user("prompt");
+            ChatClient.ChatClientRequestSpec requestSpec = client.prompt().user("prompt");
             callSpec = requestSpec.call();
             streamSpec = requestSpec.stream();
-            return builder;
+            return client;
+        }
+
+        @Bean
+        @org.springframework.context.annotation.Primary
+        ChatClient visionChatClient() {
+            visionClient = Mockito.mock(ChatClient.class,
+                    Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+            return visionClient;
         }
     }
 
@@ -116,6 +128,38 @@ class AiGatewayServiceTest extends IntegrationTestBase {
 
         verify(aiCallLogger).log(eq(42L), eq("recipe_generate"), anyString(), anyString(),
                 eq(false), any(), isNull(), isNull());
+    }
+
+    @Test
+    void callStructuredWithImageParsesAndLogsQwenProvider() {
+        ChatClient.ChatClientRequestSpec requestSpec = mock(ChatClient.ChatClientRequestSpec.class,
+                Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+        ChatClient.CallResponseSpec visionCallSpec = mock(ChatClient.CallResponseSpec.class,
+                Mockito.withSettings().defaultAnswer(Mockito.RETURNS_DEEP_STUBS));
+        doReturn(visionCallSpec).when(requestSpec).call();
+        doReturn(deepChatResponse(REPLY_JSON, 100, 50)).when(visionCallSpec).chatResponse();
+        doReturn(requestSpec).when(FakeChatConfig.visionClient).prompt(Mockito.any(Prompt.class));
+
+        RecipeContent content = aiGatewayService.callStructuredWithImage(
+                42L, "photo_analysis", "prompt",
+                new byte[]{1, 2, 3}, "image/jpeg", RecipeContent.class);
+
+        assertEquals("鸡蛋", content.ingredients().get(0).name());
+        verify(aiCallLogger).log(eq(42L), eq("photo_analysis"), anyString(), anyString(),
+                eq(true), isNull(), eq(100), eq(50));
+    }
+
+    @Test
+    void callStructuredWithImageWrapsFailuresAsVisionError() {
+        doThrow(new RuntimeException("boom"))
+                .when(FakeChatConfig.visionClient)
+                .prompt(Mockito.any(Prompt.class));
+
+        BusinessException e = assertThrows(BusinessException.class,
+                () -> aiGatewayService.callStructuredWithImage(
+                        42L, "photo_analysis", "prompt",
+                        new byte[]{1}, "image/jpeg", RecipeContent.class));
+        assertEquals(6005, e.getErrorCode().code);
     }
 
     /** 深桩 ChatResponse：output text 与 usage 两链。 */
