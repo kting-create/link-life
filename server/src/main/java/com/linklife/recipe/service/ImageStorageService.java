@@ -23,7 +23,7 @@ public class ImageStorageService {
 
     private final Path baseDir;
 
-    public ImageStorageService(@Value("${link.images.base-dir:/data/images}") String baseDir) {
+    public ImageStorageService(@Value("${link.images.base-dir:/data}") String baseDir) {
         this.baseDir = Paths.get(baseDir);
     }
 

@@ -71,6 +71,14 @@ cd web && npm install && npm run build
 | `WX_SUBSCRIBE_ENABLED` | 微信订阅消息总开关 | `false` | 通道禁用，不发送 |
 | `WX_SUBSCRIBE_TEMPLATE_ID` | 订阅消息模板 ID | 空 | 通道降级跳过，不报错 |
 
+### P4 烹饪引导环境变量
+
+| 变量名 | 作用 | 默认值 | 缺省行为 |
+|---|---|---|---|
+| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（P4 视觉分析） | 空 | 视觉分析返回 6005 降级，不影响其他功能 |
+| `DASHSCOPE_VL_MODEL` | 视觉模型名 | `qwen3-vl-flash` | — |
+| `IMAGE_BASE_DIR` | 图片存储根目录（图片落盘 `<根>/images/recipes/...`，compose 挂载 `../data/images:/data/images`） | `/data` | 走默认 `/data`，与 nginx `alias /data/images/` 对应 |
+
 ## 进度
 
 见 `docs/superpowers/specs/2026-09-16-link-life-design.md` 第 9 节路线图与 `docs/PROJECT-STATUS.md`。
