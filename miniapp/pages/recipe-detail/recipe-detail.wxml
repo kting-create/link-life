@@ -3,6 +3,30 @@
     <view class="title">{{recipe.customName || recipe.dishName}}</view>
     <view class="meta" wx:if="{{recipe.customName}}">原名：{{recipe.dishName}}</view>
     <view class="meta">版本 v{{recipe.currentVersion}} · 约 {{recipe.content.totalMinutes}} 分钟 · {{recipe.content.servings}} 人食</view>
+    <button size="mini" bindtap="toggleEdit">{{editMode ? '取消编辑' : '编辑菜谱'}}</button>
+  </view>
+
+  <view class="card" wx:if="{{editMode && editForm}}">
+    <view class="section-title">编辑菜谱内容</view>
+    <view class="edit-grid">
+      <label>份数 <input type="number" class="num-input" value="{{editForm.servings}}" bindinput="onEditField" data-field="servings" /></label>
+      <label>总分钟 <input type="number" class="num-input" value="{{editForm.totalMinutes}}" bindinput="onEditField" data-field="totalMinutes" /></label>
+    </view>
+    <view class="section-title">食材</view>
+    <textarea class="edit-area" value="{{editForm.ingredientsText}}" bindinput="onEditField" data-field="ingredientsText"
+              placeholder="每行一项：名称 数量&#10;如：鸡蛋 3个" maxlength="-1" />
+    <view class="hint">每行一项，格式：名称 数量</view>
+    <view class="section-title">调料</view>
+    <textarea class="edit-area" value="{{editForm.seasoningsText}}" bindinput="onEditField" data-field="seasoningsText"
+              placeholder="每行一项：名称 数量&#10;如：生抽 1勺" maxlength="-1" />
+    <view class="hint">每行一项，格式：名称 数量</view>
+    <view class="section-title">步骤</view>
+    <textarea class="edit-area" value="{{editForm.stepsText}}" bindinput="onEditField" data-field="stepsText"
+              placeholder="每行一步&#10;如：1. 打散鸡蛋" maxlength="-1" />
+    <view class="hint">每行一步，按行顺序编号（编辑时不保留每步时长）</view>
+    <view class="section-title">小贴士</view>
+    <input class="tips-input" value="{{editForm.tips}}" bindinput="onEditField" data-field="tips" placeholder="可选" />
+    <button size="mini" bindtap="saveEdit">保存编辑</button>
   </view>
 
   <view class="card">

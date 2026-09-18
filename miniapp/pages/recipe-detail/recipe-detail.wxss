@@ -18,3 +18,9 @@
 .version { font-size: 26rpx; padding: 8rpx 0; color: #666; }
 .rollback { color: #07c160; margin-left: 16rpx; }
 .name-input { border: 1rpx solid #eee; border-radius: 8rpx; padding: 16rpx; margin-bottom: 16rpx; }
+.edit-grid { display: flex; gap: 24rpx; font-size: 26rpx; color: #666; }
+.num-input { border: 1rpx solid #eee; border-radius: 8rpx; padding: 8rpx 16rpx; width: 120rpx; }
+.edit-area { width: 100%; min-height: 140rpx; background: #f7f7f7; border-radius: 8rpx;
+  padding: 16rpx; box-sizing: border-box; }
+.hint { color: #999; font-size: 22rpx; margin: 8rpx 0 16rpx; }
+.tips-input { border: 1rpx solid #eee; border-radius: 8rpx; padding: 16rpx; margin-bottom: 16rpx; }

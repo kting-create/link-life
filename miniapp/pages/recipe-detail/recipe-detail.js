@@ -14,6 +14,8 @@ Page({
     myComment: '',
     nameInput: '',
     atLimit: false,
+    editMode: false,
+    editForm: null,
   },
 
   onLoad(options) {
@@ -109,6 +111,84 @@ Page({
       data: { customName: this.data.nameInput || null },
     }).then(() => {
       wx.showToast({ title: '已保存', icon: 'success' });
+      self.load();
+    }).catch((err) => {
+      wx.showToast({ title: (err && err.message) || '保存失败', icon: 'none' });
+    });
+  },
+
+  toggleEdit() {
+    if (this.data.editMode) {
+      this.cancelEdit();
+    } else {
+      this.startEdit();
+    }
+  },
+
+  startEdit() {
+    const c = this.data.recipe.content;
+    this.setData({
+      editMode: true,
+      editForm: {
+        servings: c.servings,
+        totalMinutes: c.totalMinutes,
+        ingredientsText: (c.ingredients || []).map((i) => i.name + ' ' + i.amount).join('\n'),
+        seasoningsText: (c.seasonings || []).map((i) => i.name + ' ' + i.amount).join('\n'),
+        stepsText: (c.steps || []).map((s) => s.text).join('\n'),
+        tips: c.tips || '',
+      },
+    });
+  },
+
+  cancelEdit() {
+    this.setData({ editMode: false, editForm: null });
+  },
+
+  onEditField(e) {
+    const field = e.currentTarget.dataset.field;
+    this.setData({ ['editForm.' + field]: e.detail.value });
+  },
+
+  /** 一行一项：首个空白前的 token 是名称，其余是数量；空行忽略。 */
+  parseItemLines(text) {
+    return String(text || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const parts = line.split(/\s+/);
+        return { name: parts[0], amount: parts.slice(1).join(' ') };
+      });
+  },
+
+  saveEdit() {
+    const f = this.data.editForm;
+    const ingredients = this.parseItemLines(f.ingredientsText);
+    const seasonings = this.parseItemLines(f.seasoningsText);
+    const steps = String(f.stepsText || '')
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((text, idx) => ({ no: idx + 1, text }));
+    if (!ingredients.length || !steps.length) {
+      wx.showToast({ title: '食材和步骤不能为空', icon: 'none' });
+      return;
+    }
+    const content = {
+      servings: Number(f.servings) || 2,
+      totalMinutes: Number(f.totalMinutes) || 30,
+      ingredients,
+      seasonings,
+      steps,
+      tips: f.tips,
+    };
+    const self = this;
+    request('/api/recipes/' + this.recipeId, {
+      method: 'PUT',
+      data: { content, changeNote: '手动编辑' },
+    }).then(() => {
+      wx.showToast({ title: '已保存', icon: 'success' });
+      self.cancelEdit();
       self.load();
     }).catch((err) => {
       wx.showToast({ title: (err && err.message) || '保存失败', icon: 'none' });

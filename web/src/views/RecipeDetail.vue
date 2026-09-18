@@ -26,6 +26,59 @@ async function load() {
 }
 load()
 
+const editMode = ref(false)
+const editForm = ref(null)
+
+function startEdit() {
+  const c = recipe.value.content
+  editForm.value = {
+    servings: c.servings,
+    totalMinutes: c.totalMinutes,
+    ingredients: (c.ingredients || []).map((i) => ({ ...i })),
+    seasonings: (c.seasonings || []).map((i) => ({ ...i })),
+    steps: (c.steps || []).map((s) => ({ text: s.text, durationSec: s.durationSec || 0 })),
+    tips: c.tips || '',
+  }
+  editMode.value = true
+}
+
+function addIngredientRow(list) {
+  list.push({ name: '', amount: '' })
+}
+
+function addStepRow() {
+  editForm.value.steps.push({ text: '', durationSec: 0 })
+}
+
+async function saveEdit() {
+  const f = editForm.value
+  if (!f.ingredients.some((i) => i.name.trim()) || !f.steps.some((s) => s.text.trim())) {
+    showToast('食材和步骤不能为空')
+    return
+  }
+  const content = {
+    servings: Number(f.servings) || 2,
+    totalMinutes: Number(f.totalMinutes) || 30,
+    ingredients: f.ingredients.filter((i) => i.name.trim())
+      .map((i) => ({ name: i.name.trim(), amount: i.amount })),
+    seasonings: f.seasonings.filter((i) => i.name.trim())
+      .map((i) => ({ name: i.name.trim(), amount: i.amount })),
+    steps: f.steps.filter((s) => s.text.trim())
+      .map((s, idx) => ({
+        no: idx + 1,
+        text: s.text.trim(),
+        ...(Number(s.durationSec) ? { durationSec: Number(s.durationSec) } : {}),
+      })),
+    tips: f.tips,
+  }
+  try {
+    await editRecipe(id, { content, changeNote: '手动编辑' })
+    showToast('已保存')
+    editMode.value = false
+    await load()
+  } catch (e) { showToast(e.message || '保存失败') }
+}
+
 async function doFeedback() {
   if (!myScore.value) { showToast('先点星星评分'); return }
   try {
@@ -57,6 +110,41 @@ async function saveName() {
       <p v-if="recipe.customName" class="meta">原名：{{ recipe.dishName }}</p>
       <p class="meta">版本 v{{ recipe.currentVersion }} ·
         约 {{ recipe.content.totalMinutes }} 分钟 · {{ recipe.content.servings }} 人食</p>
+      <button class="edit-toggle" @click="editMode ? (editMode = false) : startEdit()">
+        {{ editMode ? '取消编辑' : '编辑菜谱' }}</button>
+    </div>
+
+    <div class="card" v-if="editMode && editForm">
+      <h3>编辑菜谱内容</h3>
+      <div class="edit-grid">
+        <label>份数 <input type="number" v-model.number="editForm.servings" /></label>
+        <label>总分钟 <input type="number" v-model.number="editForm.totalMinutes" /></label>
+      </div>
+      <h4>食材 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.ingredients)">+ 加一行</a></h4>
+      <div class="edit-row" v-for="(r, idx) in editForm.ingredients" :key="'ig' + idx">
+        <input v-model="r.name" placeholder="名称" />
+        <input v-model="r.amount" placeholder="数量" />
+        <a class="del" href="#" @click.prevent="editForm.ingredients.splice(idx, 1)">删除</a>
+      </div>
+      <h4>调料 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.seasonings)">+ 加一行</a></h4>
+      <div class="edit-row" v-for="(r, idx) in editForm.seasonings" :key="'se' + idx">
+        <input v-model="r.name" placeholder="名称" />
+        <input v-model="r.amount" placeholder="数量" />
+        <a class="del" href="#" @click.prevent="editForm.seasonings.splice(idx, 1)">删除</a>
+      </div>
+      <h4>步骤 <a class="add" href="#" @click.prevent="addStepRow()">+ 加一步</a></h4>
+      <div class="edit-row step-row" v-for="(s, idx) in editForm.steps" :key="'st' + idx">
+        <span class="no">{{ idx + 1 }}</span>
+        <input v-model="s.text" placeholder="做法" />
+        <input class="dur" type="number" v-model.number="s.durationSec" placeholder="秒" />
+        <a class="del" href="#" @click.prevent="editForm.steps.splice(idx, 1)">删除</a>
+      </div>
+      <h4>小贴士</h4>
+      <textarea v-model="editForm.tips" placeholder="可选" maxlength="255" />
+      <div class="btns">
+        <button @click="saveEdit">保存编辑</button>
+        <button class="warn" @click="editMode = false">取消</button>
+      </div>
     </div>
 
     <div class="card">
@@ -134,4 +222,14 @@ textarea { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box
 .version { display: flex; justify-content: space-between; font-size: 13px;
   color: #666; padding: 4px 0; }
 .version a { color: #07c160; cursor: pointer; }
+.edit-toggle { margin-top: 8px; }
+.edit-grid { display: flex; gap: 16px; margin-bottom: 8px; }
+.edit-grid label { font-size: 13px; color: #666; }
+.edit-grid input { width: 80px; }
+.edit-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
+.edit-row input { flex: 1; min-width: 0; }
+.edit-row .dur { flex: 0 0 70px; }
+.edit-row .no { width: 22px; text-align: center; color: #07c160; flex-shrink: 0; }
+.edit-row .del, h4 .add { color: #07c160; font-size: 12px; flex-shrink: 0; }
+h4 { margin: 12px 0 4px; }
 </style>
