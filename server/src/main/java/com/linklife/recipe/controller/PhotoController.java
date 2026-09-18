@@ -44,4 +44,9 @@ public class PhotoController {
     public Result<PhotoAnalysis> analyze(@PathVariable long photoId) {
         return Result.ok(photoAnalysisService.analyze(UserContext.requireUserId(), photoId));
     }
+
+    @PostMapping("/api/photos/{photoId}/apply")
+    public Result<Integer> apply(@PathVariable long photoId) {
+        return Result.ok(photoAnalysisService.apply(UserContext.requireUserId(), photoId));
+    }
 }

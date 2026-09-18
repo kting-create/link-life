@@ -60,6 +60,17 @@ public class PhotoAnalysisService {
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional
+    public int apply(long userId, long photoId) {
+        RecipePhoto photo = photoService.requireVisiblePhoto(userId, photoId);
+        if (photo.getAnalysis() == null) {
+            throw new BusinessException(ErrorCode.NOTHING_TO_APPLY);
+        }
+        PhotoAnalysis analysis = parseAnalysis(photo.getAnalysis());
+        return recipeService.applyPhotoPatch(userId, photo.getRecipeId(),
+                analysis.validChanges(), analysis.advice());
+    }
+
     public static String toJson(PhotoAnalysis analysis) {
         try {
             return MAPPER.writeValueAsString(analysis);
