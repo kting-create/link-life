@@ -181,6 +181,17 @@ class RecipeApiTest extends IntegrationTestBase {
     }
 
     @Test
+    void iterateCommentOver255Rejected() throws Exception {
+        // comment 直接入 recipe_version.change_note VARCHAR(255)，超长必须在入口被 400 拦下
+        String token = tokenOfMember("recipe-owner");
+        mockMvc.perform(post("/api/recipes/" + recipeId + "/iterate")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"comment\":\"" + "咸".repeat(256) + "\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void editCustomNameOnlyDoesNotAddVersion() throws Exception {
         String token = tokenOfMember("recipe-owner");
         mockMvc.perform(put("/api/recipes/" + recipeId)
