@@ -23,7 +23,15 @@ public enum ErrorCode {
     RECIPE_PARSE_FAILED(5004, "AI 返回内容解析失败", HttpStatus.INTERNAL_SERVER_ERROR),
     PANTRY_ITEM_EXISTS(5005, "该条目已存在", HttpStatus.BAD_REQUEST),
     RECIPE_ALREADY_EXISTS(5006, "该菜品已有菜谱", HttpStatus.CONFLICT),
-    PANTRY_ITEM_NOT_FOUND(5007, "条目不存在", HttpStatus.NOT_FOUND);
+    PANTRY_ITEM_NOT_FOUND(5007, "条目不存在", HttpStatus.NOT_FOUND),
+    FILE_TYPE_INVALID(6001, "仅支持 jpg/png/webp 图片", HttpStatus.BAD_REQUEST),
+    FILE_TOO_LARGE(6002, "图片不能超过 5MB", HttpStatus.BAD_REQUEST),
+    PHOTO_LIMIT_EXCEEDED(6003, "该菜谱照片已达上限", HttpStatus.BAD_REQUEST),
+    PHOTO_NOT_FOUND(6004, "照片不存在", HttpStatus.NOT_FOUND),
+    VISION_AI_FAILED(6005, "AI 视觉分析失败，请重试", HttpStatus.INTERNAL_SERVER_ERROR),
+    NOTHING_TO_APPLY(6006, "无可应用的修改建议", HttpStatus.BAD_REQUEST),
+    PHOTO_NO_PERMISSION(6007, "仅上传者或圈主可删除该照片", HttpStatus.FORBIDDEN),
+    PHOTO_STEP_INVALID(6008, "步骤不存在", HttpStatus.BAD_REQUEST);
 
     public final int code;
     public final String message;

@@ -85,6 +85,8 @@ server.servlet... multipart: max-file-size 6MB / max-request-size 8MB
 | 6004 | PHOTO_NOT_FOUND | 照片不存在 |
 | 6005 | VISION_AI_FAILED | Key 缺失/调用失败/JSON 解析失败 |
 | 6006 | NOTHING_TO_APPLY | changes 为空时 apply |
+| 6007 | PHOTO_NO_PERMISSION | 非上传者且非圈主删除照片 |
+| 6008 | PHOTO_STEP_INVALID | 上传时 stepNo 不在当前版本步骤范围 |
 
 ## 5. 前端
 
