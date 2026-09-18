@@ -1,4 +1,4 @@
-<view class="cook" wx:if="{{recipe}}">
+<view class="cook" wx:if="{{recipe && steps.length}}">
   <view class="progress-line">
     <view class="progress-inner" style="width: {{progressPct}}%"></view>
   </view>
@@ -34,7 +34,7 @@
   <view class="advice" wx:if="{{advice}}">
     <view class="advice-title">AI 建议</view>
     <view class="advice-body">{{advice.advice}}</view>
-    <view class="advice-change" wx:for="{{advice.changes}}" wx:key="index">
+    <view class="advice-change" wx:for="{{advice.changes}}" wx:key="stepNo">
       步骤 {{item.stepNo}}：{{item.text || '仅调整时长'}}
     </view>
     <view class="advice-btns">

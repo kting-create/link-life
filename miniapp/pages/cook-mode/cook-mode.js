@@ -20,6 +20,7 @@ Page({
     this.timer = null;
     this.remainSec = 0;
     this.audio = null;
+    this.photosByStep = {};
     this.load();
   },
 
@@ -64,7 +65,7 @@ Page({
 
   refreshPhotos() {
     const step = this.data.steps[this.data.current];
-    const list = (step && this.photosByStep[step.no]) || [];
+    const list = (step && this.photosByStep && this.photosByStep[step.no]) || [];
     this.setData({ currentPhotos: list });
   },
 
