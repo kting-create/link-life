@@ -1,5 +1,6 @@
 package com.linklife.user;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.linklife.user.dto.UserVO;
 import com.linklife.user.entity.User;
 import com.linklife.user.mapper.UserMapper;
@@ -33,6 +34,12 @@ public class UserService {
 
     public void updateUser(User user) {
         userMapper.updateById(user);
+    }
+
+    public void bumpTokenVersion(long userId) {
+        userMapper.update(null, new LambdaUpdateWrapper<User>()
+                .eq(User::getId, userId)
+                .setSql("token_version = token_version + 1"));
     }
 
     public UserVO toVO(User user) {

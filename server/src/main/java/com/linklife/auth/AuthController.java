@@ -47,4 +47,10 @@ public class AuthController {
         rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":bind");
         return Result.ok(bindingCodeService.bind(request.code()));
     }
+
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        authService.logout(UserContext.requireUserId());
+        return Result.ok();
+    }
 }

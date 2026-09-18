@@ -57,13 +57,25 @@ public class AuthService {
         if (user == null) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
+        if (verOf(user) != info.ver()) {
+            throw new BusinessException(ErrorCode.TOKEN_REVOKED);
+        }
         return buildTokens(user);
     }
 
+    public void logout(long userId) {
+        userService.bumpTokenVersion(userId);
+    }
+
     private AuthTokens buildTokens(User user) {
+        long ver = verOf(user);
         return new AuthTokens(
-                jwtService.generateAccessToken(user.getId()),
-                jwtService.generateRefreshToken(user.getId()),
+                jwtService.generateAccessToken(user.getId(), ver),
+                jwtService.generateRefreshToken(user.getId(), ver),
                 userService.toVO(user));
+    }
+
+    private long verOf(User user) {
+        return user.getTokenVersion() == null ? 0 : user.getTokenVersion();
     }
 }

@@ -12,6 +12,8 @@ import jakarta.validation.constraints.Min;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,8 +55,23 @@ class GlobalExceptionHandlerTest extends IntegrationTestBase {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private JdbcTemplate jdbc;
+
     private String authHeader() {
-        return "Bearer " + jwtService.generateAccessToken(1L);
+        return "Bearer " + jwtService.generateAccessToken(ensureUser(), 0);
+    }
+
+    // JwtAuthFilter 现会校验 token_version 与 DB 中 user 是否存在,需保证用户真实存在
+    private long ensureUser() {
+        String openid = "global-exception-handler-test";
+        try {
+            return jdbc.queryForObject("SELECT id FROM `user` WHERE openid = ?", Long.class, openid);
+        } catch (EmptyResultDataAccessException e) {
+            jdbc.update("INSERT INTO `user`(openid, nickname, created_at, updated_at) "
+                    + "VALUES (?, 't', NOW(), NOW())", openid);
+            return jdbc.queryForObject("SELECT id FROM `user` WHERE openid = ?", Long.class, openid);
+        }
     }
 
     @Test

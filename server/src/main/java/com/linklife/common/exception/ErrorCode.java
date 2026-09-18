@@ -17,6 +17,7 @@ public enum ErrorCode {
     NOT_ITEM_CLAIMANT(3005, "仅认领人可操作", HttpStatus.FORBIDDEN),
     NOTIFICATION_NOT_FOUND(3006, "通知不存在", HttpStatus.BAD_REQUEST),
     RATE_LIMITED(4001, "请求过于频繁", HttpStatus.TOO_MANY_REQUESTS),
+    TOKEN_REVOKED(3007, "登录已失效", HttpStatus.UNAUTHORIZED),
     RECIPE_NOT_FOUND(5001, "菜谱不存在", HttpStatus.NOT_FOUND),
     RECIPE_VERSION_LIMIT(5002, "已达版本上限，请先回滚旧版本", HttpStatus.BAD_REQUEST),
     RECIPE_AI_FAILED(5003, "AI 生成失败，请重试", HttpStatus.INTERNAL_SERVER_ERROR),

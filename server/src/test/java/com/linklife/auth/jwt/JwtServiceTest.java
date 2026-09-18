@@ -13,15 +13,16 @@ class JwtServiceTest {
 
     @Test
     void accessTokenRoundTrip() {
-        String token = jwtService.generateAccessToken(42L);
+        String token = jwtService.generateAccessToken(42L, 0);
         TokenInfo info = jwtService.parse(token);
         assertEquals(42L, info.userId());
         assertEquals("access", info.type());
+        assertEquals(0L, info.ver());
     }
 
     @Test
     void refreshTokenHasRefreshType() {
-        String token = jwtService.generateRefreshToken(42L);
+        String token = jwtService.generateRefreshToken(42L, 0);
         TokenInfo info = jwtService.parse(token);
         assertEquals("refresh", info.type());
     }

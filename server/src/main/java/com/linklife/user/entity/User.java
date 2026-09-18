@@ -16,6 +16,7 @@ public class User {
     private String nickname;
     private String avatar;
     private String phone;
+    private Long tokenVersion;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -24,25 +24,28 @@ public class JwtService {
         this.refreshTtl = Duration.ofDays(refreshTtlDays);
     }
 
-    public String generateAccessToken(long userId) {
-        return build(userId, "access", accessTtl);
+    public String generateAccessToken(long userId, long ver) {
+        return build(userId, "access", ver, accessTtl);
     }
 
-    public String generateRefreshToken(long userId) {
-        return build(userId, "refresh", refreshTtl);
+    public String generateRefreshToken(long userId, long ver) {
+        return build(userId, "refresh", ver, refreshTtl);
     }
 
     public TokenInfo parse(String token) {
         Claims claims = Jwts.parser().verifyWith(key).build()
                 .parseSignedClaims(token).getPayload();
-        return new TokenInfo(Long.parseLong(claims.getSubject()), claims.get("type", String.class));
+        Long ver = claims.get("ver", Long.class);
+        return new TokenInfo(Long.parseLong(claims.getSubject()),
+                claims.get("type", String.class), ver != null ? ver : 0L);
     }
 
-    private String build(long userId, String type, Duration ttl) {
+    private String build(long userId, String type, long ver, Duration ttl) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("type", type)
+                .claim("ver", ver)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + ttl.toMillis()))
                 .signWith(key)
