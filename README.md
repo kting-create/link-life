@@ -75,7 +75,7 @@ cd web && npm install && npm run build
 
 | 变量名 | 作用 | 默认值 | 缺省行为 |
 |---|---|---|---|
-| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（P4 视觉分析） | 空 | 视觉分析返回 6005 降级，不影响其他功能 |
+| `DASHSCOPE_API_KEY` | 阿里云百炼 API Key（P4 视觉分析） | 占位 key（compose 注入 `sk-placeholder-configure-real-key`） | 真配占位/错误 key 时调用失败，视觉分析走 6005 降级；**不可显式置空**（空字符串会使 Spring AI OpenAI 自动配置启动断言失败，故 compose 默认注入占位 key） |
 | `DASHSCOPE_VL_MODEL` | 视觉模型名 | `qwen3-vl-flash` | — |
 | `IMAGE_BASE_DIR` | 图片存储根目录（图片落盘 `<根>/images/recipes/...`，compose 挂载 `../data/images:/data/images`） | `/data` | 走默认 `/data`，与 nginx `alias /data/images/` 对应 |
 
