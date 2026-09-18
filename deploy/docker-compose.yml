@@ -10,6 +10,7 @@ services:
       WX_APPID: ${WX_APPID:-}
       WX_SECRET: ${WX_SECRET:-}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-sk-placeholder-configure-real-key}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
       FEISHU_NOTIFY_ENABLED: ${FEISHU_NOTIFY_ENABLED:-false}
       FEISHU_WEBHOOK_URL: ${FEISHU_WEBHOOK_URL:-}
       WX_SUBSCRIBE_ENABLED: ${WX_SUBSCRIBE_ENABLED:-false}
