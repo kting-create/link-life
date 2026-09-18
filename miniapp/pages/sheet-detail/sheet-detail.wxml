@@ -21,6 +21,8 @@
         </view>
       </view>
       <view class="item-actions">
+        <text class="recipe-link" wx:if="{{!readonly}}"
+              bindtap="openRecipe" data-name="{{item.dishName}}">菜谱</text>
         <button
           wx:if="{{item.canClaim}}"
           class="mini-btn"

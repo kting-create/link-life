@@ -124,6 +124,22 @@ Page({
     });
   },
 
+  openRecipe(e) {
+    const dishName = e.currentTarget.dataset.name;
+    const circleId = this.data.sheet.circleId;
+    request('/api/recipes/by-dish?circleId=' + circleId + '&dishName=' +
+        encodeURIComponent(dishName))
+      .then((recipe) => {
+        wx.navigateTo({ url: '/pages/recipe-detail/recipe-detail?id=' + recipe.id });
+      })
+      .catch(() => {
+        wx.navigateTo({
+          url: '/pages/recipe-generate/recipe-generate?circleId=' + circleId +
+            '&dishName=' + encodeURIComponent(dishName),
+        });
+      });
+  },
+
   claimItem(e) {
     this.act('/api/order/items/' + e.currentTarget.dataset.id + '/claim', 'POST', '认领成功');
   },

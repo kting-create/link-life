@@ -6,7 +6,10 @@
     "pages/sheet-list/sheet-list",
     "pages/sheet-detail/sheet-detail",
     "pages/notifications/notifications",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/recipe-generate/recipe-generate",
+    "pages/recipe-detail/recipe-detail",
+    "pages/pantry/pantry"
   ],
   "window": {
     "navigationBarTitleText": "Link-Life",

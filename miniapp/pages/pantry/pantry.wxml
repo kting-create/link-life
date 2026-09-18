@@ -1,0 +1,19 @@
+<view class="page">
+  <view class="add-box">
+    <picker range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
+      <view class="picker">{{types[typeIndex]}}</view>
+    </picker>
+    <input class="input" value="{{name}}" placeholder="如：生抽 / 五花肉"
+           bindinput="onNameInput" />
+    <button size="mini" type="primary" bindtap="add">添加</button>
+  </view>
+  <view class="item" wx:for="{{items}}" wx:key="id">
+    <view>
+      <text class="tag {{item.type === 'SEASONING' ? 'tag-s' : 'tag-i'}}">
+        {{item.type === 'SEASONING' ? '调料' : '食材'}}</text>
+      <text>{{item.name}}</text>
+    </view>
+    <text class="del" bindtap="del" data-id="{{item.id}}">删除</text>
+  </view>
+  <view wx:if="{{!items.length}}" class="empty">还没有条目，添加后 AI 会优先使用它们调味</view>
+</view>

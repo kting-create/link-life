@@ -75,6 +75,10 @@ Page({
     wx.navigateTo({ url: '/pages/notifications/notifications' });
   },
 
+  goPantry() {
+    wx.navigateTo({ url: '/pages/pantry/pantry' });
+  },
+
   goCircle() {
     wx.reLaunch({ url: '/pages/circle/circle' });
   },

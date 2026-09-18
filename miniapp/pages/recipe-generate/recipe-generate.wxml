@@ -1,0 +1,8 @@
+<view class="page">
+  <view class="stream-box">
+    <text class="stream-text">{{streamText || '正在生成菜谱…'}}</text>
+    <view wx:if="{{streaming}}" class="cursor">▍</view>
+  </view>
+  <view wx:if="{{errorText}}" class="error">{{errorText}}</view>
+  <button wx:if="{{failed}}" bindtap="retry" type="primary">重试</button>
+</view>

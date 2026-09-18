@@ -25,6 +25,7 @@
       <text>我的通知</text>
       <view wx:if="{{unread > 0}}" class="badge">{{unread > 99 ? '99+' : unread}}</view>
     </view>
+    <view class="nav-link" bindtap="goPantry">调料架</view>
     <view class="nav-link" bindtap="goCircle">返回圈子列表</view>
   </view>
 </view>

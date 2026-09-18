@@ -1,0 +1,9 @@
+.page { padding: 24rpx; }
+.stream-box {
+  background: #fff; border-radius: 16rpx; padding: 32rpx;
+  min-height: 400rpx; font-size: 26rpx; line-height: 1.7; color: #333;
+  word-break: break-all; white-space: pre-wrap;
+}
+.cursor { display: inline-block; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.error { color: #e64340; margin-top: 24rpx; font-size: 28rpx; }

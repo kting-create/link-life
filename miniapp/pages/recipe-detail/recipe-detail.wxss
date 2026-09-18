@@ -1,0 +1,20 @@
+.page { padding: 24rpx; }
+.card { background: #fff; border-radius: 16rpx; padding: 28rpx; margin-bottom: 24rpx; }
+.title { font-size: 36rpx; font-weight: 600; }
+.meta { color: #999; font-size: 24rpx; margin-top: 8rpx; }
+.section-title { font-size: 30rpx; font-weight: 600; margin: 16rpx 0; }
+.row { display: flex; justify-content: space-between; padding: 8rpx 0; font-size: 28rpx; }
+.amount { color: #666; }
+.step { display: flex; margin: 16rpx 0; }
+.step-no { width: 44rpx; height: 44rpx; border-radius: 50%; background: #07c160; color: #fff;
+  text-align: center; line-height: 44rpx; margin-right: 16rpx; font-size: 24rpx; flex-shrink: 0; }
+.step-body { flex: 1; font-size: 28rpx; }
+.duration { display: block; color: #999; font-size: 24rpx; margin-top: 4rpx; }
+.tips { color: #666; font-size: 26rpx; margin-top: 16rpx; }
+.stars { font-size: 44rpx; color: #ddd; margin-bottom: 12rpx; }
+.star.on { color: #f7ba2a; }
+.comment { width: 100%; min-height: 100rpx; background: #f7f7f7; border-radius: 8rpx;
+  padding: 16rpx; box-sizing: border-box; margin-bottom: 16rpx; }
+.version { font-size: 26rpx; padding: 8rpx 0; color: #666; }
+.rollback { color: #07c160; margin-left: 16rpx; }
+.name-input { border: 1rpx solid #eee; border-radius: 8rpx; padding: 16rpx; margin-bottom: 16rpx; }

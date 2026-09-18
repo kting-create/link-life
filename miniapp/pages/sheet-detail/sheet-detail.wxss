@@ -91,6 +91,12 @@
   margin: 0;
 }
 
+.recipe-link {
+  font-size: 26rpx;
+  color: #07c160;
+  text-align: center;
+}
+
 .complete-btn {
   margin-top: 20rpx;
 }
