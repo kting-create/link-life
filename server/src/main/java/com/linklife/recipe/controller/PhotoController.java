@@ -2,7 +2,9 @@ package com.linklife.recipe.controller;
 
 import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
+import com.linklife.recipe.dto.PhotoAnalysis;
 import com.linklife.recipe.dto.PhotoVO;
+import com.linklife.recipe.service.PhotoAnalysisService;
 import com.linklife.recipe.service.PhotoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PhotoController {
 
     private final PhotoService photoService;
+    private final PhotoAnalysisService photoAnalysisService;
 
     @PostMapping("/api/recipes/{id}/steps/{stepNo}/photos")
     public Result<PhotoVO> upload(@PathVariable long id, @PathVariable int stepNo,
@@ -35,5 +38,10 @@ public class PhotoController {
     public Result<Void> delete(@PathVariable long photoId) {
         photoService.delete(UserContext.requireUserId(), photoId);
         return Result.ok();
+    }
+
+    @PostMapping("/api/photos/{photoId}/analysis")
+    public Result<PhotoAnalysis> analyze(@PathVariable long photoId) {
+        return Result.ok(photoAnalysisService.analyze(UserContext.requireUserId(), photoId));
     }
 }
