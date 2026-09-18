@@ -1492,17 +1492,8 @@ git commit -m "feat(p4): Qwen3-VL 视觉分析接口 + 提示词模板"
 
 - [ ] **Step 4: 写集成测试**
 
-`PhotoApplyApiTest.java`（seed 照抄 PhotoAnalysisApiTest 的 FakeVisionConfig + seed，但**不 mock vision**，直接手插一条带 analysis 的照片行）：
 
-```java
-package com.linklife.recipe;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 `PhotoApplyApiTest.java` 完整内容如下（**不 mock vision**；直接手插一条带 analysis JSON 的照片行，验证 apply 链路）：
-
 ```java
 package com.linklife.recipe;
 
