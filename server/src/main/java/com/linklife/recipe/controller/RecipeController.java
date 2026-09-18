@@ -4,14 +4,19 @@ import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
 import com.linklife.recipe.dto.EditRecipeRequest;
 import com.linklife.recipe.dto.FeedbackRequest;
+import com.linklife.recipe.dto.GenerateRequest;
+import com.linklife.recipe.dto.IterateRequest;
 import com.linklife.recipe.dto.RecipeDetailVO;
 import com.linklife.recipe.dto.RecipeVersionVO;
 import com.linklife.recipe.dto.RollbackRequest;
 import com.linklife.recipe.dto.VersionMetaVO;
+import com.linklife.recipe.service.RecipeGenerationService;
 import com.linklife.recipe.service.RecipeService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RecipeController {
 
     private final RecipeService recipeService;
+    private final RecipeGenerationService recipeGenerationService;
 
     @GetMapping("/{id}")
     public Result<RecipeDetailVO> get(@PathVariable long id) {
@@ -71,5 +78,24 @@ public class RecipeController {
                                  @Valid @RequestBody RollbackRequest request) {
         recipeService.rollback(UserContext.requireUserId(), id, request.version());
         return Result.ok();
+    }
+
+    @PostMapping(value = "/generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter generate(@Valid @RequestBody GenerateRequest request,
+                               HttpServletResponse response) {
+        response.setHeader("X-Accel-Buffering", "no");
+        response.setHeader("Cache-Control", "no-cache");
+        return recipeGenerationService.generate(UserContext.requireUserId(),
+                request.circleId(), request.dishName());
+    }
+
+    @PostMapping(value = "/{id}/iterate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter iterate(@PathVariable long id,
+                              @Valid @RequestBody IterateRequest request,
+                              HttpServletResponse response) {
+        response.setHeader("X-Accel-Buffering", "no");
+        response.setHeader("Cache-Control", "no-cache");
+        return recipeGenerationService.iterate(UserContext.requireUserId(),
+                id, request.comment());
     }
 }
