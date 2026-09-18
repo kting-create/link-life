@@ -95,7 +95,7 @@ AI 结构化输出与 `recipe_version.content` 共用同一结构：
 - **taste_prefs 复用 V1 已有列** `user_profile.taste_prefs`（JSON），结构：`{"summary": "偏清淡、忌辣", "tags": ["清淡","忌辣"]}`；迭代时由 AI 同调用输出，覆盖式更新。
 - **dish upsert**：生成入口按 `(circle_id, name)` 查 dish，无则插入；insert 并发冲突 catch DuplicateKeyException 后 re-select。
 - **权限**：菜谱随 dish 挂 circle，圈内成员可查看/编辑/反馈/迭代（与 P1 认领一致的信任模型）；圈外访问按不存在处理。调料架纯个人。
-- **错误码 5xxx 段**：RECIPE_NOT_FOUND(5001)、RECIPE_VERSION_LIMIT(5002)、RECIPE_AI_FAILED(5003)、RECIPE_PARSE_FAILED(5004)、PANTRY_ITEM_EXISTS(5005)。
+- **错误码 5xxx 段**：RECIPE_NOT_FOUND(5001)、RECIPE_VERSION_LIMIT(5002)、RECIPE_AI_FAILED(5003)、RECIPE_PARSE_FAILED(5004)、PANTRY_ITEM_EXISTS(5005)、RECIPE_ALREADY_EXISTS(5006)、PANTRY_ITEM_NOT_FOUND(5007)。
 
 ## 3. API 设计
 
@@ -140,7 +140,7 @@ data: {"code": 5003, "message": "AI 生成失败，请重试"}
 ```
 
 - **delta**：AI 原始文本增量（JSON 文本逐段流出），前端打字机展示；收到 done 后拉 `GET /api/recipes/{id}` 渲染结构化菜谱卡。
-- **落库时机**：后端聚合完整输出 → 剥围栏/解析/校验 → 落库（dish+recipe+version 或仅 version）→ 才发 done。解析失败发 error，本次新建的 dish/recipe 一并回滚删除，不留脏数据。
+- **落库时机**：后端聚合完整输出 → 剥围栏/解析/校验 → 才在单事务内完成全部 DB 写入（dish upsert + recipe + version，或迭代仅 version/指针/画像）→ 发 done。解析失败发 error，由于写入延迟到解析成功后，天然不留脏数据，无需回滚删除。
 - **流中断**：客户端断开时取消 Flux 订阅、丢弃未落库结果，ai_call_log 记 ok=false。
 - **鉴权**：SSE 请求同样经过 JwtAuthFilter（两端均可携带 Authorization header）。
 - **超时**：全程 >90s 后端主动发 error 并关闭。
