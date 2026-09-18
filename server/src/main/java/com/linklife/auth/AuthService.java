@@ -12,8 +12,8 @@ import com.linklife.user.entity.User;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
 @Slf4j
@@ -25,7 +25,6 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
 
-    @Transactional
     public AuthTokens wxLogin(String jsCode) {
         WxSession session;
         try {
@@ -38,7 +37,15 @@ public class AuthService {
         }
         User user = userService.getUserByOpenid(session.openid());
         if (user == null) {
-            user = userService.createUser(session.openid(), session.unionid());
+            try {
+                user = userService.createUser(session.openid(), session.unionid());
+            } catch (DuplicateKeyException e) {
+                // 并发首登:唯一键兜底后重查(参照 RecipeService.createRecipeWithV1 范式)
+                user = userService.getUserByOpenid(session.openid());
+            }
+        }
+        if (user == null) {
+            throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
         }
         return buildTokens(user);
     }
