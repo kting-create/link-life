@@ -15,7 +15,7 @@ public class AiCallLogger {
     private final AiCallLogMapper aiCallLogMapper;
 
     public void log(Long userId, String scene, String provider, String model,
-                    boolean ok, String errorMsg) {
+                    boolean ok, String errorMsg, Integer promptTokens, Integer completionTokens) {
         try {
             AiCallLog entry = new AiCallLog();
             entry.setUserId(userId);
@@ -24,6 +24,8 @@ public class AiCallLogger {
             entry.setModel(model);
             entry.setOk(ok);
             entry.setErrorMsg(errorMsg);
+            entry.setPromptTokens(promptTokens);
+            entry.setCompletionTokens(completionTokens);
             entry.setCreatedAt(LocalDateTime.now());
             aiCallLogMapper.insert(entry);
         } catch (Exception e) {
