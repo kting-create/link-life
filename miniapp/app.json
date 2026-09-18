@@ -9,7 +9,8 @@
     "pages/profile/profile",
     "pages/recipe-generate/recipe-generate",
     "pages/recipe-detail/recipe-detail",
-    "pages/pantry/pantry"
+    "pages/pantry/pantry",
+    "pages/cook-mode/cook-mode"
   ],
   "window": {
     "navigationBarTitleText": "Link-Life",

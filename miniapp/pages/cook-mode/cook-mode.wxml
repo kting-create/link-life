@@ -1,0 +1,47 @@
+<view class="cook" wx:if="{{recipe && steps.length}}"
+      bindtouchstart="onTouchStart" bindtouchend="onTouchEnd">
+  <view class="progress-line">
+    <view class="progress-inner" style="width: {{progressPct}}%"></view>
+  </view>
+  <view class="head">步骤 {{steps[current].no}} / {{steps.length}}</view>
+
+  <view class="step-text">{{steps[current].text}}</view>
+
+  <view class="timer" wx:if="{{hasDuration}}">
+    <view class="remain">{{remainText}}</view>
+    <view class="timer-btns">
+      <button size="mini" bindtap="toggleTimer">{{counting ? '暂停' : '继续'}}</button>
+      <button size="mini" bindtap="skipTimer">跳过</button>
+    </view>
+  </view>
+  <view class="no-timer" wx:else>本步骤无需计时</view>
+
+  <view class="nav">
+    <button size="mini" plain bindtap="prevStep" disabled="{{current === 0}}">上一步</button>
+    <button size="mini" bindtap="takePhoto">拍照</button>
+    <button size="mini" plain bindtap="nextStep"
+            disabled="{{current === steps.length - 1}}">下一步</button>
+  </view>
+
+  <view class="photos" wx:if="{{currentPhotos.length}}">
+    <view class="photo" wx:for="{{currentPhotos}}" wx:key="id">
+      <image src="{{item.fullUrl}}" mode="aspectFill" />
+      <view class="photo-ops">
+        <text class="ai-btn" bindtap="askAi" data-id="{{item.id}}">{{item.analyzed ? '重新分析' : '问 AI'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="advice" wx:if="{{advice}}">
+    <view class="advice-title">AI 建议</view>
+    <view class="advice-body">{{advice.advice}}</view>
+    <view class="advice-change" wx:for="{{advice.changes}}" wx:key="stepNo">
+      步骤 {{item.stepNo}}：{{item.text || '仅调整时长'}}
+    </view>
+    <view class="advice-btns">
+      <button size="mini" type="primary" bindtap="applyAdvice">应用修改</button>
+      <button size="mini" bindtap="dismissAdvice">忽略</button>
+    </view>
+  </view>
+</view>
+<view wx:else class="cook"><text>加载中…</text></view>

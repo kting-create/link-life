@@ -15,6 +15,10 @@ services:
       FEISHU_WEBHOOK_URL: ${FEISHU_WEBHOOK_URL:-}
       WX_SUBSCRIBE_ENABLED: ${WX_SUBSCRIBE_ENABLED:-false}
       WX_SUBSCRIBE_TEMPLATE_ID: ${WX_SUBSCRIBE_TEMPLATE_ID:-}
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-sk-placeholder-configure-real-key}
+      DASHSCOPE_VL_MODEL: ${DASHSCOPE_VL_MODEL:-qwen3-vl-flash}
+    volumes:
+      - ../data/images:/data/images
     depends_on:
       mysql:
         condition: service_healthy

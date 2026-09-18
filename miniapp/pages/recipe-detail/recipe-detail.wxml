@@ -3,6 +3,7 @@
     <view class="title">{{recipe.customName || recipe.dishName}}</view>
     <view class="meta" wx:if="{{recipe.customName}}">原名：{{recipe.dishName}}</view>
     <view class="meta">版本 v{{recipe.currentVersion}} · 约 {{recipe.content.totalMinutes}} 分钟 · {{recipe.content.servings}} 人食</view>
+    <button size="mini" type="primary" bindtap="startCook">开始烹饪</button>
     <button size="mini" bindtap="toggleEdit">{{editMode ? '取消编辑' : '编辑菜谱'}}</button>
   </view>
 
@@ -23,7 +24,7 @@
     <view class="section-title">步骤</view>
     <textarea class="edit-area" value="{{editForm.stepsText}}" bindinput="onEditField" data-field="stepsText"
               placeholder="每行一步&#10;如：1. 打散鸡蛋" maxlength="-1" />
-    <view class="hint">每行一步，按行顺序编号（编辑时不保留每步时长）</view>
+    <view class="hint">每行一步，按行顺序编号（保留各步骤时长）</view>
     <view class="section-title">小贴士</view>
     <input class="tips-input" value="{{editForm.tips}}" bindinput="onEditField" data-field="tips" placeholder="可选" />
     <button size="mini" bindtap="saveEdit">保存编辑</button>

@@ -10,6 +10,7 @@ import com.linklife.common.exception.ErrorCode;
 import com.linklife.order.entity.Dish;
 import com.linklife.order.mapper.DishMapper;
 import com.linklife.recipe.dto.IterationResult;
+import com.linklife.recipe.dto.PhotoAnalysis;
 import com.linklife.recipe.dto.RecipeContent;
 import com.linklife.recipe.dto.RecipeDetailVO;
 import com.linklife.recipe.dto.RecipeVersionVO;
@@ -22,6 +23,7 @@ import com.linklife.recipe.mapper.RecipeMapper;
 import com.linklife.recipe.mapper.RecipeVersionMapper;
 import com.linklife.user.service.TasteProfileService;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -218,6 +220,44 @@ public class RecipeService {
         recipe.setUpdatedAt(LocalDateTime.now());
         recipeMapper.updateById(recipe);
         tasteProfileService.applySummary(userId, result.tasteSummary());
+        return next;
+    }
+
+    @Transactional
+    public int applyPhotoPatch(long userId, long recipeId, List<PhotoAnalysis.Change> changes,
+                               String changeNote) {
+        Recipe recipe = requireVisibleRecipe(userId, recipeId);
+        if (versionCount(recipeId) >= MAX_VERSIONS) {
+            throw new BusinessException(ErrorCode.RECIPE_VERSION_LIMIT);
+        }
+        RecipeVersion current = requireVersionRow(recipeId, recipe.getCurrentVersion());
+        RecipeContent content = parseContent(current.getContent());
+        List<RecipeContent.Step> newSteps = new ArrayList<>();
+        boolean changed = false;
+        for (RecipeContent.Step step : content.steps()) {
+            RecipeContent.Step merged = step;
+            for (PhotoAnalysis.Change c : changes) {
+                if (c.stepNo() != null && c.stepNo().equals(step.no())) {
+                    String text = c.text() == null || c.text().isBlank() ? step.text() : c.text();
+                    Integer dur = c.durationSec() == null ? step.durationSec() : c.durationSec();
+                    merged = new RecipeContent.Step(step.no(), text, dur);
+                    changed = true;
+                }
+            }
+            newSteps.add(merged);
+        }
+        if (!changed) {
+            throw new BusinessException(ErrorCode.NOTHING_TO_APPLY);
+        }
+        RecipeContent result = new RecipeContent(content.servings(), content.totalMinutes(),
+                content.ingredients(), content.seasonings(), newSteps, content.tips());
+        int next = versionCount(recipeId) + 1;
+        insertVersion(recipeId, next, "PHOTO_ANALYSIS", result,
+                changeNote != null && changeNote.length() > 255
+                        ? changeNote.substring(0, 255) : changeNote, userId);
+        recipe.setCurrentVersion(next);
+        recipe.setUpdatedAt(LocalDateTime.now());
+        recipeMapper.updateById(recipe);
         return next;
     }
 

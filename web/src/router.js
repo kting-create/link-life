@@ -6,6 +6,7 @@ import Notifications from './views/Notifications.vue'
 import ShareView from './views/ShareView.vue'
 import RecipeGenerate from './views/RecipeGenerate.vue'
 import RecipeDetail from './views/RecipeDetail.vue'
+import CookMode from './views/CookMode.vue'
 import Pantry from './views/Pantry.vue'
 
 const routes = [
@@ -15,6 +16,7 @@ const routes = [
   { path: '/sheets/:id', component: SheetDetail, meta: { requiresAuth: true } },
   { path: '/notifications', component: Notifications, meta: { requiresAuth: true } },
   { path: '/recipes/generate', component: RecipeGenerate, meta: { requiresAuth: true } },
+  { path: '/recipes/:id/cook', component: CookMode, meta: { requiresAuth: true } },
   { path: '/recipes/:id', component: RecipeDetail, meta: { requiresAuth: true } },
   { path: '/pantry', component: Pantry, meta: { requiresAuth: true } },
   { path: '/s/:token', component: ShareView },

@@ -4,6 +4,7 @@ const SOURCE_TEXT = {
   AI_GENERATE: 'AI 生成',
   AI_ITERATE: 'AI 迭代',
   MANUAL_EDIT: '手动编辑',
+  PHOTO_ANALYSIS: '拍照修正',
 };
 
 Page({
@@ -79,6 +80,12 @@ Page({
   iterate() {
     wx.navigateTo({
       url: '/pages/recipe-generate/recipe-generate?recipeId=' + this.recipeId,
+    });
+  },
+
+  startCook() {
+    wx.navigateTo({
+      url: '/pages/cook-mode/cook-mode?id=' + this.recipeId,
     });
   },
 
@@ -169,7 +176,14 @@ Page({
       .split('\n')
       .map((line) => line.trim())
       .filter(Boolean)
-      .map((text, idx) => ({ no: idx + 1, text }));
+      .map((text, idx) => {
+        const orig = (this.data.recipe.content.steps || [])[idx];
+        return {
+          no: idx + 1,
+          text,
+          ...(orig && orig.durationSec ? { durationSec: orig.durationSec } : {}),
+        };
+      });
     if (!ingredients.length || !steps.length) {
       wx.showToast({ title: '食材和步骤不能为空', icon: 'none' });
       return;

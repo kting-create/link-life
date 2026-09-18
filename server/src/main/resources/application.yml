@@ -6,15 +6,28 @@ spring:
     url: ${DB_URL:jdbc:mysql://localhost:3306/linklife?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai}
     username: ${DB_USER:linklife}
     password: ${DB_PASSWORD:linklife}
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 8MB
   flyway:
     enabled: true
     locations: classpath:db/migration
   ai:
+    chat:
+      client:
+        enabled: false
     deepseek:
       api-key: ${DEEPSEEK_API_KEY:}
       chat:
         options:
           model: ${DEEPSEEK_MODEL:deepseek-chat}
+    openai:
+      api-key: ${DASHSCOPE_API_KEY:}
+      base-url: ${DASHSCOPE_BASE_URL:https://dashscope.aliyuncs.com/compatible-mode/v1}
+      chat:
+        options:
+          model: ${DASHSCOPE_VL_MODEL:qwen3-vl-flash}
 
 link:
   jwt:
@@ -33,6 +46,8 @@ link:
       enabled: ${WX_SUBSCRIBE_ENABLED:false}
       template-id: ${WX_SUBSCRIBE_TEMPLATE_ID:}
       page: pages/sheet-detail/sheet-detail
+  images:
+    base-dir: ${IMAGE_BASE_DIR:/data}
 
 logging:
   file:

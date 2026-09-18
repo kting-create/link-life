@@ -75,15 +75,16 @@
 - [x] 自定义能力：新增调味方法/食材、自定义菜谱与个性化命名
 - [x] 流式输出接口（生成体验）；ai_call_log 补 tokens 统计与真实 userId
 - [x] 提示词调优脚本交付（真实调用小样本清单见 scripts/recipe-sample-validation.md）
-- [ ] 🧑 试吃反馈 😄（按 scripts/recipe-sample-validation.md 真实调用验证，Key 就绪后执行）
+- [ ] 🧑 试吃反馈 😄（按 scripts/recipe-sample-validation.md 真实调用验证，Key 就绪后执行；统一验证阶段执行）
+- [ ] P3 代码已推送 origin/feature/p3-recipe-engine 并通过分支终审；**按用户决策与 P4/P5 同分支，最后统一验证后一个 PR 合并**
 
-## 4. P4 烹饪引导
+## 4. P4 烹饪引导（feature/p3-recipe-engine 分支）
 
-- [ ] 分步计时引擎（类 Keep 趣味计时：步骤倒计时、进度动画、提示音）
-- [ ] 小程序烹饪模式页（亮屏常亮、步骤切换）
-- [ ] 过程拍照上传（图片存本地卷 + `/images/` 静态服务，注意 client_max_body_size）
-- [ ] AI 视觉分析：多模态模型接入（豆包视觉/通义 QVLY，AiGatewayService 扩展 image 接口）
-- [ ] 分析结果反馈到当前步骤（如"盐放多了"）并写入菜谱迭代数据
+- [x] 分步计时引擎（类 Keep 趣味计时：步骤倒计时、进度动画、提示音）
+- [x] 小程序烹饪模式页（亮屏常亮、步骤切换）
+- [x] 过程拍照上传（图片存本地卷 + `/images/` 静态服务，注意 client_max_body_size）
+- [x] AI 视觉分析：多模态模型接入（豆包视觉/通义 QVLY，AiGatewayService 扩展 image 接口）
+- [x] 分析结果反馈到当前步骤（如"盐放多了"）并写入菜谱迭代数据
 
 ## 5. P5 打磨与运维
 
@@ -104,3 +105,5 @@
 - 本地 compose DB 有 P2 验证残留数据（verify-user-A/B、29 张单、27 条通知），不需要可 `docker compose down -v` 清空
 - 🧑 微信开发者工具真机流式验证待做（SSE enableChunked，需基础库 ≥2.20.1；P3 生成/迭代流式输出真机预览）
 - 小样本真实验证清单见 `scripts/recipe-sample-validation.md`（DeepSeek Key 就绪后执行，结果追加到本区）
+- 🧑 阿里云百炼 API Key（DASHSCOPE_API_KEY）待配置到 deploy/.env —— P4 视觉分析真跑与统一验证依赖（缺省时 compose 注入占位 key，视觉分析返回 6005 降级，不影响启动）
+- P4 双端 UI 手工验证延后（与 P3 真机流式验证合并到统一验证阶段）

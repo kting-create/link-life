@@ -7,7 +7,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.main.allow-bean-definition-overriding=true")
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class IntegrationTestBase {
@@ -24,5 +24,14 @@ public abstract class IntegrationTestBase {
         registry.add("spring.datasource.username", MYSQL::getUsername);
         registry.add("spring.datasource.password", MYSQL::getPassword);
         registry.add("spring.ai.deepseek.api-key", () -> "test-key");
+        registry.add("spring.ai.openai.api-key", () -> "test-key");
+        registry.add("link.images.base-dir", () -> {
+            try {
+                return java.nio.file.Files
+                        .createTempDirectory("linklife-images").toString();
+            } catch (java.io.IOException e) {
+                throw new java.io.UncheckedIOException(e);
+            }
+        });
     }
 }
