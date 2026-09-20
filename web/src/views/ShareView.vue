@@ -1,23 +1,32 @@
 <template>
   <div class="share-page">
-    <div v-if="sheet" class="card">
+    <div v-if="sheet" class="card sheet-card">
       <div class="row section-head">
         <h3>{{ sheet.title }}</h3>
-        <span class="tag">{{ sheetStatusText[sheet.status] || sheet.status }}</span>
+        <span class="badge-pill" :class="'is-' + String(sheet.status || '').toLowerCase()">
+          {{ sheetStatusText[sheet.status] || sheet.status }}
+        </span>
       </div>
-      <div class="muted">已认领 {{ claimed }}/{{ items.length }}</div>
+      <div class="meta">已认领 {{ claimed }}/{{ items.length }}</div>
     </div>
 
-    <div v-for="it in items" :key="it.id" class="card">
-      <div class="row">
-        <strong>{{ it.dishName }}</strong>
-        <span class="tag">{{ itemStatusText[it.itemStatus] || it.itemStatus }}</span>
+    <div v-if="items.length" class="card list-card">
+      <div v-for="it in items" :key="it.id" class="list-item">
+        <div class="row">
+          <strong>{{ it.dishName }}</strong>
+          <span class="badge-pill" :class="'is-' + String(it.itemStatus || '').toLowerCase()">
+            {{ itemStatusText[it.itemStatus] || it.itemStatus }}
+          </span>
+        </div>
+        <div v-if="it.note" class="meta">备注：{{ it.note }}</div>
+        <div class="meta">认领人：{{ it.claimantNickname || '暂无' }}</div>
       </div>
-      <div v-if="it.note" class="muted">备注：{{ it.note }}</div>
-      <div class="muted">认领人：{{ it.claimantNickname || '暂无' }}</div>
     </div>
 
-    <p v-if="invalid" class="muted invalid-tip">清单不存在或已失效</p>
+    <div v-if="invalid" class="empty">
+      <span class="empty-title">清单不存在或已失效</span>
+      <span>链接可能已过期，请联系分享人重新获取</span>
+    </div>
 
     <div class="share-footer-hint">微信内搜索小程序 Link-Life 可认领菜品</div>
   </div>
@@ -71,17 +80,44 @@ export default {
 
 <style scoped>
 .share-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
   padding-bottom: 70px;
+}
+.sheet-card {
+  border-radius: var(--radius-lg);
 }
 .section-head {
   justify-content: space-between;
+  margin-bottom: 8px;
 }
 .section-head h3 {
   margin: 0;
 }
-.invalid-tip {
-  text-align: center;
-  margin-top: 40px;
+.meta {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.list-item {
+  padding: var(--gap) 0;
+}
+.list-item:first-child {
+  padding-top: 0;
+}
+.list-item:last-child {
+  padding-bottom: 0;
+}
+.list-item + .list-item {
+  border-top: 1px solid var(--border);
+}
+.list-item .row {
+  margin-bottom: 4px;
+}
+.empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 .share-footer-hint {
   position: fixed;
@@ -89,10 +125,11 @@ export default {
   right: 0;
   bottom: 0;
   padding: 12px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
   text-align: center;
-  background: #fff;
-  color: #888;
-  font-size: 13px;
-  border-top: 1px solid #eee;
+  background: var(--bg-card);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
 }
 </style>

@@ -1,8 +1,8 @@
 <template>
   <div class="login-page">
     <div class="card login-card">
-      <h2>Link-Life 登录</h2>
-      <p class="muted">请输入小程序"我的页"生成的 6 位绑定码</p>
+      <h2 class="page-title"><span class="brand">Link-Life</span> 登录</h2>
+      <p class="hint">请输入小程序"我的页"生成的 6 位绑定码</p>
       <input
         v-model="code"
         class="input code-input"
@@ -11,7 +11,9 @@
         placeholder="6 位绑定码"
         @keyup.enter="submit"
       />
-      <button class="btn login-btn" :disabled="submitting" @click="submit">登录</button>
+      <button class="btn btn-primary login-btn" :disabled="submitting" @click="submit">
+        {{ submitting ? '登录中…' : '登录' }}
+      </button>
     </div>
   </div>
 </template>
@@ -56,18 +58,34 @@ export default {
 <style scoped>
 .login-page {
   display: flex;
+  align-items: center;
   justify-content: center;
-  padding-top: 80px;
+  min-height: calc(100vh - 160px);
+  padding: 16px;
 }
 .login-card {
-  width: 320px;
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
   text-align: center;
 }
+.page-title {
+  text-align: center;
+}
+.brand {
+  color: var(--primary-deep);
+}
+.hint {
+  margin: 0 0 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
 .code-input {
+  margin-bottom: var(--gap);
   text-align: center;
   font-size: 20px;
   letter-spacing: 6px;
-  margin: 12px 0;
 }
 .login-btn {
   width: 100%;
