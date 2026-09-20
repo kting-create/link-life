@@ -20,14 +20,14 @@
   line-height: 60rpx;
   text-align: center;
   border-radius: 50%;
-  background: #07c160;
+  background: var(--primary);
   color: #ffffff;
   font-size: 40rpx;
 }
 
 .sheet-item {
   background: #ffffff;
-  border-radius: 12rpx;
+  border-radius: var(--radius);
   padding: 28rpx;
   margin-bottom: 20rpx;
 }
@@ -47,12 +47,12 @@
 .badge {
   font-size: 22rpx;
   padding: 4rpx 16rpx;
-  border-radius: 8rpx;
+  border-radius: var(--radius-sm);
 }
 
 .badge-shared {
   background: #e8f7ef;
-  color: #07c160;
+  color: var(--primary);
 }
 
 .badge-in_progress {

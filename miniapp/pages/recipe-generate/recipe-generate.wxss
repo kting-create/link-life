@@ -6,4 +6,4 @@
 }
 .cursor { display: inline-block; animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-.error { color: #e64340; margin-top: 24rpx; font-size: 28rpx; }
+.error { color: var(--danger); margin-top: 24rpx; font-size: 28rpx; }

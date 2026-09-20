@@ -3,7 +3,7 @@
 .title { font-size: 34rpx; font-weight: 600; flex: 1; }
 .read-all { color: #4f7cff; font-size: 28rpx; }
 .empty { color: #999; text-align: center; padding: 80rpx 0; }
-.item { background: #fff; border-radius: 12rpx; padding: 20rpx; margin-bottom: 16rpx; }
+.item { background: #fff; border-radius: var(--radius); padding: 20rpx; margin-bottom: 16rpx; }
 .row { display: flex; align-items: center; }
 .dot { width: 14rpx; height: 14rpx; border-radius: 50%; background: #4f7cff; margin-right: 10rpx; }
 .unread { font-weight: 600; }

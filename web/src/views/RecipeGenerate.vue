@@ -51,7 +51,7 @@ if (!circleId || !dishName) {
 
 <style scoped>
 .generate { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
-.stream { background: #fff; border-radius: 12px; padding: 24px; min-height: 320px;
+.stream { background: #fff; border-radius: var(--radius); padding: 24px; min-height: 320px;
   white-space: pre-wrap; word-break: break-all; font-size: 14px; line-height: 1.8; }
-.error { color: #e64340; margin-top: 12px; }
+.error { color: var(--danger); margin-top: 12px; }
 </style>

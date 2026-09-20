@@ -8,6 +8,7 @@ import RecipeGenerate from './views/RecipeGenerate.vue'
 import RecipeDetail from './views/RecipeDetail.vue'
 import CookMode from './views/CookMode.vue'
 import Pantry from './views/Pantry.vue'
+import Profile from './views/Profile.vue'
 
 const routes = [
   { path: '/', redirect: '/circles' },
@@ -19,6 +20,7 @@ const routes = [
   { path: '/recipes/:id/cook', component: CookMode, meta: { requiresAuth: true } },
   { path: '/recipes/:id', component: RecipeDetail, meta: { requiresAuth: true } },
   { path: '/pantry', component: Pantry, meta: { requiresAuth: true } },
+  { path: '/me', component: Profile, meta: { requiresAuth: true } },
   { path: '/s/:token', component: ShareView },
 ]
 

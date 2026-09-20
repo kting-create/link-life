@@ -16,14 +16,14 @@
 
 .topbar-profile {
   font-size: 28rpx;
-  color: #07c160;
+  color: var(--primary);
 }
 
 .tabs {
   display: flex;
   margin-bottom: 24rpx;
   background: #ffffff;
-  border-radius: 12rpx;
+  border-radius: var(--radius);
   overflow: hidden;
 }
 
@@ -35,9 +35,9 @@
 }
 
 .tab-active {
-  color: #07c160;
+  color: var(--primary);
   font-weight: bold;
-  border-bottom: 4rpx solid #07c160;
+  border-bottom: 4rpx solid var(--primary);
 }
 
 .actions {
@@ -52,7 +52,7 @@
 
 .circle-item {
   background: #ffffff;
-  border-radius: 12rpx;
+  border-radius: var(--radius);
   padding: 28rpx;
   margin-bottom: 20rpx;
 }
@@ -84,7 +84,7 @@
 }
 
 .chip-active {
-  background: #07c160;
+  background: var(--primary);
   color: #ffffff;
 }
 
@@ -92,7 +92,7 @@
   display: flex;
   align-items: center;
   background: #ffffff;
-  border-radius: 12rpx;
+  border-radius: var(--radius);
   padding: 24rpx;
   margin-bottom: 20rpx;
 }
@@ -105,7 +105,7 @@
 }
 
 .member-avatar-placeholder {
-  background: #07c160;
+  background: var(--primary);
   color: #ffffff;
   text-align: center;
   line-height: 72rpx;

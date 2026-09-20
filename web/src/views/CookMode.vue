@@ -182,16 +182,16 @@ onBeforeUnmount(stopTimer)
 <style scoped>
 .cook { max-width: 720px; margin: 0 auto; padding: 16px; background: #111; color: #fff; min-height: 100vh; box-sizing: border-box; }
 .bar { height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
-.bar-inner { height: 100%; background: #07c160; transition: width .5s; }
+.bar-inner { height: 100%; background: var(--primary); transition: width .5s; }
 .head { text-align: center; color: #aaa; }
 .step-text { font-size: 24px; line-height: 1.6; margin: 32px 0; }
 .timer { text-align: center; }
-.remain { font-size: 64px; font-weight: 700; color: #07c160; }
+.remain { font-size: 64px; font-weight: 700; color: var(--primary); }
 .nav { display: flex; gap: 12px; justify-content: center; margin: 16px 0; }
-.upload-btn { background: #07c160; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; }
+.upload-btn { background: var(--primary); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; }
 .photos { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
 .photo img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; display: block; }
-.photo a { color: #07c160; font-size: 12px; margin-right: 8px; }
+.photo a { color: var(--primary); font-size: 12px; margin-right: 8px; }
 .photo .del { color: #e66; }
 .advice { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-top: 16px; }
 .change { color: #ccc; font-size: 13px; }

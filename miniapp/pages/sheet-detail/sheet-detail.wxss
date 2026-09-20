@@ -4,7 +4,7 @@
 
 .card {
   background: #ffffff;
-  border-radius: 12rpx;
+  border-radius: var(--radius);
   padding: 28rpx;
   margin-bottom: 24rpx;
 }
@@ -24,9 +24,9 @@
 .badge {
   font-size: 22rpx;
   padding: 4rpx 16rpx;
-  border-radius: 8rpx;
+  border-radius: var(--radius-sm);
   background: #e8f7ef;
-  color: #07c160;
+  color: var(--primary);
 }
 
 .progress {
@@ -74,7 +74,7 @@
 }
 
 .status-text {
-  color: #07c160;
+  color: var(--primary);
 }
 
 .claimant {
@@ -93,7 +93,7 @@
 
 .recipe-link {
   font-size: 26rpx;
-  color: #07c160;
+  color: var(--primary);
   text-align: center;
 }
 

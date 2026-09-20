@@ -1,0 +1,16 @@
+:root {
+  --primary: #07c160;
+  --primary-weak: #e8f8ef;
+  --text-primary: #111;
+  --text-secondary: #888;
+  --bg-page: #f7f7f7;
+  --bg-card: #fff;
+  --border: #eee;
+  --danger: #e66;
+  --warning: #f7ba2a;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --gap: 12px;
+}
+.btn { background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 16px; cursor: pointer; }
+.card { background: var(--bg-card); border-radius: var(--radius); }
