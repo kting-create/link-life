@@ -57,7 +57,7 @@ public final class RecipePrompts {
     }
 
     public static String iterate(String dishName, RecipeContent current,
-                                 List<RecipeFeedback> feedbacks) {
+                                  List<RecipeFeedback> feedbacks, String tasteSummary) {
         StringBuilder sb = new StringBuilder();
         sb.append("这是菜品「").append(dishName).append("」的当前菜谱 JSON：\n");
         sb.append(toJson(current)).append('\n');
@@ -69,10 +69,13 @@ public final class RecipePrompts {
             }
             sb.append('\n');
         }
+        if (tasteSummary != null && !tasteSummary.isBlank()) {
+            sb.append("用户口味画像（必须遵守忌口等约束）：").append(tasteSummary).append('\n');
+        }
         sb.append("请基于反馈输出改进后的菜谱。只输出一个 JSON 对象，")
           .append("不要输出任何解释文字或 markdown 代码围栏，结构如下：\n");
         sb.append("{\"recipe\": <同上述菜谱结构>, \"taste_summary\": ")
-          .append("{\"summary\": \"口味画像总结\", \"tags\": [\"标签\"]}}\n");
+          .append("{\"summary\": \"口味总结\", \"tags\": [\"标签\"]}}\n");
         sb.append("要求：针对反馈调整，未提及的部分保持稳定；")
           .append("taste_summary 总结用户口味偏好与忌口。\n");
         return sb.toString();

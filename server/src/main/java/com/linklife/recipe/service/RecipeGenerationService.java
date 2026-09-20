@@ -50,7 +50,9 @@ public class RecipeGenerationService {
 
     public SseEmitter iterate(long userId, long recipeId, String comment) {
         IterateContext ctx = recipeService.prepareIterate(userId, recipeId);
-        String prompt = RecipePrompts.iterate(ctx.dishName(), ctx.current(), ctx.feedbacks());
+        String tasteSummary = tasteProfileService.getSummary(userId);
+        String prompt = RecipePrompts.iterate(ctx.dishName(), ctx.current(),
+                ctx.feedbacks(), tasteSummary);
         return stream(userId, "recipe_iterate", prompt, raw -> {
             IterationResult result = AiResponseParser.parse(raw, IterationResult.class);
             result.validate();
