@@ -8,11 +8,19 @@ Page({
     expiresText: '',
     saving: false,
     unread: 0,
+    tasteSummary: '',
+    tasteTags: [],
   },
 
   onShow() {
     request('/api/notifications/unread-count')
       .then((d) => this.setData({ unread: d.unreadCount }))
+      .catch(() => {});
+    request('/api/me/taste-profile')
+      .then((p) => this.setData({
+        tasteSummary: p.summary || '',
+        tasteTags: p.tags || [],
+      }))
       .catch(() => {});
     request('/api/me')
       .then((user) => {
@@ -81,5 +89,21 @@ Page({
 
   goCircle() {
     wx.reLaunch({ url: '/pages/circle/circle' });
+  },
+
+  logout() {
+    wx.showModal({
+      title: '退出登录',
+      content: '退出后本机登录状态将失效,确定退出?',
+      success: (res) => {
+        if (!res.confirm) return;
+        request('/api/auth/logout', { method: 'POST' })
+          .catch(() => {})
+          .then(() => {
+            wx.clearStorageSync();
+            wx.reLaunch({ url: '/pages/login/login' });
+          });
+      },
+    });
   },
 });

@@ -20,6 +20,17 @@
     </view>
   </view>
 
+  <view class="taste-card">
+    <view class="binding-title">口味画像</view>
+    <block wx:if="{{tasteSummary || tasteTags.length}}">
+      <view wx:if="{{tasteSummary}}" class="taste-summary">{{tasteSummary}}</view>
+      <view wx:if="{{tasteTags.length}}" class="taste-tags">
+        <text wx:for="{{tasteTags}}" wx:key="*this" class="taste-tag">{{item}}</text>
+      </view>
+    </block>
+    <view wx:else class="taste-empty">完成菜谱反馈后沉淀你的口味画像</view>
+  </view>
+
   <view class="nav-card">
     <view class="nav-link nav-link-row" bindtap="goNotifications">
       <text>我的通知</text>
@@ -28,4 +39,6 @@
     <view class="nav-link" bindtap="goPantry">调料架</view>
     <view class="nav-link" bindtap="goCircle">返回圈子列表</view>
   </view>
+
+  <button class="logout-btn" bindtap="logout">退出登录</button>
 </view>

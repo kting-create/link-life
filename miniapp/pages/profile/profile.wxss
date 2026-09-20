@@ -82,6 +82,39 @@
   color: #999999;
 }
 
+.taste-card {
+  background: #ffffff;
+  border-radius: 12rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.taste-summary {
+  font-size: 28rpx;
+  color: #333333;
+  line-height: 1.6;
+}
+
+.taste-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 20rpx;
+}
+
+.taste-tag {
+  padding: 8rpx 24rpx;
+  margin: 0 12rpx 12rpx 0;
+  border-radius: 24rpx;
+  background: rgba(7, 193, 96, 0.1);
+  color: #07c160;
+  font-size: 24rpx;
+}
+
+.taste-empty {
+  font-size: 26rpx;
+  color: #999999;
+}
+
 .nav-card {
   background: #ffffff;
   border-radius: 12rpx;
@@ -111,4 +144,13 @@
   line-height: 32rpx;
   text-align: center;
   margin-left: 12rpx;
+}
+
+.logout-btn {
+  margin-top: 48rpx;
+  background: #ffffff;
+  color: #ff4d4f;
+  border: 1rpx solid #ff4d4f;
+  border-radius: 12rpx;
+  font-size: 30rpx;
 }
