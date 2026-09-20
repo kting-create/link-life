@@ -1,10 +1,9 @@
-.page { padding: 16rpx; }
-.head { display: flex; align-items: center; padding: 16rpx 8rpx; }
-.title { font-size: 34rpx; font-weight: 600; flex: 1; }
-.read-all { color: #4f7cff; font-size: 28rpx; }
-.empty { color: #999; text-align: center; padding: 80rpx 0; }
-.item { background: #fff; border-radius: var(--radius); padding: 20rpx; margin-bottom: 16rpx; }
+.page { padding: 24rpx; }
+.head { display: flex; align-items: center; padding: 8rpx 8rpx 24rpx; }
+.title { font-size: 40rpx; font-weight: 700; color: var(--text-primary); flex: 1; }
+.read-all { color: var(--primary); font-size: 28rpx; }
+.item { margin-bottom: 20rpx; }
 .row { display: flex; align-items: center; }
-.dot { width: 14rpx; height: 14rpx; border-radius: 50%; background: #4f7cff; margin-right: 10rpx; }
-.unread { font-weight: 600; }
-.content { color: #999; font-size: 26rpx; margin-top: 8rpx; margin-left: 24rpx; }
+.dot { width: 12rpx; height: 32rpx; border-radius: 999rpx; background: var(--primary); margin-right: 16rpx; }
+.unread { font-weight: 600; color: var(--text-primary); }
+.content { color: var(--text-tertiary); font-size: 24rpx; margin-top: 8rpx; margin-left: 28rpx; }

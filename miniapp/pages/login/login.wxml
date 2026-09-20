@@ -1,5 +1,7 @@
 <view class="login-container">
-  <view class="login-logo">Link-Life</view>
-  <view class="login-subtitle">链接生活</view>
-  <button class="login-btn" type="primary" loading="{{loading}}" bindtap="login">微信一键登录</button>
+  <view class="brand-card card">
+    <view class="login-logo">Link-Life</view>
+    <view class="login-subtitle">链接生活</view>
+  </view>
+  <button class="login-btn btn btn-primary" hover-class="button-hover" loading="{{loading}}" bindtap="login">微信一键登录</button>
 </view>

@@ -1,27 +1,27 @@
 <view class="order-create-page">
-  <view class="card">
+  <view class="card form-card">
     <view class="field-label">点单标题</view>
     <input
-      class="title-input"
+      class="input title-input"
       placeholder="例如：今晚想吃啥"
       value="{{title}}"
       bindinput="onTitleInput"
     />
   </view>
 
-  <view class="card">
+  <view class="card form-card">
     <view class="field-label">菜品</view>
     <view class="item-row" wx:for="{{items}}" wx:key="index">
       <view class="item-inputs">
         <input
-          class="dish-input"
+          class="input dish-input"
           placeholder="菜名（必填）"
           value="{{item.dishName}}"
           data-index="{{index}}"
           bindinput="onDishInput"
         />
         <input
-          class="note-input"
+          class="input note-input"
           placeholder="备注（选填）"
           value="{{item.note}}"
           data-index="{{index}}"
@@ -33,7 +33,7 @@
     <view class="add-row" bindtap="addRow">＋ 添加一道菜</view>
   </view>
 
-  <button class="submit-btn" type="primary" loading="{{submitting}}" bindtap="submit">
+  <button class="submit-btn btn btn-primary" hover-class="button-hover" loading="{{submitting}}" bindtap="submit">
     创建点单
   </button>
 </view>

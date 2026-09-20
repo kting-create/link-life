@@ -3,13 +3,15 @@
 }
 
 .profile-card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 32rpx;
+  border-radius: var(--radius-lg);
   margin-bottom: 24rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.section-card {
+  margin-bottom: 24rpx;
 }
 
 .avatar {
@@ -36,31 +38,29 @@
 
 .field-label {
   width: 120rpx;
-  color: #666666;
+  color: var(--text-secondary);
 }
 
 .field-input {
   flex: 1;
-  border-bottom: 1rpx solid #eeeeee;
+  border-bottom: 1rpx solid var(--border);
   padding: 12rpx 0;
 }
 
-.binding-card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 32rpx;
-  margin-bottom: 24rpx;
+.save-btn {
+  min-width: 160rpx;
 }
 
-.binding-title {
+.section-title {
   font-size: 32rpx;
-  font-weight: bold;
+  font-weight: 700;
+  color: var(--text-primary);
   margin-bottom: 12rpx;
 }
 
-.binding-desc {
+.section-desc {
   font-size: 24rpx;
-  color: #999999;
+  color: var(--text-tertiary);
   margin-bottom: 24rpx;
 }
 
@@ -71,27 +71,18 @@
 
 .binding-code {
   font-size: 56rpx;
-  font-weight: bold;
+  font-weight: 700;
   letter-spacing: 12rpx;
   color: var(--primary);
 }
 
-.binding-expires {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.taste-card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 32rpx;
-  margin-bottom: 24rpx;
+.binding-result .section-desc {
+  margin-bottom: 0;
 }
 
 .taste-summary {
   font-size: 28rpx;
-  color: #333333;
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
@@ -104,53 +95,39 @@
 .taste-tag {
   padding: 8rpx 24rpx;
   margin: 0 12rpx 12rpx 0;
-  border-radius: 24rpx;
-  background: rgba(7, 193, 96, 0.1);
-  color: var(--primary);
+  border-radius: 999rpx;
+  background: var(--primary-weak);
+  color: var(--primary-deep);
   font-size: 24rpx;
 }
 
-.taste-empty {
-  font-size: 26rpx;
-  color: #999999;
-}
-
-.nav-card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 32rpx;
-}
-
 .nav-link {
-  text-align: center;
-  color: var(--primary);
-}
-
-.nav-link-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 24rpx;
+  justify-content: space-between;
+  height: 96rpx;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.nav-link:last-child {
+  border-bottom: none;
 }
 
 .badge {
   min-width: 32rpx;
   height: 32rpx;
   padding: 0 10rpx;
-  border-radius: 16rpx;
-  background: #ff4d4f;
+  border-radius: 999rpx;
+  background: var(--danger);
   color: #ffffff;
   font-size: 22rpx;
   line-height: 32rpx;
   text-align: center;
-  margin-left: 12rpx;
 }
 
 .logout-btn {
   margin-top: 48rpx;
-  background: #ffffff;
-  color: #ff4d4f;
-  border: 1rpx solid #ff4d4f;
-  border-radius: var(--radius);
-  font-size: 30rpx;
+  width: 100%;
 }

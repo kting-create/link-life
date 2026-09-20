@@ -3,15 +3,15 @@
     <picker range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
       <view class="picker">{{types[typeIndex]}}</view>
     </picker>
-    <input class="input" value="{{name}}" placeholder="如：生抽 / 五花肉"
+    <input class="input pantry-input" value="{{name}}" placeholder="如：生抽 / 五花肉"
            bindinput="onNameInput" />
-    <button size="mini" type="primary" bindtap="add">添加</button>
+    <button class="btn btn-primary add-btn" size="mini" hover-class="button-hover" bindtap="add">添加</button>
   </view>
-  <view class="item" wx:for="{{items}}" wx:key="id">
-    <view>
+  <view class="item card" wx:for="{{items}}" wx:key="id">
+    <view class="item-main">
       <text class="tag {{item.type === 'SEASONING' ? 'tag-s' : 'tag-i'}}">
         {{item.type === 'SEASONING' ? '调料' : '食材'}}</text>
-      <text>{{item.name}}</text>
+      <text class="item-name">{{item.name}}</text>
     </view>
     <text class="del" bindtap="del" data-id="{{item.id}}">删除</text>
   </view>
