@@ -113,5 +113,5 @@
 
 .badge-pill.is-completed {
   background: var(--accent-weak);
-  color: #047857;
+  color: var(--accent-deep);
 }
