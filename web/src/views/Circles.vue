@@ -363,6 +363,6 @@ export default {
 }
 .badge-pill.is-completed {
   background: var(--accent-weak);
-  color: var(--accent);
+  color: var(--accent-deep);
 }
 </style>

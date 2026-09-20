@@ -192,7 +192,7 @@ export default {
 }
 .badge-pill.is-completed {
   background: var(--accent-weak);
-  color: var(--accent);
+  color: var(--accent-deep);
 }
 .badge-pill.is-mine {
   box-shadow: 0 0 0 2px var(--primary-weak);

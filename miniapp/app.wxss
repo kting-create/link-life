@@ -6,6 +6,7 @@ page {
   --primary-deep: #9a3412;
   --primary-weak: #fff1e6;
   --accent: #059669;
+  --accent-deep: #047857;
   --accent-weak: #ecfdf5;
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -52,7 +53,7 @@ page {
 .btn-primary.hover, .btn-primary.button-hover { background: var(--primary-deep); }
 .btn-secondary { background: var(--bg-card); color: var(--primary); border: 2rpx solid var(--primary); }
 .btn-danger { background: var(--danger); color: #ffffff; }
-.btn-accent { background: #047857; color: #ffffff; }
+.btn-accent { background: var(--accent-deep); color: #ffffff; }
 
 .badge-pill {
   display: inline-flex;
@@ -65,7 +66,7 @@ page {
 .badge-pill.is-open { background: #f1f5f9; color: var(--text-secondary); }
 .badge-pill.is-claimed { background: var(--primary-weak); color: var(--primary-deep); }
 .badge-pill.is-cooking { background: #eff6ff; color: #1d4ed8; }
-.badge-pill.is-done { background: var(--accent-weak); color: #047857; }
+.badge-pill.is-done { background: var(--accent-weak); color: var(--accent-deep); }
 
 .input {
   width: 100%;

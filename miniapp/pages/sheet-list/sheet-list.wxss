@@ -57,5 +57,5 @@
 .badge-pill.badge-completed,
 .badge-pill.is-completed {
   background: var(--accent-weak);
-  color: var(--accent);
+  color: #047857;
 }
