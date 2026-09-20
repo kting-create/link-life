@@ -1,21 +1,89 @@
 page {
-  background-color: #f6f6f6;
+  background-color: #fffbeb;
   font-size: 28rpx;
-  color: #333333;
-  --primary: #07c160;
-  --primary-weak: #e8f8ef;
-  --text-primary: #111;
-  --text-secondary: #999999;
+  color: #0f172a;
+  --primary: #c2410c;
+  --primary-deep: #9a3412;
+  --primary-weak: #fff1e6;
+  --accent: #059669;
+  --accent-weak: #ecfdf5;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
   --bg-card: #ffffff;
-  --danger: #e64340;
-  --warning: #f7ba2a;
-  --radius: 12rpx;
-  --radius-sm: 8rpx;
+  --border: #f2e6e2;
+  --danger: #dc2626;
+  --warning: #f59e0b;
+  --radius-lg: 48rpx;
+  --radius: 32rpx;
+  --radius-sm: 20rpx;
+  --shadow-card: 0 4rpx 16rpx rgba(154, 52, 18, 0.06), 0 16rpx 48rpx rgba(154, 52, 18, 0.08);
+  --shadow-press: 0 2rpx 4rpx rgba(154, 52, 18, 0.1);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1rpx solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 32rpx;
+}
+
+.page-title {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 32rpx;
 }
 
 .btn {
-  background: var(--primary);
-  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   border-radius: var(--radius-sm);
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.btn::after { border: none; }
+.btn-primary { background: var(--primary); color: #ffffff; }
+.btn-primary.hover, .btn-primary.button-hover { background: var(--primary-deep); }
+.btn-secondary { background: var(--bg-card); color: var(--primary); border: 2rpx solid var(--primary); }
+.btn-danger { background: var(--danger); color: #ffffff; }
+.btn-accent { background: var(--accent); color: #ffffff; }
+
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 20rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+.badge-pill.is-open { background: #f1f5f9; color: var(--text-secondary); }
+.badge-pill.is-claimed { background: var(--primary-weak); color: var(--primary-deep); }
+.badge-pill.is-cooking { background: #eff6ff; color: #1d4ed8; }
+.badge-pill.is-done { background: var(--accent-weak); color: var(--accent); }
+
+.input {
+  width: 100%;
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+.input:focus { border-color: var(--primary); }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding: 96rpx 32rpx;
+  color: var(--text-secondary);
+  font-size: 28rpx;
 }

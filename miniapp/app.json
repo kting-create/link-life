@@ -14,9 +14,9 @@
   ],
   "window": {
     "navigationBarTitleText": "Link-Life",
-    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarBackgroundColor": "#fffbeb",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f6f6f6"
+    "backgroundColor": "#fffbeb"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
