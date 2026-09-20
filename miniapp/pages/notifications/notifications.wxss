@@ -6,4 +6,4 @@
 .row { display: flex; align-items: center; }
 .dot { width: 12rpx; height: 32rpx; border-radius: 999rpx; background: var(--primary); margin-right: 16rpx; }
 .unread { font-weight: 600; color: var(--text-primary); }
-.content { color: var(--text-tertiary); font-size: 24rpx; margin-top: 8rpx; margin-left: 28rpx; }
+.content { color: var(--text-secondary); font-size: 24rpx; margin-top: 8rpx; margin-left: 28rpx; }

@@ -52,7 +52,7 @@ page {
 .btn-primary.hover, .btn-primary.button-hover { background: var(--primary-deep); }
 .btn-secondary { background: var(--bg-card); color: var(--primary); border: 2rpx solid var(--primary); }
 .btn-danger { background: var(--danger); color: #ffffff; }
-.btn-accent { background: var(--accent); color: #ffffff; }
+.btn-accent { background: #047857; color: #ffffff; }
 
 .badge-pill {
   display: inline-flex;
@@ -65,7 +65,7 @@ page {
 .badge-pill.is-open { background: #f1f5f9; color: var(--text-secondary); }
 .badge-pill.is-claimed { background: var(--primary-weak); color: var(--primary-deep); }
 .badge-pill.is-cooking { background: #eff6ff; color: #1d4ed8; }
-.badge-pill.is-done { background: var(--accent-weak); color: var(--accent); }
+.badge-pill.is-done { background: var(--accent-weak); color: #047857; }
 
 .input {
   width: 100%;
@@ -86,4 +86,15 @@ page {
   padding: 96rpx 32rpx;
   color: var(--text-secondary);
   font-size: 28rpx;
+}
+
+.empty-main {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: var(--text-secondary);
 }

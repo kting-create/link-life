@@ -43,18 +43,7 @@
 
 .progress {
   font-size: 24rpx;
-  color: var(--text-tertiary);
-}
-
-.empty-main {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.empty-sub {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .badge-pill.badge-shared,

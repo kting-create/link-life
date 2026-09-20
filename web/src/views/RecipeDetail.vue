@@ -270,7 +270,7 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
 .detail { max-width: 720px; margin: 0 auto; padding: 16px; padding-bottom: 96px; }
 .head-card { border-radius: var(--radius-lg); }
 .detail h2 { margin: 0 0 8px; font-size: 24px; }
-.meta { color: var(--text-tertiary); font-size: 13px; }
+.meta { color: var(--text-secondary); font-size: 13px; }
 .row { display: flex; justify-content: space-between; padding: 4px 0; }
 .amount { color: var(--text-secondary); }
 .step { display: flex; gap: 12px; margin: 12px 0; padding: 12px;
@@ -278,8 +278,8 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
 .step:last-of-type { margin-bottom: 0; }
 .no { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-weak); color: var(--primary-deep);
   text-align: center; line-height: 24px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-.duration { color: var(--text-tertiary); font-size: 12px; }
-.stars { font-size: 28px; color: var(--text-tertiary); cursor: pointer; }
+.duration { color: var(--text-secondary); font-size: 12px; }
+.stars { font-size: 28px; color: var(--text-secondary); cursor: pointer; }
 .star.on { color: var(--warning); }
 textarea.input { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box; }
 .btns { display: flex; gap: 12px; }

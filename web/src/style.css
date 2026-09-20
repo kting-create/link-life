@@ -66,6 +66,8 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .btn-secondary:hover { background: var(--primary-weak); }
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-danger:hover { background: #b91c1c; }
+.btn-accent { background: var(--accent-deep); color: #fff; }
+.btn-accent:hover { background: #065f46; }
 .btn-small { padding: 6px 12px; font-size: 13px; }
 
 .badge-pill {
@@ -79,7 +81,7 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .badge-pill.is-open { background: #f1f5f9; color: var(--text-secondary); }
 .badge-pill.is-claimed { background: var(--primary-weak); color: var(--primary-deep); }
 .badge-pill.is-cooking { background: #eff6ff; color: #1d4ed8; }
-.badge-pill.is-done { background: var(--accent-weak); color: var(--accent); }
+.badge-pill.is-done { background: var(--accent-weak); color: var(--accent-deep); }
 
 .input {
   width: 100%;
@@ -92,9 +94,8 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   transition: border-color 200ms ease-out, box-shadow 200ms ease-out;
 }
 .input:focus {
-  outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-weak);
+  box-shadow: 0 0 0 2px var(--ring);
 }
 .input::placeholder { color: var(--text-tertiary); }
 
@@ -126,11 +127,11 @@ button:focus-visible, a:focus-visible, input:focus-visible {
   color: var(--primary);
   border: 1px solid var(--primary);
 }
-.btn-warn { background: var(--warning); color: #fff; }
+.btn-warn { background: var(--warning); color: #0f172a; }
 .card.clickable { cursor: pointer; }
 .card.active { border-color: var(--primary); }
 .row { display: flex; gap: 8px; align-items: center; }
-.muted { color: var(--text-tertiary); font-size: 13px; }
+.muted { color: var(--text-secondary); font-size: 13px; }
 .tag {
   display: inline-block;
   padding: 2px 8px;

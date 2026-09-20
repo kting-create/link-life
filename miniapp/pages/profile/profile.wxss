@@ -60,7 +60,7 @@
 
 .section-desc {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   margin-bottom: 24rpx;
 }
 

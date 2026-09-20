@@ -21,7 +21,7 @@
 
 .progress {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .readonly-tip {
@@ -67,7 +67,7 @@
 .dish-note {
   margin-top: 8rpx;
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .item-status {
@@ -79,7 +79,7 @@
 
 .claimant {
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .item-actions {

@@ -10,7 +10,7 @@
       <div class="muted">
         已认领 {{ claimedCount }}/{{ items.length }}
       </div>
-      <button v-if="showComplete" class="btn btn-warn complete-btn" @click="completeSheet">
+      <button v-if="showComplete" class="btn btn-danger complete-btn" @click="completeSheet">
         收单
       </button>
     </div>
@@ -30,8 +30,8 @@
       <div class="muted">认领人：{{ it.claimantNickname || '暂无' }}</div>
       <div class="row actions">
         <button v-if="it.canClaim" class="btn btn-primary btn-small" @click="claimItem(it)">认领</button>
-        <button v-if="it.canCook" class="btn btn-secondary btn-small" @click="startCook(it)">开始烹饪</button>
-        <button v-if="it.canFinish" class="btn btn-primary btn-accent btn-small" @click="finishItem(it)">完成</button>
+        <button v-if="it.canCook" class="btn btn-primary btn-small" @click="startCook(it)">开始烹饪</button>
+        <button v-if="it.canFinish" class="btn btn-accent btn-small" @click="finishItem(it)">完成</button>
         <button v-if="it.canRelease" class="btn btn-ghost btn-small" @click="releaseItem(it)">
           释放
         </button>
@@ -203,9 +203,5 @@ export default {
 .recipe-link {
   color: var(--primary);
   font-size: 13px;
-}
-.btn-accent {
-  background: var(--accent);
-  color: #fff;
 }
 </style>

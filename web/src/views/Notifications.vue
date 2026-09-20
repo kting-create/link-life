@@ -111,7 +111,7 @@ export default {
 .time {
   margin-left: auto;
   flex-shrink: 0;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 12px;
 }
 .content {

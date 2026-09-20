@@ -144,7 +144,7 @@ export default {
   padding-bottom: calc(12px + env(safe-area-inset-bottom));
   text-align: center;
   background: var(--bg-card);
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 12px;
   border-top: 1px solid var(--border);
 }

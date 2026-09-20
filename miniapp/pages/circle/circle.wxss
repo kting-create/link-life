@@ -29,7 +29,7 @@
   flex: 1;
   text-align: center;
   padding: 20rpx 0;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .tab-active {
@@ -63,7 +63,7 @@
 .circle-code {
   margin-top: 12rpx;
   font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }
 
 .member-circles {
@@ -118,16 +118,5 @@
 
 .member-role {
   font-size: 24rpx;
-  color: var(--text-tertiary);
-}
-
-.empty-main {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.empty-sub {
-  font-size: 24rpx;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
 }

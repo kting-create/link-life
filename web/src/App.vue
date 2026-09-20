@@ -164,7 +164,7 @@ export default {
     flex: 1;
     display: flex; flex-direction: column; align-items: center; gap: 2px;
     padding: 8px 0 6px;
-    color: var(--text-tertiary); font-size: 11px; position: relative;
+    color: var(--text-secondary); font-size: 11px; position: relative;
   }
   .tabbar-item.router-link-active { color: var(--primary); }
   .tabbar-item .badge { position: absolute; top: 4px; right: calc(50% - 20px); }

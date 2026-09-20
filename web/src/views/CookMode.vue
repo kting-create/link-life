@@ -187,9 +187,9 @@ onBeforeUnmount(stopTimer)
 .cook { max-width: 720px; margin: 0 auto; padding: 16px; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; box-sizing: border-box; }
 .bar { height: 8px; background: var(--primary-weak); border-radius: 999px; overflow: hidden; }
 .bar-inner { height: 100%; background: var(--primary); border-radius: 999px; transition: width .5s; }
-.head { text-align: center; color: var(--text-tertiary); }
+.head { text-align: center; color: var(--text-secondary); }
 .step-text { font-size: 28px; line-height: 1.6; margin: 32px 0; text-align: center; }
-.meta { color: var(--text-tertiary); text-align: center; }
+.meta { color: var(--text-secondary); text-align: center; }
 .timer { text-align: center; }
 .remain { font-family: 'Nunito Sans', 'PingFang SC', system-ui, sans-serif; font-size: 32px; font-weight: 700; color: var(--primary); }
 .timer-btns { display: flex; gap: 12px; justify-content: center; }

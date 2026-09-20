@@ -319,7 +319,7 @@ export default {
 }
 .meta {
   margin-left: auto;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: 13px;
   text-align: right;
 }
