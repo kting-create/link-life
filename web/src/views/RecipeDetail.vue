@@ -143,50 +143,52 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
   <div class="detail" v-if="loadFailed && !recipe">
     <div class="card">
       <p class="meta">加载失败，请稍后再试</p>
-      <button @click="load">重试</button>
+      <button class="btn btn-secondary btn-small" @click="load">重试</button>
     </div>
   </div>
   <div class="detail" v-else-if="recipe">
-    <div class="card">
+    <div class="card head-card">
       <h2>{{ recipe.customName || recipe.dishName }}</h2>
       <p v-if="recipe.customName" class="meta">原名：{{ recipe.dishName }}</p>
       <p class="meta">版本 v{{ recipe.currentVersion }} ·
         约 {{ recipe.content.totalMinutes }} 分钟 · {{ recipe.content.servings }} 人食</p>
-      <button class="edit-toggle" @click="editMode ? (editMode = false) : startEdit()">
-        {{ editMode ? '取消编辑' : '编辑菜谱' }}</button>
-      <button class="edit-toggle" @click="$router.push(`/recipes/${id}/cook`)">开始烹饪</button>
+      <div class="btns head-btns">
+        <button class="btn btn-secondary btn-small" @click="editMode ? (editMode = false) : startEdit()">
+          {{ editMode ? '取消编辑' : '编辑菜谱' }}</button>
+        <button class="btn btn-primary btn-small" @click="$router.push(`/recipes/${id}/cook`)">开始烹饪</button>
+      </div>
     </div>
 
     <div class="card" v-if="editMode && editForm">
       <h3>编辑菜谱内容</h3>
       <div class="edit-grid">
-        <label>份数 <input type="number" v-model.number="editForm.servings" /></label>
-        <label>总分钟 <input type="number" v-model.number="editForm.totalMinutes" /></label>
+        <label>份数 <input class="input" type="number" v-model.number="editForm.servings" /></label>
+        <label>总分钟 <input class="input" type="number" v-model.number="editForm.totalMinutes" /></label>
       </div>
       <h4>食材 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.ingredients)">+ 加一行</a></h4>
       <div class="edit-row" v-for="(r, idx) in editForm.ingredients" :key="'ig' + idx">
-        <input v-model="r.name" placeholder="名称" />
-        <input v-model="r.amount" placeholder="数量" />
+        <input class="input" v-model="r.name" placeholder="名称" />
+        <input class="input" v-model="r.amount" placeholder="数量" />
         <a class="del" href="#" @click.prevent="editForm.ingredients.splice(idx, 1)">删除</a>
       </div>
       <h4>调料 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.seasonings)">+ 加一行</a></h4>
       <div class="edit-row" v-for="(r, idx) in editForm.seasonings" :key="'se' + idx">
-        <input v-model="r.name" placeholder="名称" />
-        <input v-model="r.amount" placeholder="数量" />
+        <input class="input" v-model="r.name" placeholder="名称" />
+        <input class="input" v-model="r.amount" placeholder="数量" />
         <a class="del" href="#" @click.prevent="editForm.seasonings.splice(idx, 1)">删除</a>
       </div>
       <h4>步骤 <a class="add" href="#" @click.prevent="addStepRow()">+ 加一步</a></h4>
       <div class="edit-row step-row" v-for="(s, idx) in editForm.steps" :key="'st' + idx">
         <span class="no">{{ idx + 1 }}</span>
-        <input v-model="s.text" placeholder="做法" />
-        <input class="dur" type="number" v-model.number="s.durationSec" placeholder="秒" />
+        <input class="input" v-model="s.text" placeholder="做法" />
+        <input class="input dur" type="number" v-model.number="s.durationSec" placeholder="秒" />
         <a class="del" href="#" @click.prevent="editForm.steps.splice(idx, 1)">删除</a>
       </div>
       <h4>小贴士</h4>
-      <textarea v-model="editForm.tips" placeholder="可选" maxlength="255" />
+      <textarea class="input" v-model="editForm.tips" placeholder="可选" maxlength="255" />
       <div class="btns">
-        <button @click="saveEdit">保存编辑</button>
-        <button class="warn" @click="editMode = false">取消</button>
+        <button class="btn btn-primary" @click="saveEdit">保存编辑</button>
+        <button class="btn btn-ghost" @click="editMode = false">取消</button>
       </div>
     </div>
 
@@ -231,12 +233,9 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
         <span v-for="n in 5" :key="n" :class="['star', { on: n <= myScore }]"
               @click="myScore = n">★</span>
       </div>
-      <textarea v-model="myComment" placeholder="口感如何？（如：偏淡了）" maxlength="512" />
+      <textarea class="input" v-model="myComment" placeholder="口感如何？（如：偏淡了）" maxlength="512" />
       <div class="btns">
-        <button @click="doFeedback">提交反馈</button>
-        <button class="warn" :disabled="atLimit"
-                @click="$router.push({ path: '/recipes/generate', query: { recipeId: id } })">
-          按反馈优化菜谱</button>
+        <button class="btn btn-primary" @click="doFeedback">提交反馈</button>
       </div>
       <p v-if="atLimit" class="meta">已达版本上限，请先回滚旧版本</p>
     </div>
@@ -253,41 +252,55 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
 
     <div class="card">
       <h3>个性化命名</h3>
-      <input v-model="nameInput" placeholder="如：我妈的红烧肉" maxlength="64" />
-      <button @click="saveName">保存命名</button>
+      <input class="input" v-model="nameInput" placeholder="如：我妈的红烧肉" maxlength="64" />
+      <div class="btns name-btns">
+        <button class="btn btn-primary" @click="saveName">保存命名</button>
+      </div>
+    </div>
+
+    <div class="cta-bar">
+      <button class="btn btn-primary cta" :disabled="atLimit"
+              @click="$router.push({ path: '/recipes/generate', query: { recipeId: id } })">
+        按反馈优化菜谱</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.detail { max-width: 720px; margin: 0 auto; padding: 16px; }
-.card { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-.meta { color: #999; font-size: 13px; }
+.detail { max-width: 720px; margin: 0 auto; padding: 16px; padding-bottom: 96px; }
+.head-card { border-radius: var(--radius-lg); }
+.detail h2 { margin: 0 0 8px; font-size: 24px; }
+.meta { color: var(--text-tertiary); font-size: 13px; }
 .row { display: flex; justify-content: space-between; padding: 4px 0; }
-.amount { color: #666; }
-.step { display: flex; gap: 12px; margin: 12px 0; }
-.no { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff;
-  text-align: center; line-height: 24px; font-size: 12px; flex-shrink: 0; }
-.duration { color: #999; font-size: 12px; }
-.stars { font-size: 28px; color: #ddd; cursor: pointer; }
+.amount { color: var(--text-secondary); }
+.step { display: flex; gap: 12px; margin: 12px 0; padding: 12px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); }
+.step:last-of-type { margin-bottom: 0; }
+.no { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-weak); color: var(--primary-deep);
+  text-align: center; line-height: 24px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.duration { color: var(--text-tertiary); font-size: 12px; }
+.stars { font-size: 28px; color: var(--text-tertiary); cursor: pointer; }
 .star.on { color: var(--warning); }
-textarea { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box; }
+textarea.input { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box; }
 .btns { display: flex; gap: 12px; }
+.head-btns { margin-top: 12px; }
+.name-btns { margin-top: 12px; }
 .version { display: flex; justify-content: space-between; font-size: 13px;
-  color: #666; padding: 4px 0; }
+  color: var(--text-secondary); padding: 4px 0; }
 .version a { color: var(--primary); cursor: pointer; }
-.edit-toggle { margin-top: 8px; }
 .edit-grid { display: flex; gap: 16px; margin-bottom: 8px; }
-.edit-grid label { font-size: 13px; color: #666; }
+.edit-grid label { font-size: 13px; color: var(--text-secondary); }
 .edit-grid input { width: 80px; }
 .edit-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-.edit-row input { flex: 1; min-width: 0; }
+.edit-row .input { flex: 1; min-width: 0; width: auto; }
 .edit-row .dur { flex: 0 0 70px; }
-.edit-row .no { width: 22px; text-align: center; color: var(--primary); flex-shrink: 0; }
+.edit-row .no { width: 22px; text-align: center; color: var(--primary-deep); flex-shrink: 0; }
 .edit-row .del, h4 .add { color: var(--primary); font-size: 12px; flex-shrink: 0; }
 h4 { margin: 12px 0 4px; }
 .photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .photo-item img { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
 .photo-item a { color: var(--danger); font-size: 12px; }
 .photo-upload { color: var(--primary); font-size: 12px; cursor: pointer; align-self: center; }
+.cta-bar { position: sticky; bottom: 16px; display: flex; justify-content: center; margin-top: 16px; }
+.cta { padding: 14px 32px; box-shadow: var(--shadow-card); }
 </style>

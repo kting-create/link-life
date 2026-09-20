@@ -1,9 +1,11 @@
 <template>
   <div>
-    <div v-if="sheet" class="card">
+    <div v-if="sheet" class="card sheet-head">
       <div class="row section-head">
         <h3>{{ sheet.title }}</h3>
-        <span class="tag">{{ sheetStatusText[sheet.status] || sheet.status }}</span>
+        <span class="badge-pill" :class="'is-' + String(sheet.status || '').toLowerCase()">
+          {{ sheetStatusText[sheet.status] || sheet.status }}
+        </span>
       </div>
       <div class="muted">
         已认领 {{ claimedCount }}/{{ items.length }}
@@ -17,15 +19,20 @@
       <div class="row">
         <strong>{{ it.dishName }}</strong>
         <a class="recipe-link" @click.prevent="openRecipe(it.dishName)" href="#">菜谱</a>
-        <span class="tag" :class="it.mine ? 'tag-mine' : ''">{{ it.statusText }}</span>
+        <span
+          class="badge-pill"
+          :class="['is-' + String(it.itemStatus || '').toLowerCase(), { 'is-mine': it.mine }]"
+        >
+          {{ it.statusText }}
+        </span>
       </div>
       <div v-if="it.note" class="muted">备注：{{ it.note }}</div>
       <div class="muted">认领人：{{ it.claimantNickname || '暂无' }}</div>
       <div class="row actions">
-        <button v-if="it.canClaim" class="btn btn-small" @click="claimItem(it)">认领</button>
-        <button v-if="it.canCook" class="btn btn-small" @click="startCook(it)">开始烹饪</button>
-        <button v-if="it.canFinish" class="btn btn-small" @click="finishItem(it)">完成</button>
-        <button v-if="it.canRelease" class="btn btn-small btn-ghost" @click="releaseItem(it)">
+        <button v-if="it.canClaim" class="btn btn-primary btn-small" @click="claimItem(it)">认领</button>
+        <button v-if="it.canCook" class="btn btn-secondary btn-small" @click="startCook(it)">开始烹饪</button>
+        <button v-if="it.canFinish" class="btn btn-primary btn-accent btn-small" @click="finishItem(it)">完成</button>
+        <button v-if="it.canRelease" class="btn btn-ghost btn-small" @click="releaseItem(it)">
           释放
         </button>
       </div>
@@ -164,24 +171,41 @@ export default {
 </script>
 
 <style scoped>
+.sheet-head {
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--gap);
+}
 .section-head {
   justify-content: space-between;
 }
 .section-head h3 {
   margin: 0;
+  font-size: 24px;
 }
 .complete-btn {
   margin-top: 10px;
+}
+.badge-pill.is-shared,
+.badge-pill.is-in_progress {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.badge-pill.is-completed {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
+.badge-pill.is-mine {
+  box-shadow: 0 0 0 2px var(--primary-weak);
 }
 .actions {
   margin-top: 8px;
 }
 .recipe-link {
-  color: #4f7cff;
+  color: var(--primary);
   font-size: 13px;
 }
-.tag-mine {
-  background: #4f7cff;
+.btn-accent {
+  background: var(--accent);
   color: #fff;
 }
 </style>

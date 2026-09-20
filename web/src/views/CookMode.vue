@@ -144,18 +144,20 @@ onBeforeUnmount(stopTimer)
     <p class="step-text">{{ step.text }}</p>
     <div v-if="hasDuration" class="timer">
       <p class="remain">{{ remainText }}</p>
-      <button @click="toggleTimer">{{ counting ? '暂停' : '继续' }}</button>
-      <button @click="skipTimer">跳过</button>
+      <div class="timer-btns">
+        <button class="btn btn-primary" @click="toggleTimer">{{ counting ? '暂停' : '继续' }}</button>
+        <button class="btn btn-secondary" @click="skipTimer">跳过</button>
+      </div>
     </div>
     <p v-else class="meta">本步骤无需计时</p>
     <div class="nav">
-      <button :disabled="current === 0" @click="prevStep">上一步</button>
+      <button class="btn btn-secondary btn-lg" :disabled="current === 0" @click="prevStep">上一步</button>
       <label class="upload-btn">
         拍照
         <input type="file" accept="image/*" capture="environment" hidden
                @change="onFileChange($event, step.no)" />
       </label>
-      <button :disabled="current === steps.length - 1" @click="nextStep">下一步</button>
+      <button class="btn btn-primary btn-lg" :disabled="current === steps.length - 1" @click="nextStep">下一步</button>
     </div>
 
     <div class="photos" v-if="(photosByStep[step.no] || []).length">
@@ -172,27 +174,34 @@ onBeforeUnmount(stopTimer)
       <p v-for="(c, i) in advice.changes" :key="i" class="change">
         步骤 {{ c.stepNo }}：{{ c.text || '仅调整时长' }}
       </p>
-      <button @click="doApply">应用修改</button>
-      <button @click="advice = null">忽略</button>
+      <div class="advice-btns">
+        <button class="btn btn-primary" @click="doApply">应用修改</button>
+        <button class="btn btn-secondary" @click="advice = null">忽略</button>
+      </div>
     </div>
   </div>
   <div v-else>加载中…</div>
 </template>
 
 <style scoped>
-.cook { max-width: 720px; margin: 0 auto; padding: 16px; background: #111; color: #fff; min-height: 100vh; box-sizing: border-box; }
-.bar { height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
-.bar-inner { height: 100%; background: var(--primary); transition: width .5s; }
-.head { text-align: center; color: #aaa; }
-.step-text { font-size: 24px; line-height: 1.6; margin: 32px 0; }
+.cook { max-width: 720px; margin: 0 auto; padding: 16px; background: var(--bg-page); color: var(--text-primary); min-height: 100vh; box-sizing: border-box; }
+.bar { height: 8px; background: var(--primary-weak); border-radius: 999px; overflow: hidden; }
+.bar-inner { height: 100%; background: var(--primary); border-radius: 999px; transition: width .5s; }
+.head { text-align: center; color: var(--text-tertiary); }
+.step-text { font-size: 28px; line-height: 1.6; margin: 32px 0; text-align: center; }
+.meta { color: var(--text-tertiary); text-align: center; }
 .timer { text-align: center; }
-.remain { font-size: 64px; font-weight: 700; color: var(--primary); }
+.remain { font-family: 'Nunito Sans', 'PingFang SC', system-ui, sans-serif; font-size: 32px; font-weight: 700; color: var(--primary); }
+.timer-btns { display: flex; gap: 12px; justify-content: center; }
 .nav { display: flex; gap: 12px; justify-content: center; margin: 16px 0; }
-.upload-btn { background: var(--primary); color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; }
+.btn-lg { padding: 14px 32px; }
+.upload-btn { display: inline-flex; align-items: center; background: var(--primary); color: #fff; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; }
 .photos { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
-.photo img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; display: block; }
+.photo img { width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
 .photo a { color: var(--primary); font-size: 12px; margin-right: 8px; }
-.photo .del { color: #e66; }
-.advice { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-top: 16px; }
-.change { color: #ccc; font-size: 13px; }
+.photo .del { color: var(--danger); }
+.advice { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 16px; box-shadow: var(--shadow-card); }
+.advice h3 { margin: 0 0 8px; }
+.change { color: var(--text-secondary); font-size: 13px; }
+.advice-btns { display: flex; gap: 12px; margin-top: 12px; }
 </style>
