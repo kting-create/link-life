@@ -65,7 +65,8 @@ export default {
       unread.value = 0
     }
 
-    function logout() {
+    async function logout() {
+      try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
       clearTokens()
       stopPolling()
       user.value = null

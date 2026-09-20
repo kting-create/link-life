@@ -107,8 +107,8 @@ class RecipeEditValidateTest extends IntegrationTestBase {
                                 + "\"ingredients\":[],\"seasonings\":[],"
                                 + "\"steps\":[{\"no\":1,\"text\":\"打蛋\",\"durationSec\":60}],"
                                 + "\"tips\":\"\"},\"changeNote\":\"x\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value(5004));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(5008));
     }
 
     @Test
@@ -121,8 +121,8 @@ class RecipeEditValidateTest extends IntegrationTestBase {
                                 + "\"ingredients\":[{\"name\":\"鸡蛋\",\"amount\":\"3个\"}],"
                                 + "\"seasonings\":[],\"steps\":[],\"tips\":\"\"},"
                                 + "\"changeNote\":\"x\"}"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value(5004));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value(5008));
     }
 
     @Test

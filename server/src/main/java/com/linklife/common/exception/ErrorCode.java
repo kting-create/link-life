@@ -25,6 +25,7 @@ public enum ErrorCode {
     PANTRY_ITEM_EXISTS(5005, "该条目已存在", HttpStatus.BAD_REQUEST),
     RECIPE_ALREADY_EXISTS(5006, "该菜品已有菜谱", HttpStatus.CONFLICT),
     PANTRY_ITEM_NOT_FOUND(5007, "条目不存在", HttpStatus.NOT_FOUND),
+    RECIPE_CONTENT_INVALID(5008, "菜谱内容不完整：食材与步骤不能为空", HttpStatus.BAD_REQUEST),
     FILE_TYPE_INVALID(6001, "仅支持 jpg/png/webp 图片", HttpStatus.BAD_REQUEST),
     FILE_TOO_LARGE(6002, "图片不能超过 5MB", HttpStatus.BAD_REQUEST),
     PHOTO_LIMIT_EXCEEDED(6003, "该菜谱照片已达上限", HttpStatus.BAD_REQUEST),
