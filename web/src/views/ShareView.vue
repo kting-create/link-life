@@ -24,8 +24,8 @@
     </div>
 
     <div v-if="invalid" class="empty">
-      <span class="empty-title">清单不存在或已失效</span>
-      <span>链接可能已过期，请联系分享人重新获取</span>
+      <p class="empty-title">清单不存在或已失效</p>
+      <p class="empty-sub">链接可能已过期，请联系分享人重新获取</p>
     </div>
 
     <div class="share-footer-hint">微信内搜索小程序 Link-Life 可认领菜品</div>
@@ -95,6 +95,18 @@ export default {
 .section-head h3 {
   margin: 0;
 }
+.badge-pill.is-shared {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.badge-pill.is-in_progress {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.badge-pill.is-completed {
+  background: var(--accent-weak);
+  color: var(--accent);
+}
 .meta {
   color: var(--text-secondary);
   font-size: 14px;
@@ -113,6 +125,10 @@ export default {
 }
 .list-item .row {
   margin-bottom: 4px;
+}
+.empty-title,
+.empty-sub {
+  margin: 0;
 }
 .empty-title {
   font-size: 16px;

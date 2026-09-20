@@ -70,9 +70,6 @@ export default {
   padding: 32px 24px;
   text-align: center;
 }
-.page-title {
-  text-align: center;
-}
 .brand {
   color: var(--primary-deep);
 }
