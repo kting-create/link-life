@@ -145,6 +145,7 @@ public class RecipeService {
                      String customName, String changeNote) {
         Recipe recipe = requireVisibleRecipe(userId, recipeId);
         if (content != null) {
+            content.validate();
             if (versionCount(recipeId) >= MAX_VERSIONS) {
                 throw new BusinessException(ErrorCode.RECIPE_VERSION_LIMIT);
             }
