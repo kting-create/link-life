@@ -21,6 +21,12 @@ Page({
     this.remainSec = 0;
     this.audio = null;
     this.photosByStep = {};
+    try {
+      this.audio = wx.createInnerAudioContext();
+      this.audio.src = '/assets/ding.wav';
+    } catch (e) {
+      this.audio = null;
+    }
     this.load();
   },
 
@@ -134,14 +140,22 @@ Page({
   },
 
   toggleTimer() {
-    if (this.data.counting) this.stopTimer();
-    else this.startTimer();
+    if (this.data.counting) {
+      this.stopTimer();
+      return;
+    }
+    if (this.remainSec <= 0) {
+      this.nextStep();
+      return;
+    }
+    this.startTimer();
   },
 
   skipTimer() {
-    this.remainSec = 0;
-    this.setData({ remainText: this.fmt(0), progressPct: 100 });
     this.stopTimer();
+    if (this.data.current < this.data.steps.length - 1) {
+      this.enterStep(this.data.current + 1);
+    }
   },
 
   prevStep() {
