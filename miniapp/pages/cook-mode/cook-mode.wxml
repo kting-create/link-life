@@ -10,16 +10,16 @@
   <view class="timer" wx:if="{{hasDuration}}">
     <view class="remain">{{remainText}}</view>
     <view class="timer-btns">
-      <button size="mini" bindtap="toggleTimer">{{counting ? '暂停' : '继续'}}</button>
-      <button size="mini" bindtap="skipTimer">跳过</button>
+      <button size="mini" class="btn btn-secondary" hover-class="button-hover" bindtap="toggleTimer">{{counting ? '暂停' : '继续'}}</button>
+      <button size="mini" class="btn btn-secondary" hover-class="button-hover" bindtap="skipTimer">跳过</button>
     </view>
   </view>
   <view class="no-timer" wx:else>本步骤无需计时</view>
 
   <view class="nav">
-    <button size="mini" plain bindtap="prevStep" disabled="{{current === 0}}">上一步</button>
-    <button size="mini" bindtap="takePhoto">拍照</button>
-    <button size="mini" plain bindtap="nextStep"
+    <button size="mini" class="btn btn-secondary" hover-class="button-hover" bindtap="prevStep" disabled="{{current === 0}}">上一步</button>
+    <button size="mini" class="btn btn-accent" hover-class="button-hover" bindtap="takePhoto">拍照</button>
+    <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="nextStep"
             disabled="{{current === steps.length - 1}}">下一步</button>
   </view>
 
@@ -39,8 +39,8 @@
       步骤 {{item.stepNo}}：{{item.text || '仅调整时长'}}
     </view>
     <view class="advice-btns">
-      <button size="mini" type="primary" bindtap="applyAdvice">应用修改</button>
-      <button size="mini" bindtap="dismissAdvice">忽略</button>
+      <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="applyAdvice">应用修改</button>
+      <button size="mini" class="btn btn-secondary" hover-class="button-hover" bindtap="dismissAdvice">忽略</button>
     </view>
   </view>
 </view>
