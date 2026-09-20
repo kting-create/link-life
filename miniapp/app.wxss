@@ -19,8 +19,3 @@ page {
   border: none;
   border-radius: var(--radius-sm);
 }
-
-.card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-}

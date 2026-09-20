@@ -12,5 +12,3 @@
   --radius-sm: 6px;
   --gap: 12px;
 }
-.btn { background: var(--primary); color: #fff; border: none; border-radius: var(--radius-sm); padding: 8px 16px; cursor: pointer; }
-.card { background: var(--bg-card); border-radius: var(--radius); }
