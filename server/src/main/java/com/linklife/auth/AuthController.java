@@ -26,12 +26,16 @@ public class AuthController {
     private final RateLimiter rateLimiter;
 
     @PostMapping("/wx-login")
-    public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request) {
+    public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request,
+                                      HttpServletRequest httpRequest) {
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":wx-login");
         return Result.ok(authService.wxLogin(request.code()));
     }
 
     @PostMapping("/refresh")
-    public Result<AuthTokens> refresh(@Valid @RequestBody RefreshRequest request) {
+    public Result<AuthTokens> refresh(@Valid @RequestBody RefreshRequest request,
+                                      HttpServletRequest httpRequest) {
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":refresh");
         return Result.ok(authService.refresh(request.refreshToken()));
     }
 

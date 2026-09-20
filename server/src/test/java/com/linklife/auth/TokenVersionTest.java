@@ -44,7 +44,8 @@ class TokenVersionTest extends IntegrationTestBase {
         long uid = insertUser();
         String refresh = jwtService.generateRefreshToken(uid, 0);
         jdbc.update("UPDATE `user` SET token_version = 1 WHERE id = ?", uid);
-        mvc.perform(post("/api/auth/refresh").contentType("application/json")
+        mvc.perform(post("/api/auth/refresh").header("X-Real-IP", "203.0.113.3")
+                        .contentType("application/json")
                         .content("{\"refreshToken\":\"" + refresh + "\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(3007));
@@ -58,7 +59,8 @@ class TokenVersionTest extends IntegrationTestBase {
         mvc.perform(post("/api/auth/logout").header("Authorization", "Bearer " + access))
                 .andExpect(status().isOk());
         // 登出后旧 refresh token 也因 token_version bump 被吊销
-        mvc.perform(post("/api/auth/refresh").contentType("application/json")
+        mvc.perform(post("/api/auth/refresh").header("X-Real-IP", "203.0.113.3")
+                        .contentType("application/json")
                         .content("{\"refreshToken\":\"" + refresh + "\"}"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value(3007));

@@ -19,8 +19,12 @@ public class RateLimiter {
             .build();
 
     public void check(String key) {
+        check(key, LIMIT);
+    }
+
+    public void check(String key, int limit) {
         AtomicInteger count = counters.get(key, k -> new AtomicInteger());
-        if (count.incrementAndGet() > LIMIT) {
+        if (count.incrementAndGet() > limit) {
             throw new BusinessException(ErrorCode.RATE_LIMITED);
         }
     }

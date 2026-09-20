@@ -1,5 +1,6 @@
 package com.linklife.recipe.controller;
 
+import com.linklife.common.ratelimit.RateLimiter;
 import com.linklife.common.security.UserContext;
 import com.linklife.common.web.Result;
 import com.linklife.recipe.dto.EditRecipeRequest;
@@ -34,6 +35,7 @@ public class RecipeController {
 
     private final RecipeService recipeService;
     private final RecipeGenerationService recipeGenerationService;
+    private final RateLimiter rateLimiter;
 
     @GetMapping("/{id}")
     public Result<RecipeDetailVO> get(@PathVariable long id) {
@@ -83,6 +85,8 @@ public class RecipeController {
     @PostMapping(value = "/generate", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter generate(@Valid @RequestBody GenerateRequest request,
                                HttpServletResponse response) {
+        // generate/iterate 共用同一配额（每用户每分钟 5 次）
+        rateLimiter.check(UserContext.requireUserId() + ":gen");
         response.setHeader("X-Accel-Buffering", "no");
         response.setHeader("Cache-Control", "no-cache");
         return recipeGenerationService.generate(UserContext.requireUserId(),
@@ -93,6 +97,7 @@ public class RecipeController {
     public SseEmitter iterate(@PathVariable long id,
                               @Valid @RequestBody IterateRequest request,
                               HttpServletResponse response) {
+        rateLimiter.check(UserContext.requireUserId() + ":gen");
         response.setHeader("X-Accel-Buffering", "no");
         response.setHeader("Cache-Control", "no-cache");
         return recipeGenerationService.iterate(UserContext.requireUserId(),

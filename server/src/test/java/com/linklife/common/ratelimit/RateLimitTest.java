@@ -21,6 +21,22 @@ class RateLimitTest {
     }
 
     @Test
+    void customLimitOverloadRespectsGivenLimit() {
+        RateLimiter limiter = new RateLimiter();
+        // 限额 3:第 1~3 次放行,第 4 次拒绝
+        for (int i = 0; i < 3; i++) {
+            assertDoesNotThrow(() -> limiter.check("u1:gen", 3));
+        }
+        assertThrows(BusinessException.class, () -> limiter.check("u1:gen", 3));
+        // 默认 check(key) 仍是 LIMIT=5 语义
+        RateLimiter defaultLimiter = new RateLimiter();
+        for (int i = 0; i < 5; i++) {
+            assertDoesNotThrow(() -> defaultLimiter.check("u2:gen"));
+        }
+        assertThrows(BusinessException.class, () -> defaultLimiter.check("u2:gen"));
+    }
+
+    @Test
     void clientIpPrefersForwardedHeadersOverRemoteAddr() {
         // 优先 X-Real-IP
         assertEquals("1.2.3.4",

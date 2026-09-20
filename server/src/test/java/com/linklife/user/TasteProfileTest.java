@@ -37,6 +37,7 @@ class TasteProfileTest extends IntegrationTestBase {
         when(weChatClient.code2Session(anyString()))
                 .thenReturn(new WxSession(openid, "unionid-" + openid));
         return mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.6")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"c\"}"))
                 .andExpect(status().isOk()).andReturn();
     }

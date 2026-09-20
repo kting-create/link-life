@@ -81,6 +81,7 @@ class RecipeEditValidateTest extends IntegrationTestBase {
         when(weChatClient.code2Session(anyString()))
                 .thenReturn(new WxSession(openid, "unionid-" + openid));
         MvcResult result = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.11")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"c\"}"))
                 .andExpect(status().isOk()).andReturn();
         String body = result.getResponse().getContentAsString();
