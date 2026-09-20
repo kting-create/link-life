@@ -58,11 +58,7 @@
 }
 
 .badge-pill.badge-shared,
-.badge-pill.is-shared {
-  background: #f1f5f9;
-  color: var(--text-secondary);
-}
-
+.badge-pill.is-shared,
 .badge-pill.badge-in_progress,
 .badge-pill.is-in_progress {
   background: #eff6ff;
