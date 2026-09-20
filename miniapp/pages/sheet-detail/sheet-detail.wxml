@@ -2,21 +2,31 @@
   <view class="card">
     <view class="sheet-title">{{sheet.title}}</view>
     <view class="sheet-meta">
-      <view class="badge">{{statusText}}</view>
+      <view class="badge-pill {{sheet.status === 'SHARED' ? 'is-shared' : sheet.status === 'IN_PROGRESS' ? 'is-in_progress' : sheet.status === 'COMPLETED' ? 'is-completed' : ''}}">{{statusText}}</view>
       <view class="progress" wx:if="{{totalCount}}">{{claimedCount}}/{{totalCount}} 已认领</view>
     </view>
     <view class="readonly-tip" wx:if="{{readonly}}">当前为只读预览，登录后可参与认领</view>
+    <button
+      wx:if="{{sheet.shareToken}}"
+      class="share-btn btn btn-secondary"
+      size="mini"
+      open-type="share"
+      hover-class="button-hover"
+    >分享清单</button>
   </view>
 
   <view class="card">
     <view class="section-title">菜品清单</view>
-    <view wx:if="{{!items.length}}" class="hint">还没有菜品</view>
+    <view wx:if="{{!items.length}}" class="empty">
+      <view class="empty-main">还没有菜品</view>
+      <view class="empty-sub">让发起人添加菜品后开始认领</view>
+    </view>
     <view class="item-row" wx:for="{{items}}" wx:key="id">
       <view class="item-main">
         <view class="dish-name">{{item.dishName}}</view>
         <view class="dish-note" wx:if="{{item.note}}">备注：{{item.note}}</view>
         <view class="item-status">
-          <text class="status-text">{{item.statusText}}</text>
+          <text class="badge-pill {{item.itemStatus === 'OPEN' ? 'is-open' : item.itemStatus === 'CLAIMED' ? 'is-claimed' : item.itemStatus === 'COOKING' ? 'is-cooking' : 'is-done'}}">{{item.statusText}}</text>
           <text wx:if="{{item.claimantNickname}}" class="claimant">· {{item.claimantNickname}}{{item.mine ? '（我）' : ''}}</text>
         </view>
       </view>
@@ -25,32 +35,33 @@
               bindtap="openRecipe" data-name="{{item.dishName}}">菜谱</text>
         <button
           wx:if="{{item.canClaim}}"
-          class="mini-btn"
-          type="primary"
+          class="mini-btn btn btn-primary"
           size="mini"
+          hover-class="button-hover"
           data-id="{{item.id}}"
           bindtap="claimItem"
         >认领</button>
         <button
           wx:if="{{item.canCook}}"
-          class="mini-btn"
-          type="primary"
+          class="mini-btn btn btn-primary"
           size="mini"
+          hover-class="button-hover"
           data-id="{{item.id}}"
           bindtap="startCook"
         >开始烹饪</button>
         <button
           wx:if="{{item.canFinish}}"
-          class="mini-btn"
-          type="primary"
+          class="mini-btn btn btn-accent"
           size="mini"
+          hover-class="button-hover"
           data-id="{{item.id}}"
           bindtap="finishItem"
         >完成</button>
         <button
           wx:if="{{item.canRelease}}"
-          class="mini-btn"
+          class="mini-btn btn btn-secondary"
           size="mini"
+          hover-class="button-hover"
           data-id="{{item.id}}"
           bindtap="releaseItem"
         >释放</button>
@@ -60,10 +71,10 @@
 
   <button
     wx:if="{{showComplete}}"
-    class="complete-btn"
-    type="warn"
+    class="complete-btn btn btn-danger"
     loading="{{acting}}"
+    hover-class="button-hover"
     bindtap="completeSheet"
   >收单</button>
 </view>
-<view wx:else class="hint">加载中...</view>
+<view wx:else class="empty">加载中...</view>

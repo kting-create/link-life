@@ -1,16 +1,16 @@
 <view class="sheet-list-page">
   <view class="header">
     <view class="circle-name">{{circleName || '点单清单'}}</view>
-    <view class="add-btn" bindtap="addSheet">＋</view>
   </view>
 
-  <view wx:if="{{loading}}" class="hint">加载中...</view>
-  <block wx:elif="{{!sheets.length}}">
-    <view class="hint">还没有点单，点右上角 ＋ 发起一个吧</view>
-  </block>
+  <view wx:if="{{loading}}" class="empty">加载中...</view>
+  <view wx:elif="{{!sheets.length}}" class="empty">
+    <view class="empty-main">还没有点单</view>
+    <view class="empty-sub">点右下角按钮发起点单吧</view>
+  </view>
   <block wx:else>
     <view
-      class="sheet-item"
+      class="sheet-item card"
       wx:for="{{sheets}}"
       wx:key="id"
       data-id="{{item.id}}"
@@ -18,9 +18,11 @@
     >
       <view class="sheet-title">{{item.title}}</view>
       <view class="sheet-meta">
-        <view class="badge {{item.statusClass}}">{{item.statusText}}</view>
+        <view class="badge-pill {{item.statusClass}}">{{item.statusText}}</view>
         <view class="progress">{{item.claimedCount}}/{{item.totalCount}} 已认领</view>
       </view>
     </view>
   </block>
+
+  <view class="fab btn btn-primary" hover-class="button-hover" bindtap="addSheet">＋ 发起点单</view>
 </view>
