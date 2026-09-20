@@ -36,6 +36,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 .thenReturn(new WxSession("openid-new-1", "unionid-1"));
 
         mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(wxLoginBody()))
                 .andExpect(status().isOk())
@@ -51,6 +52,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 .thenThrow(new RestClientException("connection refused"));
 
         mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(wxLoginBody()))
                 .andExpect(status().isUnauthorized())
@@ -63,6 +65,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 .thenReturn(new WxSession("openid-new-2", "unionid-2"));
 
         MvcResult login = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(wxLoginBody()))
                 .andExpect(status().isOk())
@@ -72,6 +75,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 login.getResponse().getContentAsString(), "$.data.refreshToken");
 
         mockMvc.perform(post("/api/auth/refresh")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"refreshToken\":\"" + refreshToken + "\"}"))
                 .andExpect(status().isOk())
@@ -81,6 +85,7 @@ class AuthControllerTest extends IntegrationTestBase {
     @Test
     void refreshRejectsGarbageTokenWith2002() throws Exception {
         mockMvc.perform(post("/api/auth/refresh")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"refreshToken\":\"not-a-jwt\"}"))
                 .andExpect(status().isUnauthorized())
@@ -93,6 +98,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 .thenReturn(new WxSession("openid-new-3", "unionid-3"));
 
         MvcResult login = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(wxLoginBody()))
                 .andExpect(status().isOk())
@@ -102,6 +108,7 @@ class AuthControllerTest extends IntegrationTestBase {
                 login.getResponse().getContentAsString(), "$.data.accessToken");
 
         mockMvc.perform(post("/api/auth/refresh")
+                        .header("X-Real-IP", "203.0.113.1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"refreshToken\":\"" + accessToken + "\"}"))
                 .andExpect(status().isUnauthorized())

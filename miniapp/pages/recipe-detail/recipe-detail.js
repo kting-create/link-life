@@ -31,9 +31,11 @@ Page({
     const self = this;
     request('/api/recipes/' + this.recipeId).then((recipe) => {
       (recipe.content.steps || []).forEach((s) => {
-        s.durationText = s.durationSec >= 60
-          ? Math.round(s.durationSec / 60) + ' 分钟'
-          : (s.durationSec || 0) + ' 秒';
+        s.durationText = s.durationSec > 0
+          ? (s.durationSec >= 60
+              ? Math.round(s.durationSec / 60) + ' 分钟'
+              : s.durationSec + ' 秒')
+          : '';
       });
       self.setData({
         recipe,
@@ -169,6 +171,10 @@ Page({
   },
 
   saveEdit() {
+    if (this.data.atLimit) {
+      wx.showToast({ title: '已达版本上限，请先回滚', icon: 'none' });
+      return;
+    }
     const f = this.data.editForm;
     const ingredients = this.parseItemLines(f.ingredientsText);
     const seasonings = this.parseItemLines(f.seasoningsText);

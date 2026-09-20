@@ -25,7 +25,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +46,13 @@ public class OrderService {
     private final CircleService circleService;
     private final UserService userService;
     private final ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    @Lazy
+    private OrderService self;
+
+    @Autowired
+    private org.springframework.cache.CacheManager cacheManager;
 
     private static final String STATUS_SHARED = "SHARED";
     private static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
@@ -98,12 +107,26 @@ public class OrderService {
     }
 
     public SheetDetailVO getSheet(long userId, long sheetId) {
+        OrderSheet sheet = requireSheet(sheetId);
+        circleService.requireMembership(userId, sheet.getCircleId());
+        return self.loadDetail(sheetId);
+    }
+
+    @org.springframework.cache.annotation.Cacheable(value = "sheetDetail", key = "#sheetId")
+    public SheetDetailVO loadDetail(long sheetId) {
         OrderSheet sheet = orderSheetMapper.selectById(sheetId);
         if (sheet == null) {
             throw new BusinessException(ErrorCode.SHEET_NOT_FOUND);
         }
-        circleService.requireMembership(userId, sheet.getCircleId());
         return toDetailVO(sheet);
+    }
+
+    private void evictSheet(OrderSheet sheet) {
+        org.springframework.cache.Cache c1 = cacheManager.getCache("sheetDetail");
+        if (c1 != null) c1.evict(sheet.getId());
+        org.springframework.cache.Cache c2 = cacheManager.getCache("shareView");
+        // share_token 创建时必生成；null 防御兜底（不应发生）
+        if (c2 != null && sheet.getShareToken() != null) c2.evict(sheet.getShareToken());
     }
 
     @Transactional
@@ -117,6 +140,7 @@ public class OrderService {
         item.setNote(note);
         item.setItemStatus(ITEM_OPEN);
         orderItemMapper.insert(item);
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -141,6 +165,7 @@ public class OrderService {
         eventPublisher.publishEvent(new ItemClaimedEvent(
                 sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
                 userId, sheet.getCreatorId()));
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -159,6 +184,7 @@ public class OrderService {
                 .eq(OrderItem::getId, item.getId())
                 .set(OrderItem::getClaimantId, null)
                 .set(OrderItem::getItemStatus, ITEM_OPEN));
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -182,6 +208,7 @@ public class OrderService {
                     sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
                     userId, sheet.getCreatorId()));
         }
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -196,6 +223,7 @@ public class OrderService {
         orderSheetMapper.updateById(sheet);
         eventPublisher.publishEvent(new SheetCompletedEvent(
                 sheet.getCircleId(), sheet.getId(), sheet.getTitle(), userId));
+        evictSheet(sheet);
         return toDetailVO(sheet);
     }
 

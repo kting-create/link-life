@@ -15,8 +15,12 @@ public record RecipeContent(Integer servings, Integer totalMinutes,
     }
 
     public void validate() {
+        validate(ErrorCode.RECIPE_PARSE_FAILED);
+    }
+
+    public void validate(ErrorCode code) {
         if (ingredients == null || ingredients.isEmpty() || steps == null || steps.isEmpty()) {
-            throw new BusinessException(ErrorCode.RECIPE_PARSE_FAILED);
+            throw new BusinessException(code);
         }
     }
 }

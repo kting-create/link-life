@@ -3,7 +3,10 @@ function handleFrame(frame, handlers, state) {
   let data = ''
   frame.split('\n').forEach((line) => {
     if (line.startsWith('event:')) event = line.slice(6).trim()
-    else if (line.startsWith('data:')) data += line.slice(5).trim()
+    else if (line.startsWith('data:')) {
+      if (data) data += '\n'
+      data += line.slice(5).trim()
+    }
   })
   if (!data) return
   let payload

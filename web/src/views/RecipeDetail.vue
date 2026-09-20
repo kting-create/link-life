@@ -261,21 +261,21 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
 
 <style scoped>
 .detail { max-width: 720px; margin: 0 auto; padding: 16px; }
-.card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card { background: #fff; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
 .meta { color: #999; font-size: 13px; }
 .row { display: flex; justify-content: space-between; padding: 4px 0; }
 .amount { color: #666; }
 .step { display: flex; gap: 12px; margin: 12px 0; }
-.no { width: 24px; height: 24px; border-radius: 50%; background: #07c160; color: #fff;
+.no { width: 24px; height: 24px; border-radius: 50%; background: var(--primary); color: #fff;
   text-align: center; line-height: 24px; font-size: 12px; flex-shrink: 0; }
 .duration { color: #999; font-size: 12px; }
 .stars { font-size: 28px; color: #ddd; cursor: pointer; }
-.star.on { color: #f7ba2a; }
+.star.on { color: var(--warning); }
 textarea { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box; }
 .btns { display: flex; gap: 12px; }
 .version { display: flex; justify-content: space-between; font-size: 13px;
   color: #666; padding: 4px 0; }
-.version a { color: #07c160; cursor: pointer; }
+.version a { color: var(--primary); cursor: pointer; }
 .edit-toggle { margin-top: 8px; }
 .edit-grid { display: flex; gap: 16px; margin-bottom: 8px; }
 .edit-grid label { font-size: 13px; color: #666; }
@@ -283,11 +283,11 @@ textarea { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box
 .edit-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
 .edit-row input { flex: 1; min-width: 0; }
 .edit-row .dur { flex: 0 0 70px; }
-.edit-row .no { width: 22px; text-align: center; color: #07c160; flex-shrink: 0; }
-.edit-row .del, h4 .add { color: #07c160; font-size: 12px; flex-shrink: 0; }
+.edit-row .no { width: 22px; text-align: center; color: var(--primary); flex-shrink: 0; }
+.edit-row .del, h4 .add { color: var(--primary); font-size: 12px; flex-shrink: 0; }
 h4 { margin: 12px 0 4px; }
 .photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.photo-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; display: block; }
-.photo-item a { color: #e66; font-size: 12px; }
-.photo-upload { color: #07c160; font-size: 12px; cursor: pointer; align-self: center; }
+.photo-item img { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
+.photo-item a { color: var(--danger); font-size: 12px; }
+.photo-upload { color: var(--primary); font-size: 12px; cursor: pointer; align-self: center; }
 </style>

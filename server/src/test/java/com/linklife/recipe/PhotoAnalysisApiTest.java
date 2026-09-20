@@ -122,6 +122,7 @@ class PhotoAnalysisApiTest extends IntegrationTestBase {
         Mockito.when(weChatClient.code2Session(Mockito.anyString()))
                 .thenReturn(new WxSession("analysis-user", "unionid-analysis-user"));
         MvcResult result = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.18")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"code\":\"c\"}"))
                 .andExpect(status().isOk()).andReturn();
         String body = result.getResponse().getContentAsString();

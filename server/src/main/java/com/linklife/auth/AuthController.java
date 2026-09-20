@@ -26,12 +26,16 @@ public class AuthController {
     private final RateLimiter rateLimiter;
 
     @PostMapping("/wx-login")
-    public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request) {
+    public Result<AuthTokens> wxLogin(@Valid @RequestBody LoginRequest request,
+                                      HttpServletRequest httpRequest) {
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":wx-login");
         return Result.ok(authService.wxLogin(request.code()));
     }
 
     @PostMapping("/refresh")
-    public Result<AuthTokens> refresh(@Valid @RequestBody RefreshRequest request) {
+    public Result<AuthTokens> refresh(@Valid @RequestBody RefreshRequest request,
+                                      HttpServletRequest httpRequest) {
+        rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":refresh");
         return Result.ok(authService.refresh(request.refreshToken()));
     }
 
@@ -46,5 +50,11 @@ public class AuthController {
         // 无 JWT 上下文可用，因此按客户端 IP 限流（每 IP 每分钟 5 次）。
         rateLimiter.check(RateLimiter.clientIp(httpRequest) + ":bind");
         return Result.ok(bindingCodeService.bind(request.code()));
+    }
+
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        authService.logout(UserContext.requireUserId());
+        return Result.ok();
     }
 }

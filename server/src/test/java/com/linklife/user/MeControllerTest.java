@@ -31,6 +31,7 @@ class MeControllerTest extends IntegrationTestBase {
         when(weChatClient.code2Session(anyString()))
                 .thenReturn(new WxSession("openid-me-1", "unionid-me-1"));
         MvcResult login = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.5")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"code\":\"c1\"}"))
                 .andExpect(status().isOk())

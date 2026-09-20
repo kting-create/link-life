@@ -47,9 +47,10 @@ public class BindingCodeService {
         }
 
         User user = userService.getUserById(bc.getUserId());
+        long ver = user.getTokenVersion() == null ? 0 : user.getTokenVersion();
         return new AuthTokens(
-                jwtService.generateAccessToken(user.getId()),
-                jwtService.generateRefreshToken(user.getId()),
+                jwtService.generateAccessToken(user.getId(), ver),
+                jwtService.generateRefreshToken(user.getId(), ver),
                 userService.toVO(user));
     }
 }

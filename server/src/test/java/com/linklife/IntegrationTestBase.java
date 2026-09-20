@@ -1,5 +1,7 @@
 package com.linklife;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -11,6 +13,17 @@ import org.testcontainers.containers.MySQLContainer;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public abstract class IntegrationTestBase {
+
+    @Autowired
+    org.springframework.cache.CacheManager cacheManager;
+
+    @BeforeEach
+    void clearCaches() {
+        for (org.springframework.cache.Cache c : cacheManager.getCacheNames().stream()
+                .map(cacheManager::getCache).toList()) {
+            if (c != null) c.clear();
+        }
+    }
 
     static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("linklife")

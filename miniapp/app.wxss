@@ -2,4 +2,20 @@ page {
   background-color: #f6f6f6;
   font-size: 28rpx;
   color: #333333;
+  --primary: #07c160;
+  --primary-weak: #e8f8ef;
+  --text-primary: #111;
+  --text-secondary: #999999;
+  --bg-card: #ffffff;
+  --danger: #e64340;
+  --warning: #f7ba2a;
+  --radius: 12rpx;
+  --radius-sm: 8rpx;
+}
+
+.btn {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
 }

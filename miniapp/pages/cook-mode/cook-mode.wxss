@@ -1,18 +1,18 @@
 .cook { padding: 24rpx; min-height: 100vh; box-sizing: border-box; background: #111; color: #fff; }
 .progress-line { height: 8rpx; background: #333; border-radius: 4rpx; overflow: hidden; }
-.progress-inner { height: 100%; background: #07c160; transition: width .5s; }
+.progress-inner { height: 100%; background: var(--primary); transition: width .5s; }
 .head { text-align: center; margin: 24rpx 0; color: #aaa; }
 .step-text { font-size: 40rpx; line-height: 1.6; margin: 48rpx 0; }
 .timer { text-align: center; margin: 32rpx 0; }
-.remain { font-size: 120rpx; font-weight: 700; color: #07c160; }
+.remain { font-size: 120rpx; font-weight: 700; color: var(--primary); }
 .timer-btns, .nav { display: flex; justify-content: center; gap: 24rpx; margin-top: 24rpx; }
 .no-timer { text-align: center; color: #666; margin: 32rpx 0; }
 .photos { display: flex; flex-wrap: wrap; gap: 16rpx; margin-top: 32rpx; }
 .photo { width: 200rpx; }
 .photo image { width: 200rpx; height: 200rpx; border-radius: 12rpx; }
 .photo-ops { text-align: center; margin-top: 8rpx; }
-.ai-btn { color: #07c160; font-size: 24rpx; }
+.ai-btn { color: var(--primary); font-size: 24rpx; }
 .advice { background: #1e1e1e; border-radius: 16rpx; padding: 24rpx; margin-top: 32rpx; }
-.advice-title { color: #07c160; font-weight: 700; margin-bottom: 12rpx; }
+.advice-title { color: var(--primary); font-weight: 700; margin-bottom: 12rpx; }
 .advice-change { color: #ccc; font-size: 26rpx; margin-top: 8rpx; }
 .advice-btns { display: flex; gap: 24rpx; margin-top: 20rpx; }

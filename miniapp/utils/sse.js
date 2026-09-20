@@ -19,7 +19,10 @@ function handleFrame(frame, handlers, state) {
   let data = '';
   frame.split('\n').forEach((line) => {
     if (line.indexOf('event:') === 0) event = line.slice(6).trim();
-    else if (line.indexOf('data:') === 0) data += line.slice(5).trim();
+    else if (line.indexOf('data:') === 0) {
+      if (data) data += '\n';
+      data += line.slice(5).trim();
+    }
   });
   if (!data) return;
   let payload;

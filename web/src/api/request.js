@@ -48,7 +48,7 @@ export async function request(path, options = {}) {
   const token = localStorage.getItem('accessToken')
   const body = await raw(path, method, options.data, token)
   if (body.code === 0) return body.data
-  if (body.code !== 2002) throw body
+  if (body.code !== 2002 && body.code !== 3007) throw body
   let newToken
   try {
     newToken = await refresh()

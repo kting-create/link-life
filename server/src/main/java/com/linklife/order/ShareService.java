@@ -16,6 +16,7 @@ public class ShareService {
     private final OrderSheetMapper orderSheetMapper;
     private final OrderService orderService;
 
+    @org.springframework.cache.annotation.Cacheable(value = "shareView", key = "#token")
     public SheetDetailVO getByToken(String token) {
         OrderSheet sheet = orderSheetMapper.selectOne(
                 new LambdaQueryWrapper<OrderSheet>().eq(OrderSheet::getShareToken, token));

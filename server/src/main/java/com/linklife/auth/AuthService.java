@@ -12,8 +12,8 @@ import com.linklife.user.entity.User;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 
 @Slf4j
@@ -25,7 +25,6 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
 
-    @Transactional
     public AuthTokens wxLogin(String jsCode) {
         WxSession session;
         try {
@@ -38,7 +37,15 @@ public class AuthService {
         }
         User user = userService.getUserByOpenid(session.openid());
         if (user == null) {
-            user = userService.createUser(session.openid(), session.unionid());
+            try {
+                user = userService.createUser(session.openid(), session.unionid());
+            } catch (DuplicateKeyException e) {
+                // 并发首登:唯一键兜底后重查(参照 RecipeService.createRecipeWithV1 范式)
+                user = userService.getUserByOpenid(session.openid());
+            }
+        }
+        if (user == null) {
+            throw new BusinessException(ErrorCode.WX_LOGIN_FAILED);
         }
         return buildTokens(user);
     }
@@ -57,13 +64,25 @@ public class AuthService {
         if (user == null) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
+        if (verOf(user) != info.ver()) {
+            throw new BusinessException(ErrorCode.TOKEN_REVOKED);
+        }
         return buildTokens(user);
     }
 
+    public void logout(long userId) {
+        userService.bumpTokenVersion(userId);
+    }
+
     private AuthTokens buildTokens(User user) {
+        long ver = verOf(user);
         return new AuthTokens(
-                jwtService.generateAccessToken(user.getId()),
-                jwtService.generateRefreshToken(user.getId()),
+                jwtService.generateAccessToken(user.getId(), ver),
+                jwtService.generateRefreshToken(user.getId(), ver),
                 userService.toVO(user));
+    }
+
+    private long verOf(User user) {
+        return user.getTokenVersion() == null ? 0 : user.getTokenVersion();
     }
 }

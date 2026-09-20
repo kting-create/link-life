@@ -3,6 +3,7 @@ services:
     build: ../server
     restart: unless-stopped
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:mysql://mysql:3306/linklife?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
       DB_USER: linklife
       DB_PASSWORD: ${DB_PASSWORD:-linklife-prod}
@@ -37,10 +38,11 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-ulinklife", "-p${DB_PASSWORD:-linklife-prod}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -ulinklife -p\"$$MYSQL_PASSWORD\" && mysql -ulinklife -p\"$$MYSQL_PASSWORD\" -e 'SELECT 1' linklife"]
       interval: 5s
-      timeout: 3s
+      timeout: 5s
       retries: 20
+      start_period: 60s
 
   nginx:
     image: nginx:1.27-alpine

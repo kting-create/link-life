@@ -30,6 +30,7 @@ class CircleControllerTest extends IntegrationTestBase {
         when(weChatClient.code2Session(anyString()))
                 .thenReturn(new WxSession(openid, "unionid-" + openid));
         MvcResult login = mockMvc.perform(post("/api/auth/wx-login")
+                        .header("X-Real-IP", "203.0.113.4")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"code\":\"c\"}"))
                 .andExpect(status().isOk())

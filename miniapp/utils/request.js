@@ -29,7 +29,7 @@ function refresh() {
 function request(path, options = {}) {
   const token = wx.getStorageSync('accessToken');
   return raw(path, options.method || 'GET', options.data, token).catch((err) => {
-    if (err && err.code === 2002) {
+    if (err && (err.code === 2002 || err.code === 3007)) {
       return refresh()
         .then((t) => raw(path, options.method || 'GET', options.data, t))
         .catch((refreshErr) => {

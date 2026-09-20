@@ -6,6 +6,7 @@
         <router-link v-if="user" to="/notifications" class="nav-notif">
           通知<span v-if="unread > 0" class="badge">{{ unread > 99 ? '99+' : unread }}</span>
         </router-link>
+        <router-link v-if="user" to="/me" class="nav-me">我的</router-link>
         <span v-if="user" class="nickname">{{ user.nickname }}</span>
         <button v-if="user" class="btn btn-small" @click="logout">退出</button>
       </span>
@@ -64,7 +65,8 @@ export default {
       unread.value = 0
     }
 
-    function logout() {
+    async function logout() {
+      try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
       clearTokens()
       stopPolling()
       user.value = null
@@ -125,6 +127,11 @@ body {
   gap: 12px;
 }
 .nav-notif {
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+}
+.nav-me {
   color: #333;
   text-decoration: none;
   font-size: 14px;

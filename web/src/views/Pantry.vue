@@ -53,7 +53,7 @@ async function del(id) {
 .add input { flex: 1; }
 .item { background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
   display: flex; justify-content: space-between; }
-.item a { color: #e64340; cursor: pointer; }
+.item a { color: var(--danger); cursor: pointer; }
 .tag { font-weight: 400; font-size: 12px; color: #1989fa; margin-right: 8px; }
 .empty { color: #999; text-align: center; padding: 48px 0; }
 </style>

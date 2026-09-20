@@ -27,7 +27,7 @@
     <view class="hint">每行一步，按行顺序编号（保留各步骤时长）</view>
     <view class="section-title">小贴士</view>
     <input class="tips-input" value="{{editForm.tips}}" bindinput="onEditField" data-field="tips" placeholder="可选" />
-    <button size="mini" bindtap="saveEdit">保存编辑</button>
+    <button size="mini" bindtap="saveEdit" disabled="{{atLimit}}">保存编辑</button>
   </view>
 
   <view class="card">
