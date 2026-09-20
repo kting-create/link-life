@@ -108,4 +108,11 @@
 - 🧑 阿里云百炼 API Key（DASHSCOPE_API_KEY）待配置到 deploy/.env —— P4 视觉分析真跑与统一验证依赖（缺省时 compose 注入占位 key，视觉分析返回 6005 降级，不影响启动）
 - P4 双端 UI 手工验证延后（与 P3 真机流式验证合并到统一验证阶段）
 - P5 遗留 backlog（不阻塞合并，详见 PROJECT-STATUS 第 5 节）：JwtAuthFilter 热路径查询可加短 TTL 缓存、最后一步 skip 无反馈 toast、web 双主色统一需产品决策等
-- 🧑 统一验证清单：①DeepSeek 真跑 scripts/recipe-sample-validation.md ②小程序真机（流式 enableChunked + 烹饪模式）③服务器备份恢复演练（backup.sh + restore.sh）④飞书/订阅模板既有待办；生产部署前跑 security-checklist.md 部署前置检查（unionid 去重）
+- 🧑 统一验证清单:①DeepSeek 真跑 scripts/recipe-sample-validation.md ✅(2026-09-20 本机已真跑,结果见下) ②小程序真机(流式 enableChunked + 烹饪模式) ③服务器备份恢复演练(backup.sh + restore.sh) ④飞书/订阅模板既有待办;生产部署前跑 security-checklist.md 部署前置检查(unionid 去重)
+- **统一验证记录(2026-09-20,本机 compose 全栈)**:
+  - P0/P1 ✅ health UP;建圈→邀请加入→建单→分享免读→OPEN/CLAIMED/COOKING/DONE/release 全状态机→非法状态拒绝→收单 3004 保护;图片静态服务 200 image/jpeg
+  - P2 ✅ 认领事件生成站内信、未读数、已读幂等(中文昵称乱码为冒烟脚本插库未设 utf8mb4 所致,非应用问题)
+  - P3 真跑 ✅ DeepSeek(deepseek-flash):红烧肉 478 delta 流式打字机 + done;结构完整(6 步全带 durationSec,用量可操作);调料架约束生效(家传红烧汁 4勺 入 seasonings);反馈→迭代 v2(change_note=comment);taste-profile 沉淀 tags/summary 合理且迭代 prompt 已注入画像(P5);回滚/手动编辑 v3/5 版上限 5002/非法 content 5008 全过;ai_call_log ok=1、user_id 非空(流式 tokens 为 NULL 系已知设计,AiGatewayService:115)
+  - P4 ✅ 照片上传(魔数校验)/列表/删除、静态服务、视觉分析占位 key 6005 降级、非图片 6001
+  - P5 ✅ 登出后旧 access/refresh 均 3007、他人不受影响、token_version 原子 +1;wx-login 第 6 次 429
+  - 待🧑:小程序真机(打字机流式/烹饪模式计时提示音/拍照分析)、试吃反馈主观评价、服务器侧备份演练
