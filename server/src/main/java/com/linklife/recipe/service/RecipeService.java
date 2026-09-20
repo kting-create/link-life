@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,13 @@ public class RecipeService {
     private final DishMapper dishMapper;
     private final CircleService circleService;
     private final TasteProfileService tasteProfileService;
+
+    @Autowired
+    @Lazy
+    private RecipeService self;
+
+    @Autowired
+    private org.springframework.cache.CacheManager cacheManager;
 
     // ---------- 权限与查询 ----------
 
@@ -76,12 +85,23 @@ public class RecipeService {
 
     public RecipeDetailVO get(long userId, long recipeId) {
         Recipe recipe = requireVisibleRecipe(userId, recipeId);
+        return self.loadRecipeDetail(recipe.getId());
+    }
+
+    @org.springframework.cache.annotation.Cacheable(value = "recipeDetail", key = "#recipeId")
+    public RecipeDetailVO loadRecipeDetail(long recipeId) {
+        Recipe recipe = recipeMapper.selectById(recipeId);
         Dish dish = dishMapper.selectById(recipe.getDishId());
         RecipeVersion current = requireVersionRow(recipeId, recipe.getCurrentVersion());
         return new RecipeDetailVO(recipe.getId(), dish.getId(), dish.getName(),
                 recipe.getCustomName(), recipe.getCurrentVersion(),
                 parseContent(current.getContent()), listVersionMetas(recipeId),
                 recipe.getUpdatedAt());
+    }
+
+    private void evictRecipe(long recipeId) {
+        org.springframework.cache.Cache c = cacheManager.getCache("recipeDetail");
+        if (c != null) c.evict(recipeId);
     }
 
     public RecipeDetailVO findByDish(long userId, long circleId, String dishName) {
@@ -137,6 +157,7 @@ public class RecipeService {
         }
         recipe.setUpdatedAt(LocalDateTime.now());
         recipeMapper.updateById(recipe);
+        evictRecipe(recipeId);
     }
 
     @Transactional
@@ -146,6 +167,7 @@ public class RecipeService {
         recipe.setCurrentVersion(version);
         recipe.setUpdatedAt(LocalDateTime.now());
         recipeMapper.updateById(recipe);
+        evictRecipe(recipeId);
     }
 
     // ---------- 供流式编排使用（Task 8） ----------
@@ -220,6 +242,7 @@ public class RecipeService {
         recipe.setUpdatedAt(LocalDateTime.now());
         recipeMapper.updateById(recipe);
         tasteProfileService.applySummary(userId, result.tasteSummary());
+        evictRecipe(recipeId);
         return next;
     }
 
@@ -258,6 +281,7 @@ public class RecipeService {
         recipe.setCurrentVersion(next);
         recipe.setUpdatedAt(LocalDateTime.now());
         recipeMapper.updateById(recipe);
+        evictRecipe(recipeId);
         return next;
     }
 
