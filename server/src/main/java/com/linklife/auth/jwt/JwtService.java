@@ -17,8 +17,13 @@ public class JwtService {
     private final Duration refreshTtl;
 
     public JwtService(@Value("${link.jwt.secret}") String secret,
+                      @Value("${spring.profiles.active:}") String activeProfiles,
                       @Value("${link.jwt.access-ttl-hours}") long accessTtlHours,
                       @Value("${link.jwt.refresh-ttl-days}") long refreshTtlDays) {
+        if (activeProfiles.contains("prod") && secret.startsWith("dev-only-secret-key")) {
+            throw new IllegalStateException(
+                    "生产环境禁止使用默认 JWT_SECRET,请配置强随机密钥");
+        }
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
         this.accessTtl = Duration.ofHours(accessTtlHours);
         this.refreshTtl = Duration.ofDays(refreshTtlDays);

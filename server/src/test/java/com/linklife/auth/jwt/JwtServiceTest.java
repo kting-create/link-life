@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class JwtServiceTest {
 
     private final JwtService jwtService = new JwtService(
-            "test-secret-key-with-at-least-32-bytes!!", 168, 30);
+            "test-secret-key-with-at-least-32-bytes!!", "", 168, 30);
 
     @Test
     void accessTokenRoundTrip() {

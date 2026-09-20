@@ -3,6 +3,7 @@ services:
     build: ../server
     restart: unless-stopped
     environment:
+      SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:mysql://mysql:3306/linklife?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
       DB_USER: linklife
       DB_PASSWORD: ${DB_PASSWORD:-linklife-prod}
