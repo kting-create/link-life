@@ -38,7 +38,7 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h localhost -ulinklife -p$$MYSQL_PASSWORD && mysql -ulinklife -p$$MYSQL_PASSWORD -e 'SELECT 1' linklife"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -ulinklife -p\"$$MYSQL_PASSWORD\" && mysql -ulinklife -p\"$$MYSQL_PASSWORD\" -e 'SELECT 1' linklife"]
       interval: 5s
       timeout: 5s
       retries: 20

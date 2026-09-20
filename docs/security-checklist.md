@@ -2,6 +2,14 @@
 
 逐项列:现状(引代码事实)/ 风险 / 处置。标注 [P5] 表示本轮已落地的项;🧑 表示需人工操作的事项。
 
+## 0. 部署前置检查
+
+- **unionid 重复数据**:上 V6 迁移(Flyway)前必须确认 `user` 表无重复 unionid,否则 `ADD UNIQUE INDEX uk_unionid` 会失败:
+  ```sql
+  SELECT unionid, COUNT(*) FROM `user` WHERE unionid IS NOT NULL GROUP BY unionid HAVING COUNT(*) > 1;
+  ```
+  结果集**必须为空**后才允许执行 V6 迁移;若非空,先人工合并/去重再迁移。
+
 ## 1. 鉴权(JWT / refresh / 吊销 / 绑定码)
 
 **现状**

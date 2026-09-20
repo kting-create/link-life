@@ -24,6 +24,11 @@ class UserMigrationTest extends IntegrationTestBase {
 
     @Test
     void unionidIndexIsUnique() {
+        Integer rows = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.statistics "
+                        + "WHERE table_schema='linklife' AND table_name='user' "
+                        + "AND index_name='uk_unionid'", Integer.class);
+        assertTrue(rows != null && rows > 0, "索引 uk_unionid 必须存在");
         Boolean unique = jdbc.queryForObject(
                 "SELECT COUNT(*) = 0 FROM information_schema.statistics "
                         + "WHERE table_schema='linklife' AND table_name='user' "

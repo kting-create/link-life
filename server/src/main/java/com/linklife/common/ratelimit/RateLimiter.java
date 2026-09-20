@@ -23,8 +23,10 @@ public class RateLimiter {
     }
 
     public void check(String key, int limit) {
+        // 防御：limit 误传 0/负数时按 1 处理，避免计数器永远超限全拒绝
+        int effective = Math.max(1, limit);
         AtomicInteger count = counters.get(key, k -> new AtomicInteger());
-        if (count.incrementAndGet() > limit) {
+        if (count.incrementAndGet() > effective) {
             throw new BusinessException(ErrorCode.RATE_LIMITED);
         }
     }

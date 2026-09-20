@@ -121,11 +121,12 @@ public class OrderService {
         return toDetailVO(sheet);
     }
 
-    private void evictSheet(long sheetId) {
+    private void evictSheet(OrderSheet sheet) {
         org.springframework.cache.Cache c1 = cacheManager.getCache("sheetDetail");
-        if (c1 != null) c1.evict(sheetId);
+        if (c1 != null) c1.evict(sheet.getId());
         org.springframework.cache.Cache c2 = cacheManager.getCache("shareView");
-        if (c2 != null) c2.clear();
+        // share_token 创建时必生成；null 防御兜底（不应发生）
+        if (c2 != null && sheet.getShareToken() != null) c2.evict(sheet.getShareToken());
     }
 
     @Transactional
@@ -139,7 +140,7 @@ public class OrderService {
         item.setNote(note);
         item.setItemStatus(ITEM_OPEN);
         orderItemMapper.insert(item);
-        evictSheet(sheetId);
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -164,7 +165,7 @@ public class OrderService {
         eventPublisher.publishEvent(new ItemClaimedEvent(
                 sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
                 userId, sheet.getCreatorId()));
-        evictSheet(sheet.getId());
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -183,7 +184,7 @@ public class OrderService {
                 .eq(OrderItem::getId, item.getId())
                 .set(OrderItem::getClaimantId, null)
                 .set(OrderItem::getItemStatus, ITEM_OPEN));
-        evictSheet(sheet.getId());
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -207,7 +208,7 @@ public class OrderService {
                     sheet.getId(), sheet.getTitle(), item.getId(), item.getDishName(),
                     userId, sheet.getCreatorId()));
         }
-        evictSheet(sheet.getId());
+        evictSheet(sheet);
         return toItemVO(item);
     }
 
@@ -222,7 +223,7 @@ public class OrderService {
         orderSheetMapper.updateById(sheet);
         eventPublisher.publishEvent(new SheetCompletedEvent(
                 sheet.getCircleId(), sheet.getId(), sheet.getTitle(), userId));
-        evictSheet(sheet.getId());
+        evictSheet(sheet);
         return toDetailVO(sheet);
     }
 
