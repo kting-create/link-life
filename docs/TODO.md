@@ -88,11 +88,11 @@
 
 ## 5. P5 打磨与运维
 
-- [ ] 口味画像数据沉淀与展示；UI 全面打磨
-- [ ] Caffeine 缓存落地（热点清单/菜谱）；`wxLogin` 并发竞争 catch-reselect
-- [ ] 备份恢复演练（🧑 确认备份真的能恢复）；mysql healthcheck 加 init 等待
-- [ ] refresh-token 吊销方案；`uk_unionid`/`uk_code` 索引修正迁移
-- [ ] 性能压测（小规模即可）+ 安全检查清单过一遍
+- [x] 口味画像数据沉淀与展示（小程序 profile 卡片 + Web /me 页）；UI 全面打磨（P3/P4 延后项修复 + 双端设计 token）
+- [x] Caffeine 缓存落地（热点清单/菜谱）；`wxLogin` 并发竞争 catch-reselect
+- [x] 备份恢复演练（本地 backup.sh → restore.sh 全链路已演练通过；🧑 服务器侧确认留统一验证）；mysql healthcheck 加 init 等待
+- [x] refresh-token 吊销方案（token_version + logout API）；`uk_unionid`/`uk_code` 索引修正迁移（V6；部署前置：unionid 去重检查见 docs/security-checklist.md）
+- [x] 性能压测（小规模基线，docs/load-test-results.md）+ 安全检查清单（docs/security-checklist.md）
 
 ---
 
@@ -107,3 +107,5 @@
 - 小样本真实验证清单见 `scripts/recipe-sample-validation.md`（DeepSeek Key 就绪后执行，结果追加到本区）
 - 🧑 阿里云百炼 API Key（DASHSCOPE_API_KEY）待配置到 deploy/.env —— P4 视觉分析真跑与统一验证依赖（缺省时 compose 注入占位 key，视觉分析返回 6005 降级，不影响启动）
 - P4 双端 UI 手工验证延后（与 P3 真机流式验证合并到统一验证阶段）
+- P5 遗留 backlog（不阻塞合并，详见 PROJECT-STATUS 第 5 节）：JwtAuthFilter 热路径查询可加短 TTL 缓存、最后一步 skip 无反馈 toast、web 双主色统一需产品决策等
+- 🧑 统一验证清单：①DeepSeek 真跑 scripts/recipe-sample-validation.md ②小程序真机（流式 enableChunked + 烹饪模式）③服务器备份恢复演练（backup.sh + restore.sh）④飞书/订阅模板既有待办；生产部署前跑 security-checklist.md 部署前置检查（unionid 去重）
