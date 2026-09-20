@@ -31,29 +31,90 @@ async function del(id) {
 
 <template>
   <div class="pantry">
-    <div class="add">
-      <select v-model="type">
+    <div class="card add-card">
+      <select v-model="type" class="input type-select">
         <option value="SEASONING">调料</option>
         <option value="INGREDIENT">食材</option>
       </select>
-      <input v-model="name" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
-      <button @click="add">添加</button>
+      <input v-model="name" class="input" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
+      <button class="btn btn-primary" @click="add">添加</button>
     </div>
-    <div class="item" v-for="i in items" :key="i.id">
-      <span><b class="tag">{{ i.type === 'SEASONING' ? '调料' : '食材' }}</b> {{ i.name }}</span>
-      <a @click.prevent="del(i.id)" href="#">删除</a>
+    <div class="item-grid">
+      <div class="card item" v-for="i in items" :key="i.id">
+        <div class="item-main">
+          <span class="badge-pill" :class="i.type === 'SEASONING' ? 'is-seasoning' : 'is-ingredient'">
+            {{ i.type === 'SEASONING' ? '调料' : '食材' }}
+          </span>
+          <span class="name">{{ i.name }}</span>
+        </div>
+        <a @click.prevent="del(i.id)" href="#" class="delete">删除</a>
+      </div>
     </div>
     <p v-if="!items.length" class="empty">还没有条目，添加后 AI 会优先使用它们调味</p>
   </div>
 </template>
 
 <style scoped>
-.pantry { max-width: 640px; margin: 0 auto; padding: 16px; }
-.add { display: flex; gap: 8px; margin-bottom: 16px; }
-.add input { flex: 1; }
-.item { background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
-  display: flex; justify-content: space-between; }
-.item a { color: var(--danger); cursor: pointer; }
-.tag { font-weight: 400; font-size: 12px; color: #1989fa; margin-right: 8px; }
-.empty { color: #999; text-align: center; padding: 48px 0; }
+.pantry {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.add-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.type-select {
+  width: 96px;
+  flex-shrink: 0;
+}
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--gap);
+}
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.name {
+  font-size: 14px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge-pill.is-seasoning {
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+}
+.badge-pill.is-ingredient {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+/* 临期/过期徽标：后端 pantry_item 暂无过期字段，预留语义类 */
+.badge-pill.is-expiring {
+  background: #fef3c7;
+  color: #b45309;
+}
+.badge-pill.is-expired {
+  background: #fee2e2;
+  color: var(--danger);
+}
+.delete {
+  color: var(--danger);
+  font-size: 13px;
+  flex-shrink: 0;
+}
 </style>

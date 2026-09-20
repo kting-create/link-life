@@ -43,15 +43,45 @@ if (!circleId || !dishName) {
 
 <template>
   <div class="generate">
-    <pre class="stream">{{ streamText || '正在生成菜谱…' }}</pre>
+    <pre class="card stream" :class="{ breathing: !streamText && !failed }">{{ streamText || '正在生成菜谱…' }}</pre>
     <p v-if="errorText" class="error">{{ errorText }}</p>
-    <button v-if="failed" @click="start">重试</button>
+    <button v-if="failed" class="btn btn-primary retry" @click="start">重试</button>
   </div>
 </template>
 
 <style scoped>
-.generate { max-width: 720px; margin: 0 auto; padding: 24px 16px; }
-.stream { background: #fff; border-radius: var(--radius); padding: 24px; min-height: 320px;
-  white-space: pre-wrap; word-break: break-all; font-size: 14px; line-height: 1.8; }
-.error { color: var(--danger); margin-top: 12px; }
+.generate {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.stream {
+  margin: 0;
+  padding: 24px;
+  min-height: 320px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 14px;
+  line-height: 1.8;
+  font-family: inherit;
+}
+.breathing {
+  animation: breathe 2000ms ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.error {
+  color: var(--danger);
+  margin-top: 12px;
+}
+.retry {
+  width: 100%;
+  margin-top: 12px;
+}
 </style>

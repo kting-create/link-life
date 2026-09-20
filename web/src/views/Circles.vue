@@ -1,32 +1,33 @@
 <template>
-  <div>
+  <div class="circles-page">
     <div class="card">
       <div class="row section-head">
         <h3>我的圈子</h3>
         <div class="row">
-          <button class="btn btn-small btn-ghost" @click="showCreate = !showCreate">建圈</button>
-          <button class="btn btn-small btn-ghost" @click="showJoin = !showJoin">加入</button>
+          <button class="btn btn-secondary btn-small" @click="showCreate = !showCreate">建圈</button>
+          <button class="btn btn-secondary btn-small" @click="showJoin = !showJoin">加入</button>
         </div>
       </div>
       <div v-if="showCreate" class="inline-form">
         <input v-model="newName" class="input" placeholder="圈子名称" />
-        <button class="btn btn-small" :disabled="acting" @click="createCircle">创建</button>
+        <button class="btn btn-primary btn-small" :disabled="acting" @click="createCircle">创建</button>
       </div>
       <div v-if="showJoin" class="inline-form">
         <input v-model="inviteCode" class="input" placeholder="邀请码" />
-        <button class="btn btn-small" :disabled="acting" @click="joinCircle">加入</button>
+        <button class="btn btn-primary btn-small" :disabled="acting" @click="joinCircle">加入</button>
       </div>
-      <p v-if="!circles.length && !loading" class="muted">还没有圈子，创建或加入一个吧</p>
+      <p v-if="!circles.length && !loading" class="empty">还没有圈子，创建或加入一个吧</p>
       <div
         v-for="c in circles"
         :key="c.id"
-        class="card clickable"
+        class="card clickable circle-card"
         :class="{ active: selectedId === c.id }"
         @click="selectCircle(c.id)"
       >
-        <div class="row">
+        <div class="row circle-row">
+          <span class="avatar">{{ c.name.charAt(0) }}</span>
           <strong>{{ c.name }}</strong>
-          <span class="muted">邀请码：{{ c.inviteCode }}</span>
+          <span class="meta">邀请码：{{ c.inviteCode }}</span>
         </div>
       </div>
     </div>
@@ -34,19 +35,21 @@
     <div v-if="selectedId" class="card">
       <div class="row section-head">
         <h3>成员</h3>
-        <button class="btn btn-small btn-ghost" @click="loadMembers">刷新</button>
+        <button class="btn btn-secondary btn-small" @click="loadMembers">刷新</button>
       </div>
       <div v-for="m in members" :key="m.userId" class="member-row">
         <span>{{ m.nickname }}</span>
-        <span class="tag">{{ m.role === 'OWNER' ? '圈主' : '成员' }}</span>
+        <span class="badge-pill" :class="m.role === 'OWNER' ? 'role-owner' : 'role-member'">
+          {{ m.role === 'OWNER' ? '圈主' : '成员' }}
+        </span>
       </div>
-      <p v-if="!members.length" class="muted">暂无成员</p>
+      <p v-if="!members.length" class="empty">暂无成员</p>
     </div>
 
     <div v-if="selectedId" class="card">
       <div class="row section-head">
         <h3>点单清单</h3>
-        <button class="btn btn-small" @click="showCreateSheet = !showCreateSheet">发起点单</button>
+        <button class="btn btn-secondary btn-small" @click="showCreateSheet = !showCreateSheet">发起点单</button>
       </div>
 
       <div v-if="showCreateSheet" class="sheet-form">
@@ -54,26 +57,28 @@
         <div v-for="(item, idx) in sheetItems" :key="idx" class="row item-row">
           <input v-model="item.dishName" class="input" placeholder="菜名" />
           <input v-model="item.note" class="input" placeholder="备注" />
-          <button class="btn btn-small btn-ghost" @click="removeRow(idx)">删除</button>
+          <button class="btn btn-secondary btn-small" @click="removeRow(idx)">删除</button>
         </div>
         <div class="row">
-          <button class="btn btn-small btn-ghost" @click="addRow">加一道菜</button>
-          <button class="btn btn-small" :disabled="creating" @click="submitSheet">创建清单</button>
+          <button class="btn btn-secondary btn-small" @click="addRow">加一道菜</button>
+          <button class="btn btn-primary btn-small" :disabled="creating" @click="submitSheet">创建清单</button>
         </div>
       </div>
 
-      <p v-if="!sheets.length && !loadingSheets" class="muted">该圈子暂无清单</p>
+      <p v-if="!sheets.length && !loadingSheets" class="empty">该圈子暂无清单</p>
       <div
         v-for="s in sheets"
         :key="s.id"
-        class="card clickable"
+        class="card clickable sheet-card"
         @click="$router.push('/sheets/' + s.id)"
       >
         <div class="row">
           <strong>{{ s.title }}</strong>
-          <span class="tag">{{ sheetStatusText[s.status] || s.status }}</span>
+          <span class="badge-pill" :class="'is-' + String(s.status || '').toLowerCase()">
+            {{ sheetStatusText[s.status] || s.status }}
+          </span>
         </div>
-        <div class="muted">
+        <div class="meta">
           {{ (s.items || []).filter((it) => it.claimantId).length }}/{{ (s.items || []).length }} 已认领
         </div>
       </div>
@@ -266,6 +271,16 @@ export default {
 </script>
 
 <style scoped>
+.circles-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .section-head {
   justify-content: space-between;
   margin-bottom: 8px;
@@ -278,11 +293,53 @@ export default {
   gap: 8px;
   margin-bottom: 12px;
 }
+.circle-card {
+  margin-top: 8px;
+}
+.circle-card.active {
+  border-color: var(--primary);
+}
+.clickable {
+  cursor: pointer;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.circle-row strong {
+  flex-shrink: 0;
+}
+.meta {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  text-align: right;
+}
 .member-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 6px 0;
-  border-bottom: 1px solid #f0f1f4;
+  border-bottom: 1px solid var(--border);
+}
+.member-row:last-child {
+  border-bottom: none;
+}
+.role-owner {
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+}
+.role-member {
+  background: #f1f5f9;
+  color: var(--text-secondary);
 }
 .sheet-form {
   margin-bottom: 12px;
@@ -292,5 +349,20 @@ export default {
 }
 .sheet-form > .row:last-child {
   margin-top: 12px;
+}
+.sheet-card {
+  margin-top: 8px;
+}
+.sheet-card .row {
+  justify-content: space-between;
+}
+.badge-pill.is-shared,
+.badge-pill.is-in_progress {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+.badge-pill.is-completed {
+  background: var(--accent-weak);
+  color: var(--accent);
 }
 </style>
