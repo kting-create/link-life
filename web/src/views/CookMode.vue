@@ -45,6 +45,13 @@ function beep() {
   } catch (e) { /* 音频不可用则静默 */ }
 }
 
+function warmAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+    if (audioCtx.state === 'suspended') audioCtx.resume()
+  } catch (e) { /* 音频不可用则静默 */ }
+}
+
 function stopTimer() {
   if (timer) { clearInterval(timer); timer = null }
   counting.value = false
@@ -66,8 +73,15 @@ function enterStep(idx) {
   if (remainSec.value > 0) startTimer()
 }
 
-function toggleTimer() { counting.value ? stopTimer() : startTimer() }
-function skipTimer() { stopTimer(); remainSec.value = 0 }
+function toggleTimer() {
+  if (counting.value) { stopTimer(); return }
+  if (remainSec.value <= 0) { nextStep(); return }
+  startTimer()
+}
+function skipTimer() {
+  stopTimer()
+  if (current.value < steps.value.length - 1) enterStep(current.value + 1)
+}
 function prevStep() { if (current.value > 0) enterStep(current.value - 1) }
 function nextStep() { if (current.value < steps.value.length - 1) enterStep(current.value + 1) }
 
@@ -124,7 +138,7 @@ onBeforeUnmount(stopTimer)
 </script>
 
 <template>
-  <div class="cook" v-if="recipe">
+  <div class="cook" v-if="recipe" @click="warmAudio">
     <div class="bar"><div class="bar-inner" :style="{ width: progressPct + '%' }"></div></div>
     <p class="head">步骤 {{ step.no }} / {{ steps.length }}</p>
     <p class="step-text">{{ step.text }}</p>

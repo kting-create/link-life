@@ -24,12 +24,22 @@ export const applyPhoto = (photoId) =>
 export async function uploadPhoto(id, stepNo, file) {
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch(`/api/recipes/${id}/steps/${stepNo}/photos`, {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') },
-    body: fd,
-  })
-  const body = await res.json()
+  let res
+  try {
+    res = await fetch(`/api/recipes/${id}/steps/${stepNo}/photos`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + localStorage.getItem('accessToken') },
+      body: fd,
+    })
+  } catch (e) {
+    throw { code: -1, message: '网络错误，上传失败' }
+  }
+  let body
+  try {
+    body = await res.json()
+  } catch (e) {
+    throw { code: res.status, message: '上传失败(' + res.status + ')' }
+  }
   if (body.code === 0) return body.data
   throw body
 }

@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { streamRequest } from '../api/sse'
+import { showToast } from '../utils/toast'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,7 +30,15 @@ function start() {
     },
   })
 }
-start()
+
+const circleId = route.query.circleId
+const dishName = Array.isArray(route.query.dishName) ? route.query.dishName[0] : route.query.dishName
+if (!circleId || !dishName) {
+  showToast('缺少菜谱参数')
+  router.replace('/circles')
+} else {
+  start()
+}
 </script>
 
 <template>
