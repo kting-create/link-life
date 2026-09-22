@@ -4,6 +4,8 @@
 
 **Goal:** 把双端 UI 升级为「暖玻璃流光」视觉 + 全链路弹簧动效 + 共享组件原语层，并修 3 个 UI backlog。
 
+**执行模式（用户确认）:** **Subagent-Driven + 视觉 QA Loop**。每个任务由独立 subagent 实现，每个涉及页面的任务必须闭合 QA Loop：实现 → `npm run build` → `node scripts/ui-qa/shoot.mjs`（Playwright+Chrome 截图/交互态/动效中帧）→ 主会话对照 `scripts/ui-qa/rubric.md` 逐条读图打分 → 违规回修重截 → **0 违规才 commit**；静态闸（grep 禁 emoji/阶外字号/硬编码色）每循环必跑。小程序截图走 `miniprogram-automator`（需开发者工具服务端口；未开启时先静态检查，并把「开服务端口」列入 🧑 人工项）。同一任务 QA 重试 2 轮仍不过的项降级为「需人工目检」清单，不得硬凑通过。
+
 **Architecture:** 先扩 Web token 层（渐变/玻璃/光晕/间距/字阶/motion tokens）与全局基础类，再建动效基建（motion-v + 路由转场）与组件原语（reka-ui + 玻璃皮肤），随后按功能页→核心页铺开；小程序端同构复制（WXSS + `this.animate` + WXS，不迁 Skyline）；最后修 backlog、做一致性收尾与终验。
 
 **Tech Stack:** Web：Vue 3 + Vite + **motion-v** + **reka-ui** + 原生 View Transitions（渐进增强）；小程序：原生 WXML/WXSS/JS + `this.animate`（≥2.9）+ WXS；后端零改动。
@@ -32,6 +34,99 @@
 6. 表单行换 `<Field>`；间距只用 `--space-1..7`；字号只用 `--text-xs..3xl`。
 7. 移除内联硬编码颜色/阶外字号；光晕每页 ≤2。
 8. **文案/字段/事件/跳转逻辑不动**。
+
+---
+
+### Task 0: 视觉 QA Loop 基建（rubric + 截图 harness）
+
+**Files:**
+- Create: `scripts/ui-qa/shoot.mjs`（Playwright 截图/交互态采集）
+- Create: `scripts/ui-qa/rubric.md`（打分标准）
+- Create: `scripts/ui-qa/routes.mjs`（页面 × 视口 × 交互态清单）
+- Modify: `web/package.json`（devDependencies 加 `playwright`）
+- Create: `scripts/ui-qa/shoot-mini.mjs`（miniprogram-automator 采集，服务端口不可用时优雅跳过）
+
+**Interfaces:**
+- Produces: `node scripts/ui-qa/shoot.mjs [--page circles]` → 输出 `tmp/ui-qa/<page>-<vp>-<state>.png`（375/768/1440）；退出码 0=采集完成（不代表视觉通过，打分由主会话读图做）；`rubric.md` 分「全局 6 条防廉价感 + 每页固定项 + 组件态」三段，每条可判定（是/否）。
+
+- [ ] **Step 1: 安装 playwright（devDependency，不入运行时）**
+
+Run: `cd web && npm install -D playwright`
+Expected: devDependencies 出现 `"playwright"`（浏览器用系统 Chrome channel，不下载新浏览器）。
+
+- [ ] **Step 2: 写 routes.mjs**——10 条 web 路由 × 3 视口 + 交互态定义：
+
+```js
+// scripts/ui-qa/routes.mjs
+export const BASE = process.env.QA_BASE || 'http://localhost:5173'
+export const VIEWPORTS = [
+  { name: '375', width: 375, height: 812 },
+  { name: '768', width: 768, height: 1024 },
+  { name: '1440', width: 1440, height: 900 },
+]
+export const PAGES = [
+  { name: 'login', path: '/login', auth: false },
+  { name: 'circles', path: '/circles', auth: true },
+  { name: 'sheet-detail', path: '/sheets/1', auth: true },
+  { name: 'notifications', path: '/notifications', auth: true },
+  { name: 'share', path: '/s/demo-token', auth: false },
+  { name: 'recipe-generate', path: '/recipes/generate', auth: true },
+  { name: 'recipe-detail', path: '/recipes/1', auth: true },
+  { name: 'cook-mode', path: '/recipes/1/cook', auth: true },
+  { name: 'pantry', path: '/pantry', auth: true },
+  { name: 'me', path: '/me', auth: true },
+]
+// 交互态：state 名 → Playwright 动作（截图于动作后 250ms 与 600ms 两个时刻以捕捉动效中/终帧）
+export const STATES = {
+  base: null,
+  'hover-primary': async (page) => { const b = page.locator('.btn-primary').first(); await b.hover() },
+  'press-card': async (page) => { const c = page.locator('.card.clickable').first(); await c.hover(); await c.dispatchEvent('mousedown') },
+  'toast': async (page) => { await page.evaluate(() => window.__qaShowToast?.('已认领', 'ok')) },
+  'confirm-open': async (page) => { await page.evaluate(() => window.__qaConfirm?.()) },
+}
+```
+
+（`__qaShowToast`/`__qaConfirm` 由 Task 3 在 `main.js` 里挂 `window.__qa*` 调试钩子，仅 dev 暴露：`if (import.meta.env.DEV) window.__qaShowToast = showToast; window.__qaConfirm = () => confirm({ title: '删除这道菜？', message: '无法恢复', danger: true })`。）
+
+- [ ] **Step 3: 写 shoot.mjs**——`chromium.launch({ channel: 'chrome' })`，auth 页注入 `localStorage.accessToken='qa-fake'` 以免跳登录；对每个 page×viewport 截 `base` 态；对 rubric 指定的交互态执行动作并连拍两帧（250ms/600ms）；全部输出到 `tmp/ui-qa/`（`.gitignore` 已覆盖 tmp/ 除外——若无则加 `tmp/`）。`--page <name>` 只截单页。
+
+- [ ] **Step 4: 写 rubric.md**——从 spec §2.3/§7 生成可判定条目（摘录格式）：
+
+```markdown
+# UI QA Rubric（每条 0/1，全 1 才算通过）
+## 全局（每张截图）
+G1 页面底为暖渐变 wash（非纯 #fffbeb，无破版）
+G2 内容卡玻璃三件套（半透明底+白顶高光+暖阴影），圆角 16/24px
+G3 无 emoji 图标；图标为 Lucide 线性 SVG
+G4 光晕每页 ≤2 处、透明度淡、只在 hero 背后
+G5 主按钮为 flame 渐变胶囊；hover 帧出现一次性流光（600ms 帧应已消失）
+G6 文字对比度 ≥4.5:1（玻璃面上标题/正文可读）
+## 交互态（对应截图状态）
+S1 hover-primary：按钮 scale≈1.04，250ms 帧有流光高光带、600ms 帧无
+S2 toast：玻璃胶囊弹跳入画，ok 态绿色对勾图标
+S3 confirm-open：遮罩模糊 + 玻璃弹层居中，危险操作红色主按钮
+S4 press-card：卡片 scale≈0.985 或 translateY 抬升（hover 帧）
+## 页面固定项
+P-login：六格 CodeInput；单光晕
+P-circles：列表 stagger（首帧可捕捉错位）；无阶外字号
+P-cook-mode：步骤大字不溢出；进度条 primary-weak 轨道
+P-recipe-generate：流式区有光标
+...
+```
+
+- [ ] **Step 5: 写 shoot-mini.mjs**——`miniprogram-automator.connect()`（cliPath 指向 `/Applications/wechatwebdevtools.app/Contents/MacOS/cli`），连不上时打印 `SKIP: 开发者工具服务端口未开启（🧑 设置→安全设置→服务端口）` 并退出 0。
+
+- [ ] **Step 6: 验证 harness 本身**
+
+Run: `cd web && npm run dev &` 然后 `node scripts/ui-qa/shoot.mjs --page login`
+Expected: `tmp/ui-qa/login-375-base.png` 等文件生成；主会话读图确认采集可用（此时尚未铺开 Warm Glass，截图应是旧 UI——采集通道通即可）。
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add scripts/ui-qa/ web/package.json web/package-lock.json tmp/ .gitignore
+git commit -m "feat(ui): 视觉 QA Loop 基建(rubric/截图 harness)"
+```
 
 ---
 
