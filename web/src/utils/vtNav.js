@@ -3,7 +3,7 @@ import { prefersReducedMotion } from '../styles/motion.js'
 
 export function navigateWithHero(sourceEl, name, fn) {
   const vt = document.startViewTransition
-  if (!vt || prefersReducedMotion()) return Promise.resolve(fn())
+  if (!sourceEl || !vt || prefersReducedMotion()) return Promise.resolve(fn())
   sourceEl.style.viewTransitionName = name
   document.documentElement.dataset.vtHero = '1'
   const t = document.startViewTransition(async () => {
