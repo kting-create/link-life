@@ -1,1 +1,10 @@
-{ "navigationBarTitleText": "调料架" }
+{
+  "navigationBarTitleText": "调料架",
+  "usingComponents": {
+    "field": "/components/field/field",
+    "icon-btn": "/components/icon-btn/icon-btn",
+    "empty-state": "/components/empty-state/empty-state",
+    "skeleton": "/components/skeleton/skeleton",
+    "glass-toast": "/components/glass-toast/glass-toast"
+  }
+}

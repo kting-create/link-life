@@ -1,14 +1,67 @@
-.page { padding: 24rpx; }
-.add-box { display: flex; align-items: center; gap: 16rpx; margin-bottom: 24rpx; }
-.picker { background: var(--bg-card); border: 1rpx solid var(--border); border-radius: var(--radius-sm); padding: 16rpx 24rpx; font-size: 28rpx; color: var(--text-primary); }
-.pantry-input { flex: 1; }
-.add-btn { flex-shrink: 0; }
-.item { margin-bottom: 16rpx; display: flex; justify-content: space-between; align-items: center; font-size: 28rpx; }
-.item-main { display: flex; align-items: center; }
-.item-name { color: var(--text-primary); }
-.tag { font-size: 20rpx; padding: 4rpx 16rpx; border-radius: 999rpx; margin-right: 12rpx; }
-.tag-s { background: var(--primary-weak); color: var(--primary-deep); }
-.tag-i { background: #eff6ff; color: #1d4ed8; }
-.del { color: var(--danger); }
-.badge-pill.is-expiring { background: #FEF3C7; color: #B45309; }
-.badge-pill.is-expired { background: #FEE2E2; color: var(--danger); }
+.page {
+  padding: var(--space-3);
+}
+
+.add-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.picker {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.add-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-input .field {
+  margin-bottom: 0;
+}
+
+.add-btn {
+  flex-shrink: 0;
+}
+
+.item {
+  margin-bottom: var(--space-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.item-name {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-pill.is-seasoning {
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+}
+
+.badge-pill.is-ingredient {
+  background: var(--glass-bg-strong);
+  color: var(--text-secondary);
+  border: 2rpx solid var(--border);
+}

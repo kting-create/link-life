@@ -1,39 +1,34 @@
 <view class="order-create-page">
   <view class="card form-card">
-    <view class="field-label">点单标题</view>
-    <input
-      class="input title-input"
-      placeholder="例如：今晚想吃啥"
-      value="{{title}}"
-      bindinput="onTitleInput"
-    />
+    <field label="点单标题" value="{{title}}" placeholder="例如：今晚想吃啥" bindinput="onTitleInput" />
   </view>
 
   <view class="card form-card">
     <view class="field-label">菜品</view>
-    <view class="item-row" wx:for="{{items}}" wx:key="index">
-      <view class="item-inputs">
-        <input
-          class="input dish-input"
-          placeholder="菜名（必填）"
-          value="{{item.dishName}}"
-          data-index="{{index}}"
-          bindinput="onDishInput"
-        />
-        <input
-          class="input note-input"
-          placeholder="备注（选填）"
-          value="{{item.note}}"
-          data-index="{{index}}"
-          bindinput="onNoteInput"
-        />
+    <view class="stagger-list {{listRun ? 'run' : ''}}">
+      <view class="item-row stagger-item" style="--i: {{index}}" wx:for="{{items}}" wx:key="index">
+        <view class="item-inputs">
+          <field
+            placeholder="菜名（必填）"
+            value="{{item.dishName}}"
+            data-index="{{index}}"
+            bindinput="onDishInput"
+          />
+          <field
+            placeholder="备注（选填）"
+            value="{{item.note}}"
+            data-index="{{index}}"
+            bindinput="onNoteInput"
+          />
+        </view>
+        <icon-btn name="trash" title="删除" data-index="{{index}}" bindtap="removeRow" />
       </view>
-      <view class="row-remove" data-index="{{index}}" bindtap="removeRow">删</view>
     </view>
-    <view class="add-row" bindtap="addRow">＋ 添加一道菜</view>
+    <view class="add-row" hover-class="link-hover" hover-stay-time="80" bindtap="addRow">添加一道菜</view>
   </view>
 
   <button class="submit-btn btn btn-primary" hover-class="button-hover" loading="{{submitting}}" bindtap="submit">
     创建点单
   </button>
 </view>
+<glass-toast id="gtoast" />

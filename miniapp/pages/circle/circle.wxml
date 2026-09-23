@@ -1,36 +1,34 @@
 <view class="circle-page">
+  <view class="glow-orb page-glow"></view>
   <view class="topbar">
     <view class="topbar-title">Link-Life</view>
-    <view class="topbar-profile" bindtap="goProfile">我的</view>
+    <view class="topbar-profile" hover-class="link-hover" hover-stay-time="80" bindtap="goProfile">我的</view>
   </view>
 
-  <view class="tabs card">
-    <view class="tab {{tab === 'circles' ? 'tab-active' : ''}}" data-tab="circles" bindtap="switchTab">圈子</view>
-    <view class="tab {{tab === 'members' ? 'tab-active' : ''}}" data-tab="members" bindtap="switchTab">成员</view>
-  </view>
+  <tabs items="{{tabItems}}" current="{{tab}}" bindchange="onTabChange" />
 
   <block wx:if="{{tab === 'circles'}}">
     <view class="actions">
       <button class="action-btn btn btn-primary" size="mini" hover-class="button-hover" bindtap="createCircle">建圈</button>
       <button class="action-btn btn btn-secondary" size="mini" hover-class="button-hover" bindtap="joinCircle">加入圈子</button>
     </view>
-    <view wx:if="{{loading}}" class="empty">加载中...</view>
-    <view wx:elif="{{!circles.length}}" class="empty">
-      <view class="empty-main">还没有圈子</view>
-      <view class="empty-sub">先创建或加入一个吧</view>
-    </view>
-    <block wx:else>
+    <skeleton wx:if="{{loading}}" rows="3" />
+    <empty-state wx:elif="{{!circles.length}}" title="还没有圈子" desc="先创建或加入一个吧" />
+    <view wx:else class="stagger-list {{circlesRun ? 'run' : ''}}">
       <view
-        class="circle-item card"
+        class="circle-item card clickable stagger-item"
+        style="--i: {{index}}"
         wx:for="{{circles}}"
         wx:key="id"
         data-id="{{item.id}}"
+        hover-class="button-hover"
+        hover-stay-time="80"
         bindtap="onCircleTap"
       >
         <view class="circle-name">{{item.name}}</view>
         <view class="circle-code">邀请码：{{item.inviteCode}}</view>
       </view>
-    </block>
+    </view>
   </block>
 
   <block wx:else>
@@ -40,19 +38,20 @@
         wx:for="{{circles}}"
         wx:key="id"
         data-id="{{item.id}}"
+        hover-class="chip-hover"
+        hover-stay-time="80"
         bindtap="selectMemberCircle"
       >{{item.name}}</view>
     </view>
-    <view wx:if="{{!members.length}}" class="empty">
-      <view class="empty-main">选择一个圈子查看成员</view>
-    </view>
-    <block wx:else>
-      <view class="member-item card" wx:for="{{members}}" wx:key="userId">
+    <empty-state wx:if="{{!members.length}}" title="选择一个圈子查看成员" />
+    <view wx:else class="stagger-list {{membersRun ? 'run' : ''}}">
+      <view class="member-item card stagger-item" style="--i: {{index}}" wx:for="{{members}}" wx:key="userId">
         <image wx:if="{{item.avatar}}" class="member-avatar" src="{{item.avatar}}" />
         <view wx:else class="member-avatar member-avatar-placeholder">{{item.nickname[0]}}</view>
         <view class="member-name">{{item.nickname}}</view>
         <view class="member-role">{{item.role === 'OWNER' ? '圈主' : '成员'}}</view>
       </view>
-    </block>
+    </view>
   </block>
 </view>
+<glass-toast id="gtoast" />

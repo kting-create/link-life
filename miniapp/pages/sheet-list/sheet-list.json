@@ -1,3 +1,8 @@
 {
-  "navigationBarTitleText": "点单清单"
+  "navigationBarTitleText": "点单清单",
+  "usingComponents": {
+    "empty-state": "/components/empty-state/empty-state",
+    "skeleton": "/components/skeleton/skeleton",
+    "glass-toast": "/components/glass-toast/glass-toast"
+  }
 }

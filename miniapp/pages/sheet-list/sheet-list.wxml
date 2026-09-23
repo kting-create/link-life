@@ -3,17 +3,21 @@
     <view class="circle-name">{{circleName || '点单清单'}}</view>
   </view>
 
-  <view wx:if="{{loading}}" class="empty">加载中...</view>
-  <view wx:elif="{{!sheets.length}}" class="empty">
-    <view class="empty-main">还没有点单</view>
-    <view class="empty-sub">点右下角按钮发起点单吧</view>
-  </view>
-  <block wx:else>
+  <skeleton wx:if="{{loading}}" rows="3" />
+  <empty-state
+    wx:elif="{{!sheets.length}}"
+    title="还没有点单清单"
+    desc="发起一单，让家人来认领拿手菜"
+  />
+  <view wx:else class="stagger-list {{listRun ? 'run' : ''}}">
     <view
-      class="sheet-item card"
+      class="sheet-item card clickable stagger-item"
+      style="--i: {{index}}"
       wx:for="{{sheets}}"
       wx:key="id"
       data-id="{{item.id}}"
+      hover-class="button-hover"
+      hover-stay-time="80"
       bindtap="openSheet"
     >
       <view class="sheet-title">{{item.title}}</view>
@@ -22,7 +26,8 @@
         <view class="progress">{{item.claimedCount}}/{{item.totalCount}} 已认领</view>
       </view>
     </view>
-  </block>
+  </view>
 
-  <view class="fab btn btn-primary" hover-class="button-hover" bindtap="addSheet">＋ 发起点单</view>
+  <view class="fab btn btn-primary" hover-class="button-hover" bindtap="addSheet">发起点单</view>
 </view>
+<glass-toast id="gtoast" />

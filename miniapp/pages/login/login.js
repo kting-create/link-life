@@ -1,8 +1,13 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 Page({
   data: {
     loading: false,
+  },
+
+  onReady() {
+    bindToast(this, '#gtoast');
   },
 
   login() {
@@ -12,7 +17,7 @@ Page({
       success: (res) => {
         if (!res.code) {
           this.setData({ loading: false });
-          wx.showToast({ title: 'wx.login 未返回 code', icon: 'none' });
+          showGlassToast('wx.login 未返回 code', 'err');
           return;
         }
         request('/api/auth/wx-login', {
@@ -25,7 +30,7 @@ Page({
             wx.reLaunch({ url: '/pages/circle/circle' });
           })
           .catch((err) => {
-            wx.showToast({ title: (err && err.message) || '登录失败', icon: 'none' });
+            showGlassToast((err && err.message) || '登录失败', 'err');
           })
           .then(() => {
             this.setData({ loading: false });
@@ -33,7 +38,7 @@ Page({
       },
       fail: () => {
         this.setData({ loading: false });
-        wx.showToast({ title: 'wx.login 调用失败', icon: 'none' });
+        showGlassToast('wx.login 调用失败', 'err');
       },
     });
   },

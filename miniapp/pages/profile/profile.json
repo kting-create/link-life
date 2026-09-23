@@ -1,4 +1,8 @@
 {
   "navigationBarTitleText": "我的",
-  "usingComponents": {}
+  "usingComponents": {
+    "field": "/components/field/field",
+    "empty-state": "/components/empty-state/empty-state",
+    "glass-toast": "/components/glass-toast/glass-toast"
+  }
 }
