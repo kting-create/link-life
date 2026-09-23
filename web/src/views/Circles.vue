@@ -100,11 +100,12 @@
 </template>
 
 <script>
-import { ref, nextTick } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { showToast } from '../utils/toast'
 import { sheetStatusText, sheetBadgeClass } from '../utils/sheet'
+import { navigateWithHero } from '../utils/vtNav'
 import EmptyState from '../components/EmptyState.vue'
 import Skeleton from '../components/Skeleton.vue'
 import Field from '../components/Field.vue'
@@ -181,19 +182,7 @@ export default {
 
     function openSheet(s, e) {
       const el = e && e.currentTarget
-      const go = () => router.push('/sheets/' + s.id)
-      if (el && typeof document !== 'undefined' && document.startViewTransition) {
-        el.style.viewTransitionName = 'sheet-hero'
-        const t = document.startViewTransition(async () => {
-          go()
-          await nextTick()
-        })
-        if (t && t.finished && t.finished.finally) {
-          t.finished.finally(() => { el.style.viewTransitionName = '' })
-        }
-      } else {
-        go()
-      }
+      return navigateWithHero(el, 'sheet-hero', () => router.push('/sheets/' + s.id))
     }
 
     async function createCircle() {

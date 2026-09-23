@@ -62,13 +62,14 @@
 </template>
 
 <script>
-import { computed, nextTick, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { getByDish } from '../api/recipe'
 import { showToast } from '../utils/toast'
 import { confirm } from '../utils/confirm'
 import { sheetStatusText, claimedCount, sheetBadgeClass } from '../utils/sheet'
+import { navigateWithHero } from '../utils/vtNav'
 import EmptyState from '../components/EmptyState.vue'
 import Skeleton from '../components/Skeleton.vue'
 import Icon from '../components/Icon.vue'
@@ -160,26 +161,11 @@ export default {
       act('/api/order/sheets/' + route.params.id + '/complete', '已收单')
     }
 
-    function navigateWithVT(sourceEl, viewName, go) {
-      if (sourceEl && typeof document !== 'undefined' && document.startViewTransition) {
-        sourceEl.style.viewTransitionName = viewName
-        const t = document.startViewTransition(async () => {
-          go()
-          await nextTick()
-        })
-        if (t && t.finished && t.finished.finally) {
-          t.finished.finally(() => { sourceEl.style.viewTransitionName = '' })
-        }
-      } else {
-        go()
-      }
-    }
-
     async function openRecipe(dishName, e) {
       const sourceEl = e && e.currentTarget && e.currentTarget.closest('.card')
       try {
         const recipe = await getByDish(sheet.value.circleId, dishName)
-        navigateWithVT(sourceEl, 'recipe-hero', () => router.push('/recipes/' + recipe.id))
+        return navigateWithHero(sourceEl, 'recipe-hero', () => router.push('/recipes/' + recipe.id))
       } catch (err) {
         if (err && err.code === 5001) {
           router.push({ path: '/recipes/generate',

@@ -1,8 +1,9 @@
 <script setup>
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { streamRequest } from '../api/sse'
 import { showToast } from '../utils/toast'
+import { navigateWithHero } from '../utils/vtNav'
 import Icon from '../components/Icon.vue'
 
 const route = useRoute()
@@ -29,20 +30,7 @@ function start() {
     onDelta: (text) => { segs.value = segs.value.concat([text]) },
     onDone: (payload) => {
       streaming.value = false
-      const go = () => router.replace('/recipes/' + payload.recipeId)
-      const el = streamEl.value
-      if (el && typeof document !== 'undefined' && document.startViewTransition) {
-        el.style.viewTransitionName = 'recipe-hero'
-        const t = document.startViewTransition(async () => {
-          go()
-          await nextTick()
-        })
-        if (t && t.finished && t.finished.finally) {
-          t.finished.finally(() => { el.style.viewTransitionName = '' })
-        }
-      } else {
-        go()
-      }
+      return navigateWithHero(streamEl.value, 'recipe-hero', () => router.replace('/recipes/' + payload.recipeId))
     },
     onError: (err) => {
       streaming.value = false
