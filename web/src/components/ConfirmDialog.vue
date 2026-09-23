@@ -2,7 +2,7 @@
   <DialogRoot :open="state.open" @update:open="onOpen">
     <DialogPortal>
       <DialogOverlay class="ovl" />
-      <DialogContent class="dlg" aria-describedby="confirm-desc">
+      <DialogContent ref="contentRef" class="dlg" aria-describedby="confirm-desc">
         <DialogTitle class="dlg-title">{{ state.title }}</DialogTitle>
         <DialogDescription id="confirm-desc" class="dlg-desc">{{ state.message }}</DialogDescription>
         <div class="dlg-acts">
@@ -16,9 +16,13 @@
   </DialogRoot>
 </template>
 <script setup>
-import { reactive } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
+import { animate } from 'motion-v'
 import { DialogRoot, DialogPortal, DialogOverlay, DialogContent, DialogTitle, DialogDescription } from 'reka-ui'
+import { SPRING_BOUNCE, prefersReducedMotion } from '../styles/motion.js'
+
 const state = reactive({ open: false, title: '', message: '', danger: false, confirmText: '' })
+const contentRef = ref(null)
 let resolver = null
 function resolve(v) { state.open = false; resolver?.(v); resolver = null }
 function onOpen(v) { if (!v) resolve(false) }
@@ -26,6 +30,15 @@ function confirm(opts) {
   Object.assign(state, { open: true, title: opts.title, message: opts.message, danger: !!opts.danger, confirmText: opts.confirmText })
   return new Promise((r) => { resolver = r })
 }
+watch(() => state.open, async (v) => {
+  if (!v) return
+  await nextTick()
+  const el = contentRef.value && contentRef.value.$el instanceof Element ? contentRef.value.$el : null
+  if (!el || prefersReducedMotion()) return
+  el.style.opacity = '0'
+  el.style.transform = 'translate(-50%, calc(-50% + 12px)) scale(0.9)'
+  animate(el, { opacity: 1, transform: 'translate(-50%, -50%) scale(1)' }, { ...SPRING_BOUNCE })
+})
 defineExpose({ confirm })
 </script>
 <style scoped>
@@ -36,9 +49,7 @@ defineExpose({ confirm })
   background: var(--glass-bg-strong); backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border); border-radius: 20px;
   box-shadow: var(--shadow-lift), var(--glass-highlight); padding: var(--space-5);
-  animation: dlg-in 0.4s var(--ease-spring-tap);
 }
-@keyframes dlg-in { from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)) scale(0.9); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 .dlg-title { margin: 0 0 var(--space-2); font-size: var(--text-md); font-weight: 800; }
 .dlg-desc { margin: 0 0 var(--space-5); font-size: var(--text-sm); color: var(--text-secondary); }
 .dlg-acts { display: flex; gap: var(--space-3); justify-content: flex-end; }
