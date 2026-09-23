@@ -4,7 +4,6 @@
     wx:key="index"
     class="code-cell {{focusIdx === index ? 'code-cell-focus' : ''}}"
     type="number"
-    maxlength="{{length}}"
     value="{{item}}"
     data-i="{{index}}"
     focus="{{focusIdx === index}}"

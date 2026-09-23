@@ -41,14 +41,18 @@ Component({
       const len = this.data.length;
       const raw = String(e.detail.value || '').replace(/\D/g, '');
       const cells = this.data.cells.slice();
-      if (raw.length > 1) {
-        // 粘贴/自动填充：与 web onPaste 同语义，整串落格（从首位铺开）
-        const next = this.toCells(raw, len);
+      const oldLen = cells.join('').length;
+      // 整串填充特征：满码长度，或相对原串一次多出 >1 字符（粘贴/自动填充）
+      const isFullFill = raw.length >= len || raw.length > oldLen + 1;
+      if (isFullFill) {
+        // 与 web onPaste 同语义：整串落格（从首位铺开）
+        const next = this.toCells(raw.slice(0, len), len);
         this.sync(next);
         const filled = next.join('').length;
         this.setFocus(filled < len ? Math.min(filled, len - 1) : -1);
         return;
       }
+      // 增量单格编辑（web onInput 的 slice(-1) 语义）：只动当前格，保位姿
       const v = raw.slice(-1);
       cells[i] = v;
       this.sync(cells);
