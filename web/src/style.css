@@ -95,6 +95,8 @@ button:focus-visible, a:focus-visible, input:focus-visible {
 .badge-pill.is-claimed { background: var(--grad-flame); color: #fff; box-shadow: var(--shadow-glow); }
 .badge-pill.is-cooking { background: var(--grad-cooking); color: #fff; box-shadow: 0 2px 8px rgba(29, 78, 216, 0.3); }
 .badge-pill.is-done { background: var(--grad-done); color: #fff; box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3); }
+.badge-pill.is-warn { background: #fef3c7; color: #b45309; }
+.badge-pill.is-expired { background: #fee2e2; color: var(--danger); }
 
 .input {
   width: 100%;

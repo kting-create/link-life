@@ -9,25 +9,29 @@
         </div>
       </div>
       <div v-if="showCreate" class="inline-form">
-        <input v-model="newName" class="input" placeholder="圈子名称" />
+        <Field v-model="newName" placeholder="圈子名称" />
         <button class="btn btn-primary btn-small" :disabled="acting" @click="createCircle">创建</button>
       </div>
       <div v-if="showJoin" class="inline-form">
-        <input v-model="inviteCode" class="input" placeholder="邀请码" />
+        <Field v-model="inviteCode" placeholder="邀请码" />
         <button class="btn btn-primary btn-small" :disabled="acting" @click="joinCircle">加入</button>
       </div>
-      <p v-if="!circles.length && !loading" class="empty">还没有圈子，创建或加入一个吧</p>
-      <div
-        v-for="c in circles"
-        :key="c.id"
-        class="card clickable circle-card"
-        :class="{ active: selectedId === c.id }"
-        @click="selectCircle(c.id)"
-      >
-        <div class="row circle-row">
-          <span class="avatar">{{ c.name.charAt(0) }}</span>
-          <strong>{{ c.name }}</strong>
-          <span class="meta">邀请码：{{ c.inviteCode }}</span>
+      <Skeleton v-if="loading" :rows="3" />
+      <EmptyState v-else-if="!circles.length" title="还没有圈子，创建或加入一个吧" />
+      <div v-else class="stagger-list" :class="{ run: circlesRun }">
+        <div
+          v-for="(c, index) in circles"
+          :key="c.id"
+          class="card clickable circle-card stagger-item"
+          :class="{ active: selectedId === c.id }"
+          :style="{ '--i': index }"
+          @click="selectCircle(c.id)"
+        >
+          <div class="row circle-row">
+            <span class="avatar">{{ c.name.charAt(0) }}</span>
+            <strong>{{ c.name }}</strong>
+            <span class="meta">邀请码：{{ c.inviteCode }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -37,26 +41,31 @@
         <h3>成员</h3>
         <button class="btn btn-secondary btn-small" @click="loadMembers">刷新</button>
       </div>
-      <div v-for="m in members" :key="m.userId" class="member-row">
-        <span>{{ m.nickname }}</span>
-        <span class="badge-pill" :class="m.role === 'OWNER' ? 'role-owner' : 'role-member'">
-          {{ m.role === 'OWNER' ? '圈主' : '成员' }}
-        </span>
+      <Skeleton v-if="loadingMembers" :rows="2" />
+      <EmptyState v-else-if="!members.length" title="暂无成员" />
+      <div v-else class="stagger-list" :class="{ run: membersRun }">
+        <div v-for="(m, index) in members" :key="m.userId" class="member-row stagger-item" :style="{ '--i': index }">
+          <span>{{ m.nickname }}</span>
+          <span class="badge-pill" :class="m.role === 'OWNER' ? 'role-owner' : 'role-member'">
+            {{ m.role === 'OWNER' ? '圈主' : '成员' }}
+          </span>
+        </div>
       </div>
-      <p v-if="!members.length" class="empty">暂无成员</p>
     </div>
 
     <div v-if="selectedId" class="card">
       <div class="row section-head">
         <h3>点单清单</h3>
-        <button class="btn btn-secondary btn-small" @click="showCreateSheet = !showCreateSheet">发起点单</button>
+        <button class="btn btn-primary btn-small" @click="showCreateSheet = !showCreateSheet">
+          <Icon name="plus" /> 发起点单
+        </button>
       </div>
 
       <div v-if="showCreateSheet" class="sheet-form">
-        <input v-model="sheetTitle" class="input" placeholder="点单标题" />
+        <Field v-model="sheetTitle" placeholder="点单标题" />
         <div v-for="(item, idx) in sheetItems" :key="idx" class="row item-row">
-          <input v-model="item.dishName" class="input" placeholder="菜名" />
-          <input v-model="item.note" class="input" placeholder="备注" />
+          <Field v-model="item.dishName" placeholder="菜名" />
+          <Field v-model="item.note" placeholder="备注" />
           <button class="btn btn-secondary btn-small" @click="removeRow(idx)">删除</button>
         </div>
         <div class="row">
@@ -65,21 +74,25 @@
         </div>
       </div>
 
-      <p v-if="!sheets.length && !loadingSheets" class="empty">该圈子暂无清单</p>
-      <div
-        v-for="s in sheets"
-        :key="s.id"
-        class="card clickable sheet-card"
-        @click="$router.push('/sheets/' + s.id)"
-      >
-        <div class="row">
-          <strong>{{ s.title }}</strong>
-          <span class="badge-pill" :class="'is-' + String(s.status || '').toLowerCase()">
-            {{ sheetStatusText[s.status] || s.status }}
-          </span>
-        </div>
-        <div class="meta">
-          {{ (s.items || []).filter((it) => it.claimantId).length }}/{{ (s.items || []).length }} 已认领
+      <Skeleton v-if="loadingSheets" :rows="2" />
+      <EmptyState v-else-if="!sheets.length" title="该圈子暂无清单" />
+      <div v-else class="stagger-list" :class="{ run: sheetsRun }">
+        <div
+          v-for="(s, index) in sheets"
+          :key="s.id"
+          class="card clickable sheet-card stagger-item"
+          :style="{ '--i': index }"
+          @click="$router.push('/sheets/' + s.id)"
+        >
+          <div class="row">
+            <strong>{{ s.title }}</strong>
+            <span class="badge-pill" :class="sheetBadgeClass(s.status)">
+              {{ sheetStatusText[s.status] || s.status }}
+            </span>
+          </div>
+          <div class="meta">
+            {{ (s.items || []).filter((it) => it.claimantId).length }}/{{ (s.items || []).length }} 已认领
+          </div>
         </div>
       </div>
     </div>
@@ -92,8 +105,17 @@ import { useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { showToast } from '../utils/toast'
 import { sheetStatusText } from '../utils/sheet'
+import EmptyState from '../components/EmptyState.vue'
+import Skeleton from '../components/Skeleton.vue'
+import Field from '../components/Field.vue'
+import Icon from '../components/Icon.vue'
+
+function sheetBadgeClass(status) {
+  return String(status || '') === 'COMPLETED' ? 'is-done' : 'is-cooking'
+}
 
 export default {
+  components: { EmptyState, Skeleton, Field, Icon },
   setup() {
     const router = useRouter()
     const circles = ref([])
@@ -101,7 +123,11 @@ export default {
     const sheets = ref([])
     const selectedId = ref(null)
     const loading = ref(false)
+    const loadingMembers = ref(false)
     const loadingSheets = ref(false)
+    const circlesRun = ref(false)
+    const membersRun = ref(false)
+    const sheetsRun = ref(false)
     const acting = ref(false)
     const showCreate = ref(false)
     const showJoin = ref(false)
@@ -116,6 +142,7 @@ export default {
       loading.value = true
       try {
         circles.value = (await request('/api/circles')) || []
+        circlesRun.value = true
       } catch (err) {
         showToast((err && err.message) || '加载圈子失败')
       } finally {
@@ -125,10 +152,14 @@ export default {
 
     async function loadMembers() {
       if (!selectedId.value) return
+      loadingMembers.value = true
       try {
         members.value = (await request('/api/circles/' + selectedId.value + '/members')) || []
+        membersRun.value = true
       } catch (err) {
         showToast((err && err.message) || '加载成员失败')
+      } finally {
+        loadingMembers.value = false
       }
     }
 
@@ -138,6 +169,7 @@ export default {
       try {
         sheets.value =
           (await request('/api/order/sheets?circleId=' + selectedId.value)) || []
+        sheetsRun.value = true
       } catch (err) {
         showToast((err && err.message) || '加载清单失败')
       } finally {
@@ -247,7 +279,11 @@ export default {
       sheets,
       selectedId,
       loading,
+      loadingMembers,
       loadingSheets,
+      circlesRun,
+      membersRun,
+      sheetsRun,
       acting,
       showCreate,
       showJoin,
@@ -258,6 +294,7 @@ export default {
       sheetItems,
       creating,
       sheetStatusText,
+      sheetBadgeClass,
       selectCircle,
       loadMembers,
       createCircle,
@@ -279,28 +316,30 @@ export default {
 .row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .section-head {
   justify-content: space-between;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 .section-head h3 {
   margin: 0;
 }
 .inline-form {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  align-items: flex-start;
+}
+.inline-form .field {
+  flex: 1;
+  margin-bottom: 0;
 }
 .circle-card {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 .circle-card.active {
   border-color: var(--primary);
-}
-.clickable {
-  cursor: pointer;
 }
 .avatar {
   width: 36px;
@@ -320,14 +359,14 @@ export default {
 .meta {
   margin-left: auto;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: var(--text-xs);
   text-align: right;
 }
 .member-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: var(--space-1) 0;
   border-bottom: 1px solid var(--border);
 }
 .member-row:last-child {
@@ -338,31 +377,27 @@ export default {
   color: var(--primary-deep);
 }
 .role-member {
-  background: #f1f5f9;
+  background: var(--bg-card);
   color: var(--text-secondary);
 }
 .sheet-form {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .item-row {
-  margin-top: 8px;
+  margin-top: var(--space-2);
+  align-items: flex-start;
+}
+.item-row .field {
+  flex: 1;
+  margin-bottom: 0;
 }
 .sheet-form > .row:last-child {
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 .sheet-card {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 .sheet-card .row {
   justify-content: space-between;
-}
-.badge-pill.is-shared,
-.badge-pill.is-in_progress {
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-.badge-pill.is-completed {
-  background: var(--accent-weak);
-  color: var(--accent-deep);
 }
 </style>

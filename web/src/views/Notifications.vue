@@ -5,14 +5,18 @@
       <button class="btn btn-secondary btn-small" @click="onReadAll"
               :disabled="allDone">全部已读</button>
     </div>
-    <p v-if="items.length === 0" class="empty">暂无通知</p>
-    <div v-for="n in items" :key="n.id" class="card clickable notif-card" @click="open(n)">
-      <div class="row">
-        <span class="unread-bar" v-if="!n.read"></span>
-        <span class="title" :class="{ unread: !n.read }">{{ n.title }}</span>
-        <span class="time">{{ n.createdAt }}</span>
+    <Skeleton v-if="loading && !items.length" :rows="3" />
+    <EmptyState v-else-if="items.length === 0" title="暂无通知" />
+    <div v-else class="stagger-list" :class="{ run: listRun }">
+      <div v-for="(n, index) in items" :key="n.id" class="card clickable notif-card stagger-item"
+           :style="{ '--i': index }" @click="open(n)">
+        <div class="row">
+          <span class="unread-bar" v-if="!n.read"></span>
+          <span class="title" :class="{ unread: !n.read }">{{ n.title }}</span>
+          <span class="time">{{ n.createdAt }}</span>
+        </div>
+        <div class="content">{{ n.content }}</div>
       </div>
-      <div class="content">{{ n.content }}</div>
     </div>
     <button v-if="items.length >= 20" class="btn btn-secondary load-more"
             @click="loadMore">加载更多</button>
@@ -22,23 +26,30 @@
 <script>
 import { listNotifications, markAllRead, markRead } from '../api/notifications'
 import { showToast } from '../utils/toast'
+import EmptyState from '../components/EmptyState.vue'
+import Skeleton from '../components/Skeleton.vue'
 
 export default {
+  components: { EmptyState, Skeleton },
   data() {
-    return { items: [], allDone: false }
+    return { items: [], allDone: false, loading: false, listRun: false }
   },
   mounted() {
     this.load()
   },
   methods: {
     async load() {
+      this.loading = true
       try {
         const data = await listNotifications(null)
         this.items = data.items
         this.allDone = data.unreadCount === 0
+        this.listRun = true
       } catch (e) {
         console.error('load notifications failed', e)
         showToast('加载通知失败')
+      } finally {
+        this.loading = false
       }
     },
     async loadMore() {
@@ -80,7 +91,7 @@ export default {
 .row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 .page-head {
   justify-content: space-between;
@@ -95,7 +106,7 @@ export default {
   width: 6px;
   align-self: stretch;
   border-radius: 3px;
-  background: var(--primary);
+  background: var(--grad-flame);
   flex-shrink: 0;
 }
 .title {
@@ -112,12 +123,12 @@ export default {
   margin-left: auto;
   flex-shrink: 0;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: var(--text-xs);
 }
 .content {
-  margin-top: 4px;
+  margin-top: var(--space-1);
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: var(--text-sm);
   line-height: 1.6;
 }
 .load-more {

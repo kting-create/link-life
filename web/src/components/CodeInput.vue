@@ -6,11 +6,14 @@
   </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 const props = defineProps({ length: { type: Number, default: 6 }, modelValue: { type: String, default: '' } })
 const emit = defineEmits(['update:modelValue'])
 const cells = ref(props.modelValue.split(''))
 const chars = computed(() => cells.value)
+watch(() => props.modelValue, (v) => {
+  cells.value = String(v ?? '').split('').slice(0, props.length)
+})
 function sync() { emit('update:modelValue', cells.value.join('')) }
 function onInput(i, e) {
   const v = e.target.value.replace(/\D/g, '').slice(-1)
