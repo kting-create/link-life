@@ -40,6 +40,7 @@
   --radius-sm: 10px;
   --radius-pill: 999px;
   /* 间距阶梯 */
+  --gap: var(--space-3);
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
