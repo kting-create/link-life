@@ -1,0 +1,64 @@
+/* confirm-dialog — 对照 web/src/components/ConfirmDialog.vue（rpx = web px × 2）
+   视觉 = 玻璃弹层 + 弹簧 scale 入场（dlg-in 近似 web motion SPRING_BOUNCE） */
+
+.dlg-mask {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(28, 25, 23, 0.35);
+  -webkit-backdrop-filter: blur(8rpx);
+  backdrop-filter: blur(8rpx);
+  z-index: 200;
+}
+.dlg {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 640rpx;
+  max-width: 92%;
+  z-index: 201;
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 2rpx solid var(--glass-border);
+  border-radius: 40rpx;
+  box-shadow: var(--shadow-lift), var(--glass-highlight);
+  padding: var(--space-5);
+}
+.dlg-in {
+  animation: dlg-in 0.4s var(--ease-spring-tap);
+}
+@keyframes dlg-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 24rpx)) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+.dlg-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-md);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+.dlg-desc {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+.dlg-acts {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+.dlg-acts .btn {
+  width: auto;
+  flex: 0 0 auto;
+  margin: 0;
+}

@@ -1,12 +1,23 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 Page({
   data: {
     tab: 'circles',
+    tabItems: [
+      { key: 'circles', label: '圈子' },
+      { key: 'members', label: '成员' },
+    ],
     circles: [],
     members: [],
     memberCircleId: null,
     loading: false,
+    circlesRun: false,
+    membersRun: false,
+  },
+
+  onReady() {
+    bindToast(this, '#gtoast');
   },
 
   onShow() {
@@ -17,22 +28,22 @@ Page({
     this.setData({ loading: true });
     request('/api/circles')
       .then((list) => {
-        this.setData({ circles: list || [] });
+        this.setData({ circles: list || [], circlesRun: true });
         const current = wx.getStorageSync('currentCircle');
         if (current && this.data.tab === 'members' && current.id) {
           this.loadMembers(current.id);
         }
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '加载圈子失败', icon: 'none' });
+        showGlassToast((err && err.message) || '加载圈子失败', 'err');
       })
       .then(() => {
         this.setData({ loading: false });
       });
   },
 
-  switchTab(e) {
-    const tab = e.currentTarget.dataset.tab;
+  onTabChange(e) {
+    const tab = e.detail.value;
     this.setData({ tab });
     if (tab === 'members' && !this.data.members.length) {
       const current = wx.getStorageSync('currentCircle');
@@ -54,10 +65,10 @@ Page({
     this.setData({ memberCircleId: id });
     request('/api/circles/' + id + '/members')
       .then((list) => {
-        this.setData({ members: list || [] });
+        this.setData({ members: list || [], membersRun: true });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '加载成员失败', icon: 'none' });
+        showGlassToast((err && err.message) || '加载成员失败', 'err');
       });
   },
 
@@ -70,19 +81,19 @@ Page({
         if (!res.confirm) return;
         const name = (res.content || '').trim();
         if (!name) {
-          wx.showToast({ title: '圈子名称不能为空', icon: 'none' });
+          showGlassToast('圈子名称不能为空', 'err');
           return;
         }
         request('/api/circles', { method: 'POST', data: { name } })
           .then((circle) => {
-            wx.showToast({ title: '创建成功', icon: 'success' });
+            showGlassToast('创建成功', 'ok');
             this.setData({
               circles: this.data.circles.concat([circle]),
               memberCircleId: circle.id,
             });
           })
           .catch((err) => {
-            wx.showToast({ title: (err && err.message) || '创建失败', icon: 'none' });
+            showGlassToast((err && err.message) || '创建失败', 'err');
           });
       },
     });
@@ -97,19 +108,19 @@ Page({
         if (!res.confirm) return;
         const inviteCode = (res.content || '').trim();
         if (!inviteCode) {
-          wx.showToast({ title: '邀请码不能为空', icon: 'none' });
+          showGlassToast('邀请码不能为空', 'err');
           return;
         }
         request('/api/circles/join', { method: 'POST', data: { inviteCode } })
           .then((circle) => {
-            wx.showToast({ title: '加入成功', icon: 'success' });
+            showGlassToast('加入成功', 'ok');
             const exists = this.data.circles.some((c) => c.id === circle.id);
             if (!exists) {
               this.setData({ circles: this.data.circles.concat([circle]) });
             }
           })
           .catch((err) => {
-            wx.showToast({ title: (err && err.message) || '加入失败', icon: 'none' });
+            showGlassToast((err && err.message) || '加入失败', 'err');
           });
       },
     });

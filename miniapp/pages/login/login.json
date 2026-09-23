@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "glass-toast": "/components/glass-toast/glass-toast"
+  }
 }

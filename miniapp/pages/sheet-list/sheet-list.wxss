@@ -1,77 +1,47 @@
 .sheet-list-page {
-  padding: 24rpx;
+  padding: var(--space-3) var(--space-3) 160rpx;
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: var(--space-3);
 }
 
 .circle-name {
-  font-size: 34rpx;
-  font-weight: bold;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
-.add-btn {
-  width: 64rpx;
-  height: 64rpx;
-  line-height: 60rpx;
-  text-align: center;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #ffffff;
-  font-size: 40rpx;
+.fab {
+  position: fixed;
+  right: var(--space-4);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  height: 112rpx;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-md);
+  box-shadow: var(--shadow-card);
+  z-index: 10;
 }
 
 .sheet-item {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 28rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: var(--space-2);
 }
 
 .sheet-title {
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .sheet-meta {
   display: flex;
   align-items: center;
-  gap: 20rpx;
-  margin-top: 16rpx;
-}
-
-.badge {
-  font-size: 22rpx;
-  padding: 4rpx 16rpx;
-  border-radius: var(--radius-sm);
-}
-
-.badge-shared {
-  background: #e8f7ef;
-  color: var(--primary);
-}
-
-.badge-in_progress {
-  background: #eef3ff;
-  color: #4a7cf6;
-}
-
-.badge-completed {
-  background: #f2f2f2;
-  color: #999999;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 .progress {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.hint {
-  text-align: center;
-  color: #999999;
-  padding: 60rpx 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }

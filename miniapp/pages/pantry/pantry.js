@@ -1,4 +1,5 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 Page({
   data: {
@@ -6,6 +7,12 @@ Page({
     types: ['调料', '食材'],
     typeIndex: 0,
     name: '',
+    loading: false,
+    listRun: false,
+  },
+
+  onReady() {
+    bindToast(this, '#gtoast');
   },
 
   onShow() {
@@ -13,9 +20,15 @@ Page({
   },
 
   load() {
-    const self = this;
-    request('/api/me/pantry').then((items) => self.setData({ items }))
-      .catch(() => {});
+    this.setData({ loading: true });
+    request('/api/me/pantry')
+      .then((items) => {
+        this.setData({ items: items || [], listRun: true });
+      })
+      .catch(() => {})
+      .then(() => {
+        this.setData({ loading: false });
+      });
   },
 
   onTypeChange(e) {
@@ -29,10 +42,9 @@ Page({
   add() {
     const name = (this.data.name || '').trim();
     if (!name) {
-      wx.showToast({ title: '请输入名称', icon: 'none' });
+      showGlassToast('请输入名称', 'err');
       return;
     }
-    const self = this;
     request('/api/me/pantry', {
       method: 'POST',
       data: {
@@ -40,19 +52,17 @@ Page({
         name,
       },
     }).then(() => {
-      self.setData({ name: '' });
-      self.load();
+      this.setData({ name: '' });
+      this.load();
     }).catch((err) => {
-      wx.showToast({ title: (err && err.message) || '添加失败', icon: 'none' });
+      showGlassToast((err && err.message) || '添加失败', 'err');
     });
   },
 
   del(e) {
     const id = e.currentTarget.dataset.id;
-    const self = this;
     request('/api/me/pantry/' + id, { method: 'DELETE' })
-      .then(() => self.load())
-      .catch((err) => wx.showToast({
-        title: (err && err.message) || '删除失败', icon: 'none' }));
+      .then(() => this.load())
+      .catch((err) => showGlassToast((err && err.message) || '删除失败', 'err'));
   },
 });

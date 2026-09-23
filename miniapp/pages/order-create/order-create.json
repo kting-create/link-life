@@ -1,3 +1,8 @@
 {
-  "navigationBarTitleText": "发起点单"
+  "navigationBarTitleText": "发起点单",
+  "usingComponents": {
+    "field": "/components/field/field",
+    "icon-btn": "/components/icon-btn/icon-btn",
+    "glass-toast": "/components/glass-toast/glass-toast"
+  }
 }

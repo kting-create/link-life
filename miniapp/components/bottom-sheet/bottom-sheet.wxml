@@ -1,0 +1,6 @@
+<view wx:if="{{show}}" class="bs-mask" bindtap="onMask">
+  <view class="bs bs-in" catchtap="noop">
+    <view class="bs-handle"></view>
+    <slot></slot>
+  </view>
+</view>

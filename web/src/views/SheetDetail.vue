@@ -1,37 +1,63 @@
 <template>
-  <div>
-    <div v-if="sheet" class="card">
-      <div class="row section-head">
-        <h3>{{ sheet.title }}</h3>
-        <span class="tag">{{ sheetStatusText[sheet.status] || sheet.status }}</span>
-      </div>
-      <div class="muted">
-        已认领 {{ claimedCount }}/{{ items.length }}
-      </div>
-      <button v-if="showComplete" class="btn btn-warn complete-btn" @click="completeSheet">
-        收单
-      </button>
-    </div>
+  <div class="sheet-page">
+    <Skeleton v-if="loading && !sheet" :rows="3" />
 
-    <div v-for="it in items" :key="it.id" class="card">
-      <div class="row">
-        <strong>{{ it.dishName }}</strong>
-        <a class="recipe-link" @click.prevent="openRecipe(it.dishName)" href="#">菜谱</a>
-        <span class="tag" :class="it.mine ? 'tag-mine' : ''">{{ it.statusText }}</span>
-      </div>
-      <div v-if="it.note" class="muted">备注：{{ it.note }}</div>
-      <div class="muted">认领人：{{ it.claimantNickname || '暂无' }}</div>
-      <div class="row actions">
-        <button v-if="it.canClaim" class="btn btn-small" @click="claimItem(it)">认领</button>
-        <button v-if="it.canCook" class="btn btn-small" @click="startCook(it)">开始烹饪</button>
-        <button v-if="it.canFinish" class="btn btn-small" @click="finishItem(it)">完成</button>
-        <button v-if="it.canRelease" class="btn btn-small btn-ghost" @click="releaseItem(it)">
-          释放
+    <template v-else>
+      <div v-if="sheet" class="card hero sheet-head" style="view-transition-name: sheet-hero">
+        <span class="glow-orb sheet-glow" />
+        <div class="row section-head">
+          <h3>{{ sheet.title }}</h3>
+          <span class="badge-pill" :class="sheetBadgeClass(sheet.status)">
+            {{ sheetStatusText[sheet.status] || sheet.status }}
+          </span>
+        </div>
+        <div class="muted">
+          已认领 {{ claimedCount }}/{{ items.length }}
+        </div>
+        <button v-if="showComplete" class="btn btn-danger complete-btn" @click="completeSheet">
+          收单
         </button>
       </div>
-    </div>
 
-    <p v-if="!sheet && !loading" class="muted">清单不存在或加载失败</p>
+      <div v-if="items.length" class="stagger-list" :class="{ run: listRun }">
+        <div
+          v-for="(it, index) in items"
+          :key="it.id"
+          class="card clickable stagger-item item-card"
+          :style="{ '--i': index }"
+        >
+          <div class="row">
+            <strong>{{ it.dishName }}</strong>
+            <a class="recipe-link" @click.prevent="openRecipe(it.dishName, $event)" href="#">菜谱</a>
+            <span
+              class="badge-pill"
+              :class="['is-' + String(it.itemStatus || '').toLowerCase(), { 'is-mine': it.mine }]"
+            >
+              {{ it.statusText }}
+            </span>
+          </div>
+          <div v-if="it.note" class="muted">备注：{{ it.note }}</div>
+          <div class="muted">认领人：{{ it.claimantNickname || '暂无' }}</div>
+          <div class="row actions">
+            <button v-if="it.canClaim" class="btn btn-primary btn-small" @click="claimItem(it)">
+              <Icon name="plus" />认领
+            </button>
+            <button v-if="it.canCook" class="btn btn-primary btn-small" @click="startCook(it)">
+              <Icon name="timer" />开始烹饪
+            </button>
+            <button v-if="it.canFinish" class="btn btn-accent btn-small" @click="finishItem(it)">
+              <Icon name="check" />完成
+            </button>
+            <button v-if="it.canRelease" class="btn btn-secondary btn-small" @click="releaseItem(it)">
+              释放
+            </button>
+          </div>
+        </div>
+      </div>
+      <EmptyState v-else-if="sheet" title="暂无菜品" />
+    </template>
+
+    <EmptyState v-if="!sheet && !loading" title="清单不存在或加载失败" />
   </div>
 </template>
 
@@ -41,7 +67,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { getByDish } from '../api/recipe'
 import { showToast } from '../utils/toast'
-import { sheetStatusText, claimedCount } from '../utils/sheet'
+import { confirm } from '../utils/confirm'
+import { sheetStatusText, claimedCount, sheetBadgeClass } from '../utils/sheet'
+import { navigateWithHero } from '../utils/vtNav'
+import EmptyState from '../components/EmptyState.vue'
+import Skeleton from '../components/Skeleton.vue'
+import Icon from '../components/Icon.vue'
 
 const itemStatusText = {
   OPEN: '待认领',
@@ -51,6 +82,7 @@ const itemStatusText = {
 }
 
 export default {
+  components: { EmptyState, Skeleton, Icon },
   setup() {
     const route = useRoute()
     const router = useRouter()
@@ -60,6 +92,7 @@ export default {
     const showComplete = ref(false)
     const loading = ref(true)
     const acting = ref(false)
+    const listRun = ref(false)
 
     function applySheet(data, currentUserId) {
       const actionsEnabled = data.status !== 'COMPLETED'
@@ -77,6 +110,7 @@ export default {
       }))
       showComplete.value = actionsEnabled && currentUserId && data.creatorId === currentUserId
       sheet.value = data
+      listRun.value = true
     }
 
     async function reload() {
@@ -122,15 +156,16 @@ export default {
       act('/api/order/items/' + it.id + '/release', '已释放')
     }
 
-    function completeSheet() {
-      if (!window.confirm('收单后所有人不能再操作菜品，确定收单吗？')) return
+    async function completeSheet() {
+      if (!(await confirm({ title: '确定收单？', message: '收单后所有人不能再操作菜品', danger: true }))) return
       act('/api/order/sheets/' + route.params.id + '/complete', '已收单')
     }
 
-    async function openRecipe(dishName) {
+    async function openRecipe(dishName, e) {
+      const sourceEl = e && e.currentTarget && e.currentTarget.closest('.card')
       try {
         const recipe = await getByDish(sheet.value.circleId, dishName)
-        router.push('/recipes/' + recipe.id)
+        return navigateWithHero(sourceEl, 'recipe-hero', () => router.push('/recipes/' + recipe.id))
       } catch (err) {
         if (err && err.code === 5001) {
           router.push({ path: '/recipes/generate',
@@ -150,7 +185,9 @@ export default {
       items,
       showComplete,
       loading,
+      listRun,
       sheetStatusText,
+      sheetBadgeClass,
       claimedCount: claimed,
       claimItem,
       startCook,
@@ -164,24 +201,40 @@ export default {
 </script>
 
 <style scoped>
+.sheet-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.sheet-head {
+  margin-bottom: var(--space-1);
+}
+.sheet-glow {
+  width: 160px;
+  height: 160px;
+  top: -36px;
+  right: -36px;
+}
 .section-head {
   justify-content: space-between;
 }
 .section-head h3 {
   margin: 0;
+  font-size: var(--text-xl);
+  letter-spacing: -0.01em;
 }
 .complete-btn {
-  margin-top: 10px;
+  margin-top: var(--space-3);
+}
+.badge-pill.is-mine {
+  box-shadow: 0 0 0 2px var(--primary-weak);
 }
 .actions {
-  margin-top: 8px;
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
 }
 .recipe-link {
-  color: #4f7cff;
-  font-size: 13px;
-}
-.tag-mine {
-  background: #4f7cff;
-  color: #fff;
+  color: var(--primary);
+  font-size: var(--text-xs);
 }
 </style>

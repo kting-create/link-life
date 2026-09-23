@@ -1,9 +1,16 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 Page({
   data: {
     items: [],
     allDone: true,
+    loading: false,
+    listRun: false,
+  },
+
+  onReady() {
+    bindToast(this, '#gtoast');
   },
 
   onShow() {
@@ -15,12 +22,32 @@ Page({
   },
 
   load() {
+    this.setData({ loading: true });
     return request('/api/notifications?size=20')
       .then((data) => {
-        this.setData({ items: data.items, allDone: data.unreadCount === 0 });
+        this.setData({
+          items: data.items,
+          allDone: data.unreadCount === 0,
+          listRun: true,
+        });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '加载通知失败', icon: 'none' });
+        showGlassToast((err && err.message) || '加载通知失败', 'err');
+      })
+      .then(() => {
+        this.setData({ loading: false });
+      });
+  },
+
+  loadMore() {
+    const items = this.data.items;
+    const last = items.length ? items[items.length - 1].id : null;
+    request('/api/notifications?size=20&afterId=' + last)
+      .then((data) => {
+        this.setData({ items: items.concat(data.items || []) });
+      })
+      .catch((err) => {
+        showGlassToast((err && err.message) || '加载通知失败', 'err');
       });
   },
 
@@ -38,7 +65,7 @@ Page({
     request('/api/notifications/read-all', { method: 'POST' })
       .then(() => this.load())
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '操作失败', icon: 'none' });
+        showGlassToast((err && err.message) || '操作失败', 'err');
       });
   },
 });

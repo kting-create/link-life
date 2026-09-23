@@ -1,0 +1,13 @@
+<view class="code-input">
+  <input
+    wx:for="{{cells}}"
+    wx:key="index"
+    class="code-cell {{focusIdx === index ? 'code-cell-focus' : ''}}"
+    type="number"
+    value="{{item}}"
+    data-i="{{index}}"
+    focus="{{focusIdx === index}}"
+    bindinput="onInput"
+    bindfocus="onFocus"
+  />
+</view>

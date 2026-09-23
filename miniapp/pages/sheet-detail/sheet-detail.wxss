@@ -2,16 +2,14 @@
   padding: 24rpx;
 }
 
-.card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 28rpx;
+.sheet-detail-page .card {
   margin-bottom: 24rpx;
 }
 
 .sheet-title {
-  font-size: 36rpx;
-  font-weight: bold;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .sheet-meta {
@@ -21,36 +19,39 @@
   margin-top: 16rpx;
 }
 
-.badge {
-  font-size: 22rpx;
-  padding: 4rpx 16rpx;
-  border-radius: var(--radius-sm);
-  background: #e8f7ef;
-  color: var(--primary);
-}
-
 .progress {
   font-size: 24rpx;
-  color: #999999;
+  color: var(--text-secondary);
 }
 
 .readonly-tip {
   margin-top: 16rpx;
   font-size: 24rpx;
-  color: #fa9d3b;
+  color: var(--warning);
+}
+
+.share-btn {
+  margin-top: 24rpx;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .section-title {
   font-size: 28rpx;
-  color: #666666;
+  font-weight: 600;
+  color: var(--text-secondary);
   margin-bottom: 20rpx;
 }
 
 .item-row {
   display: flex;
   align-items: center;
-  padding: 20rpx 0;
-  border-bottom: 2rpx solid #f6f6f6;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid var(--border);
+}
+
+.item-row:last-child {
+  border-bottom: none;
 }
 
 .item-main {
@@ -59,36 +60,39 @@
 
 .dish-name {
   font-size: 30rpx;
-  font-weight: bold;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .dish-note {
   margin-top: 8rpx;
   font-size: 24rpx;
-  color: #999999;
+  color: var(--text-secondary);
 }
 
 .item-status {
-  margin-top: 8rpx;
-  font-size: 24rpx;
-}
-
-.status-text {
-  color: var(--primary);
+  margin-top: 12rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 
 .claimant {
-  color: #999999;
+  font-size: 24rpx;
+  color: var(--text-secondary);
 }
 
 .item-actions {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   gap: 12rpx;
 }
 
 .mini-btn {
   margin: 0;
+  padding: 8rpx 24rpx;
+  font-size: 24rpx;
 }
 
 .recipe-link {
@@ -98,11 +102,16 @@
 }
 
 .complete-btn {
-  margin-top: 20rpx;
+  margin-top: 8rpx;
 }
 
-.hint {
-  text-align: center;
-  color: #999999;
-  padding: 60rpx 0;
+.badge-pill.is-shared,
+.badge-pill.is-in_progress {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.badge-pill.is-completed {
+  background: var(--accent-weak);
+  color: var(--accent-deep);
 }

@@ -1,26 +1,30 @@
-.page { padding: 24rpx; }
-.card { background: #fff; border-radius: 16rpx; padding: 28rpx; margin-bottom: 24rpx; }
-.title { font-size: 36rpx; font-weight: 600; }
-.meta { color: #999; font-size: 24rpx; margin-top: 8rpx; }
-.section-title { font-size: 30rpx; font-weight: 600; margin: 16rpx 0; }
+.page { padding: 24rpx 24rpx 48rpx; }
+.page .card { margin-bottom: 24rpx; }
+.title { font-size: 36rpx; font-weight: 600; color: var(--text-primary); }
+.meta { color: var(--text-secondary); font-size: 24rpx; margin-top: 8rpx; }
+.section-title { font-size: 30rpx; font-weight: 600; margin: 16rpx 0; color: var(--text-primary); }
+.btn-row { display: flex; gap: 16rpx; margin-top: 24rpx; }
 .row { display: flex; justify-content: space-between; padding: 8rpx 0; font-size: 28rpx; }
-.amount { color: #666; }
+.amount { color: var(--text-secondary); }
 .step { display: flex; margin: 16rpx 0; }
-.step-no { width: 44rpx; height: 44rpx; border-radius: 50%; background: var(--primary); color: #fff;
-  text-align: center; line-height: 44rpx; margin-right: 16rpx; font-size: 24rpx; flex-shrink: 0; }
-.step-body { flex: 1; font-size: 28rpx; }
-.duration { display: block; color: #999; font-size: 24rpx; margin-top: 4rpx; }
-.tips { color: #666; font-size: 26rpx; margin-top: 16rpx; }
-.stars { font-size: 44rpx; color: #ddd; margin-bottom: 12rpx; }
-.star.on { color: #f7ba2a; }
-.comment { width: 100%; min-height: 100rpx; background: #f7f7f7; border-radius: var(--radius-sm);
-  padding: 16rpx; box-sizing: border-box; margin-bottom: 16rpx; }
-.version { font-size: 26rpx; padding: 8rpx 0; color: #666; }
+.step-no { width: 44rpx; height: 44rpx; border-radius: 50%; background: var(--primary-weak); color: var(--primary-deep);
+  text-align: center; line-height: 44rpx; margin-right: 16rpx; font-size: 24rpx; font-weight: 600; flex-shrink: 0; }
+.step-body { flex: 1; font-size: 28rpx; color: var(--text-primary); }
+.duration { display: block; color: var(--text-secondary); font-size: 24rpx; margin-top: 4rpx; }
+.tips { color: var(--text-secondary); font-size: 26rpx; margin-top: 16rpx; }
+.stars { font-size: 44rpx; color: var(--text-tertiary); margin-bottom: 12rpx; }
+.star.on { color: var(--warning); }
+.comment { width: 100%; min-height: 100rpx; background: var(--primary-weak); border: 1rpx solid var(--border);
+  border-radius: var(--radius-sm); padding: 16rpx; box-sizing: border-box; margin-bottom: 16rpx; }
+.version { font-size: 26rpx; padding: 8rpx 0; color: var(--text-secondary); }
 .rollback { color: var(--primary); margin-left: 16rpx; }
-.name-input { border: 1rpx solid #eee; border-radius: var(--radius-sm); padding: 16rpx; margin-bottom: 16rpx; }
-.edit-grid { display: flex; gap: 24rpx; font-size: 26rpx; color: #666; }
-.num-input { border: 1rpx solid #eee; border-radius: var(--radius-sm); padding: 8rpx 16rpx; width: 120rpx; }
-.edit-area { width: 100%; min-height: 140rpx; background: #f7f7f7; border-radius: var(--radius-sm);
-  padding: 16rpx; box-sizing: border-box; }
-.hint { color: #999; font-size: 22rpx; margin: 8rpx 0 16rpx; }
-.tips-input { border: 1rpx solid #eee; border-radius: var(--radius-sm); padding: 16rpx; margin-bottom: 16rpx; }
+.name-input { border: 1rpx solid var(--border); border-radius: var(--radius-sm); padding: 16rpx; margin-bottom: 16rpx;
+  background: var(--bg-card); color: var(--text-primary); }
+.edit-grid { display: flex; gap: 24rpx; font-size: 26rpx; color: var(--text-secondary); }
+.num-input { border: 1rpx solid var(--border); border-radius: var(--radius-sm); padding: 8rpx 16rpx; width: 120rpx;
+  background: var(--bg-card); color: var(--text-primary); }
+.edit-area { width: 100%; min-height: 140rpx; background: var(--primary-weak); border: 1rpx solid var(--border);
+  border-radius: var(--radius-sm); padding: 16rpx; box-sizing: border-box; color: var(--text-primary); }
+.hint { color: var(--text-secondary); font-size: 22rpx; margin: 8rpx 0 16rpx; }
+.tips-input { border: 1rpx solid var(--border); border-radius: var(--radius-sm); padding: 16rpx; margin-bottom: 16rpx;
+  background: var(--bg-card); color: var(--text-primary); }

@@ -1,9 +1,13 @@
 .page { padding: 24rpx; }
 .stream-box {
-  background: #fff; border-radius: 16rpx; padding: 32rpx;
-  min-height: 400rpx; font-size: 26rpx; line-height: 1.7; color: #333;
+  background: var(--primary-weak); border: 1rpx solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow-card);
+  padding: 32rpx;
+  min-height: 400rpx; font-size: 26rpx; line-height: 1.7; color: var(--text-primary);
   word-break: break-all; white-space: pre-wrap;
 }
-.cursor { display: inline-block; animation: blink 1s infinite; }
+.stream-text { color: var(--text-primary); }
+.cursor { display: inline-block; color: var(--primary); animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 .error { color: var(--danger); margin-top: 24rpx; font-size: 28rpx; }
+.retry-btn { margin-top: 24rpx; width: 100%; }

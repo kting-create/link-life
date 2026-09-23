@@ -7,3 +7,7 @@ export const sheetStatusText = {
 export function claimedCount(items) {
   return (items || []).filter((it) => it.claimantId).length
 }
+
+export function sheetBadgeClass(status) {
+  return String(status || '') === 'COMPLETED' ? 'is-done' : 'is-cooking'
+}

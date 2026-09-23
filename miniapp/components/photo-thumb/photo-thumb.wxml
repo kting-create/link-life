@@ -1,0 +1,9 @@
+<view
+  class="photo-thumb"
+  style="width: {{width}}rpx; height: {{width}}rpx;"
+  hover-class="photo-thumb-hover"
+  hover-stay-time="80"
+  bindtap="onOpen"
+>
+  <image class="photo-thumb-img" src="{{src}}" mode="aspectFill" />
+</view>

@@ -1,44 +1,43 @@
 <view class="profile-page">
-  <view class="profile-card">
+  <view class="card profile-card">
     <image wx:if="{{avatar}}" class="avatar" src="{{avatar}}" />
     <view wx:else class="avatar avatar-placeholder">我</view>
 
-    <view class="field">
-      <text class="field-label">昵称</text>
-      <input class="field-input" value="{{nickname}}" bindinput="onNicknameInput" placeholder="请输入昵称" />
-    </view>
-    <button class="save-btn" type="primary" size="mini" loading="{{saving}}" bindtap="saveProfile">保存</button>
+    <field label="昵称" value="{{nickname}}" placeholder="请输入昵称" bindinput="onNicknameInput" />
+    <button class="save-btn btn btn-primary" size="mini" hover-class="button-hover" loading="{{saving}}" bindtap="saveProfile">保存</button>
   </view>
 
-  <view class="binding-card">
-    <view class="binding-title">账号绑定</view>
-    <view class="binding-desc">在 Web 端输入绑定码，可绑定同一账号</view>
-    <button size="mini" bindtap="generateBindingCode">生成绑定码</button>
+  <view class="card section-card">
+    <view class="section-title">账号绑定</view>
+    <view class="section-desc">在 Web 端输入绑定码，可绑定同一账号</view>
+    <button class="btn btn-secondary" size="mini" hover-class="button-hover" bindtap="generateBindingCode">生成绑定码</button>
     <view wx:if="{{bindingCode}}" class="binding-result">
       <view class="binding-code">{{bindingCode}}</view>
-      <view class="binding-expires">有效期至 {{expiresText}}</view>
+      <view class="section-desc">有效期至 {{expiresText}}</view>
     </view>
   </view>
 
-  <view class="taste-card">
-    <view class="binding-title">口味画像</view>
+  <view class="card section-card taste-card">
+    <view class="glow-orb taste-glow"></view>
+    <view class="section-title">口味画像</view>
     <block wx:if="{{tasteSummary || tasteTags.length}}">
       <view wx:if="{{tasteSummary}}" class="taste-summary">{{tasteSummary}}</view>
       <view wx:if="{{tasteTags.length}}" class="taste-tags">
-        <text wx:for="{{tasteTags}}" wx:key="*this" class="taste-tag">{{item}}</text>
+        <text wx:for="{{tasteTags}}" wx:key="*this" class="badge-pill is-open taste-tag">{{item}}</text>
       </view>
     </block>
-    <view wx:else class="taste-empty">完成菜谱反馈后沉淀你的口味画像</view>
+    <empty-state wx:else title="完成菜谱反馈后沉淀你的口味画像" />
   </view>
 
-  <view class="nav-card">
-    <view class="nav-link nav-link-row" bindtap="goNotifications">
+  <view class="card section-card nav-card">
+    <view class="nav-link" hover-class="nav-hover" hover-stay-time="80" bindtap="goNotifications">
       <text>我的通知</text>
       <view wx:if="{{unread > 0}}" class="badge">{{unread > 99 ? '99+' : unread}}</view>
     </view>
-    <view class="nav-link" bindtap="goPantry">调料架</view>
-    <view class="nav-link" bindtap="goCircle">返回圈子列表</view>
+    <view class="nav-link" hover-class="nav-hover" hover-stay-time="80" bindtap="goPantry">调料架</view>
+    <view class="nav-link" hover-class="nav-hover" hover-stay-time="80" bindtap="goCircle">返回圈子列表</view>
   </view>
 
-  <button class="logout-btn" bindtap="logout">退出登录</button>
+  <button class="logout-btn btn btn-danger" hover-class="button-hover" bindtap="logout">退出登录</button>
 </view>
+<glass-toast id="gtoast" />

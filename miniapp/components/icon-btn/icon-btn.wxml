@@ -1,0 +1,10 @@
+<view
+  class="icon-btn"
+  hover-class="icon-btn-hover"
+  hover-stay-time="80"
+  catchtap="onTap"
+  role="button"
+  aria-label="{{title}}"
+>
+  <view class="icon-glyph icon-{{name}}"></view>
+</view>

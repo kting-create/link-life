@@ -1,9 +1,16 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 const SHEET_STATUS_TEXT = {
   SHARED: '分享中',
   IN_PROGRESS: '进行中',
   COMPLETED: '已收单',
+};
+
+const SHEET_STATUS_CLASS = {
+  SHARED: 'is-open',
+  IN_PROGRESS: 'is-cooking',
+  COMPLETED: 'is-done',
 };
 
 Page({
@@ -12,6 +19,7 @@ Page({
     circleName: '',
     sheets: [],
     loading: false,
+    listRun: false,
   },
 
   onLoad(options) {
@@ -23,13 +31,17 @@ Page({
     });
   },
 
+  onReady() {
+    bindToast(this, '#gtoast');
+  },
+
   onShow() {
     this.loadSheets();
   },
 
   loadSheets() {
     if (!this.data.circleId) {
-      wx.showToast({ title: '缺少圈子信息', icon: 'none' });
+      showGlassToast('缺少圈子信息', 'err');
       return;
     }
     this.setData({ loading: true });
@@ -41,15 +53,15 @@ Page({
           return {
             ...s,
             statusText: SHEET_STATUS_TEXT[s.status] || s.status,
-            statusClass: 'badge-' + String(s.status || '').toLowerCase(),
+            statusClass: SHEET_STATUS_CLASS[s.status] || 'is-open',
             claimedCount: claimed,
             totalCount: items.length,
           };
         });
-        this.setData({ sheets });
+        this.setData({ sheets, listRun: true });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '加载清单失败', icon: 'none' });
+        showGlassToast((err && err.message) || '加载清单失败', 'err');
       })
       .then(() => {
         this.setData({ loading: false });

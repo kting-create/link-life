@@ -1,129 +1,137 @@
 .circle-page {
-  padding: 24rpx;
+  position: relative;
+  padding: var(--space-3);
+}
+
+.page-glow {
+  width: 320rpx;
+  height: 320rpx;
+  top: -60rpx;
+  right: -60rpx;
 }
 
 .topbar {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24rpx;
+  margin-bottom: var(--space-3);
 }
 
 .topbar-title {
-  font-size: 36rpx;
-  font-weight: bold;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .topbar-profile {
-  font-size: 28rpx;
+  font-size: var(--text-sm);
   color: var(--primary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
 }
 
-.tabs {
-  display: flex;
-  margin-bottom: 24rpx;
-  background: #ffffff;
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.tab {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx 0;
-  color: #999999;
-}
-
-.tab-active {
-  color: var(--primary);
-  font-weight: bold;
-  border-bottom: 4rpx solid var(--primary);
+.link-hover {
+  background-color: var(--primary-weak);
 }
 
 .actions {
+  position: relative;
+  z-index: 1;
   display: flex;
-  gap: 20rpx;
-  margin-bottom: 24rpx;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
 }
 
 .action-btn {
-  margin-right: 20rpx;
+  flex: 1;
+  margin: 0;
+  padding: var(--space-2) 0;
 }
 
 .circle-item {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 28rpx;
-  margin-bottom: 20rpx;
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-2);
 }
 
 .circle-name {
-  font-size: 32rpx;
-  font-weight: bold;
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .circle-code {
-  margin-top: 12rpx;
-  font-size: 24rpx;
-  color: #999999;
+  margin-top: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }
 
 .member-circles {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
-  margin-bottom: 24rpx;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
 }
 
 .member-circle-chip {
-  padding: 10rpx 28rpx;
-  background: #ffffff;
-  border-radius: 32rpx;
-  font-size: 26rpx;
-  color: #666666;
+  padding: var(--space-1) var(--space-3);
+  background: var(--bg-card);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  transition: transform 0.18s var(--ease-spring-tap), box-shadow 0.2s ease;
 }
 
+.member-circle-chip.chip-hover {
+  transform: scale(0.96);
+}
+
+/* 白字为渐变上的 on-color 约定（同 app.wxss .btn-primary） */
 .chip-active {
-  background: var(--primary);
+  background: var(--grad-flame);
+  border-color: transparent;
   color: #ffffff;
+  box-shadow: var(--shadow-glow);
 }
 
 .member-item {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 24rpx;
-  margin-bottom: 20rpx;
+  margin-bottom: var(--space-2);
 }
 
 .member-avatar {
   width: 72rpx;
   height: 72rpx;
   border-radius: 50%;
-  margin-right: 20rpx;
+  margin-right: var(--space-2);
 }
 
 .member-avatar-placeholder {
-  background: var(--primary);
-  color: #ffffff;
+  background: var(--primary-weak);
+  color: var(--primary-deep);
   text-align: center;
   line-height: 72rpx;
-  font-size: 32rpx;
+  font-size: var(--text-md);
+  font-weight: 600;
+  box-shadow: var(--shadow-glow);
 }
 
 .member-name {
   flex: 1;
-  font-size: 30rpx;
+  font-size: var(--text-md);
+  color: var(--text-primary);
 }
 
 .member-role {
-  font-size: 24rpx;
-  color: #999999;
-}
-
-.hint {
-  text-align: center;
-  color: #999999;
-  padding: 60rpx 0;
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
 }

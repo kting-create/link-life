@@ -3,12 +3,25 @@ import { onMounted, ref } from 'vue'
 import { addPantry, deletePantry, listPantry } from '../api/recipe'
 import { showToast } from '../utils/toast'
 
+import EmptyState from '../components/EmptyState.vue'
+import Skeleton from '../components/Skeleton.vue'
+import Field from '../components/Field.vue'
+import IconButton from '../components/IconButton.vue'
+
 const items = ref([])
 const type = ref('SEASONING')
 const name = ref('')
+const loading = ref(false)
+const listRun = ref(false)
 
 async function load() {
-  items.value = await listPantry()
+  loading.value = true
+  try {
+    items.value = await listPantry()
+    listRun.value = true
+  } finally {
+    loading.value = false
+  }
 }
 onMounted(load)
 
@@ -31,29 +44,82 @@ async function del(id) {
 
 <template>
   <div class="pantry">
-    <div class="add">
-      <select v-model="type">
+    <div class="card add-card">
+      <select v-model="type" class="input type-select">
         <option value="SEASONING">调料</option>
         <option value="INGREDIENT">食材</option>
       </select>
-      <input v-model="name" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
-      <button @click="add">添加</button>
+      <Field v-model="name" label="名称" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
+      <button class="btn btn-primary" @click="add">添加</button>
     </div>
-    <div class="item" v-for="i in items" :key="i.id">
-      <span><b class="tag">{{ i.type === 'SEASONING' ? '调料' : '食材' }}</b> {{ i.name }}</span>
-      <a @click.prevent="del(i.id)" href="#">删除</a>
+    <Skeleton v-if="loading && !items.length" :rows="3" />
+    <div v-else-if="items.length" class="item-grid stagger-list" :class="{ run: listRun }">
+      <div class="card item stagger-item" v-for="(i, index) in items" :key="i.id" :style="{ '--i': index }">
+        <div class="item-main">
+          <span class="badge-pill" :class="i.type === 'SEASONING' ? 'is-seasoning' : 'is-ingredient'">
+            {{ i.type === 'SEASONING' ? '调料' : '食材' }}
+          </span>
+          <span class="name">{{ i.name }}</span>
+        </div>
+        <IconButton name="trash" title="删除" @click="del(i.id)" />
+      </div>
     </div>
-    <p v-if="!items.length" class="empty">还没有条目，添加后 AI 会优先使用它们调味</p>
+    <EmptyState v-else title="还没有条目，添加后 AI 会优先使用它们调味" />
   </div>
 </template>
 
 <style scoped>
-.pantry { max-width: 640px; margin: 0 auto; padding: 16px; }
-.add { display: flex; gap: 8px; margin-bottom: 16px; }
-.add input { flex: 1; }
-.item { background: #fff; border-radius: 8px; padding: 12px 16px; margin-bottom: 8px;
-  display: flex; justify-content: space-between; }
-.item a { color: var(--danger); cursor: pointer; }
-.tag { font-weight: 400; font-size: 12px; color: #1989fa; margin-right: 8px; }
-.empty { color: #999; text-align: center; padding: 48px 0; }
+.pantry {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+.add-card {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+}
+.add-card .field {
+  flex: 1;
+  margin-bottom: 0;
+}
+.type-select {
+  width: 96px;
+  flex-shrink: 0;
+}
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--gap);
+}
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.name {
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.badge-pill.is-seasoning {
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+}
+.badge-pill.is-ingredient {
+  background: var(--glass-bg-strong);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
 </style>

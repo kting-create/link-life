@@ -1,65 +1,51 @@
 .order-create-page {
-  padding: 24rpx;
+  padding: var(--space-3);
 }
 
-.card {
-  background: #ffffff;
-  border-radius: var(--radius);
-  padding: 28rpx;
-  margin-bottom: 24rpx;
+.form-card {
+  margin-bottom: var(--space-3);
 }
 
 .field-label {
-  font-size: 28rpx;
-  color: #666666;
-  margin-bottom: 16rpx;
-}
-
-.title-input {
-  border-bottom: 2rpx solid #eeeeee;
-  padding: 12rpx 0;
-  font-size: 30rpx;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
 }
 
 .item-row {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
 }
 
 .item-inputs {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
-.dish-input {
-  border-bottom: 2rpx solid #eeeeee;
-  padding: 12rpx 0;
-  font-size: 30rpx;
-}
-
-.note-input {
-  border-bottom: 2rpx solid #eeeeee;
-  padding: 8rpx 0;
-  font-size: 26rpx;
-  color: #999999;
-}
-
-.row-remove {
-  width: 60rpx;
-  height: 60rpx;
-  line-height: 60rpx;
-  text-align: center;
-  color: var(--danger);
-  font-size: 26rpx;
+.item-inputs .field {
+  margin-bottom: 0;
 }
 
 .add-row {
   text-align: center;
   color: var(--primary);
-  font-size: 28rpx;
-  padding: 16rpx 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.link-hover {
+  background-color: var(--primary-weak);
 }
 
 .submit-btn {
-  margin-top: 40rpx;
+  margin-top: var(--space-5);
+  width: 100%;
+  height: 112rpx;
 }

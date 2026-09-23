@@ -1,4 +1,5 @@
 const { request } = require('../../utils/request');
+const { bindToast, showGlassToast } = require('../../utils/toast');
 
 Page({
   data: {
@@ -10,6 +11,10 @@ Page({
     unread: 0,
     tasteSummary: '',
     tasteTags: [],
+  },
+
+  onReady() {
+    bindToast(this, '#gtoast');
   },
 
   onShow() {
@@ -27,7 +32,7 @@ Page({
         this.setData({ nickname: user.nickname || '', avatar: user.avatar || '' });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '加载个人信息失败', icon: 'none' });
+        showGlassToast((err && err.message) || '加载个人信息失败', 'err');
       });
   },
 
@@ -38,18 +43,18 @@ Page({
   saveProfile() {
     const nickname = (this.data.nickname || '').trim();
     if (!nickname) {
-      wx.showToast({ title: '昵称不能为空', icon: 'none' });
+      showGlassToast('昵称不能为空', 'err');
       return;
     }
     if (this.data.saving) return;
     this.setData({ saving: true });
     request('/api/me', { method: 'PUT', data: { nickname } })
       .then((user) => {
-        wx.showToast({ title: '保存成功', icon: 'success' });
+        showGlassToast('保存成功', 'ok');
         this.setData({ nickname: user.nickname || nickname });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '保存失败', icon: 'none' });
+        showGlassToast((err && err.message) || '保存失败', 'err');
       })
       .then(() => {
         this.setData({ saving: false });
@@ -65,7 +70,7 @@ Page({
         });
       })
       .catch((err) => {
-        wx.showToast({ title: (err && err.message) || '生成绑定码失败', icon: 'none' });
+        showGlassToast((err && err.message) || '生成绑定码失败', 'err');
       });
   },
 

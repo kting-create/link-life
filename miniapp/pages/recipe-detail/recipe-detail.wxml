@@ -3,8 +3,10 @@
     <view class="title">{{recipe.customName || recipe.dishName}}</view>
     <view class="meta" wx:if="{{recipe.customName}}">原名：{{recipe.dishName}}</view>
     <view class="meta">版本 v{{recipe.currentVersion}} · 约 {{recipe.content.totalMinutes}} 分钟 · {{recipe.content.servings}} 人食</view>
-    <button size="mini" type="primary" bindtap="startCook">开始烹饪</button>
-    <button size="mini" bindtap="toggleEdit">{{editMode ? '取消编辑' : '编辑菜谱'}}</button>
+    <view class="btn-row">
+      <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="startCook">开始烹饪</button>
+      <button size="mini" class="btn btn-secondary" hover-class="button-hover" bindtap="toggleEdit">{{editMode ? '取消编辑' : '编辑菜谱'}}</button>
+    </view>
   </view>
 
   <view class="card" wx:if="{{editMode && editForm}}">
@@ -27,7 +29,7 @@
     <view class="hint">每行一步，按行顺序编号（保留各步骤时长）</view>
     <view class="section-title">小贴士</view>
     <input class="tips-input" value="{{editForm.tips}}" bindinput="onEditField" data-field="tips" placeholder="可选" />
-    <button size="mini" bindtap="saveEdit" disabled="{{atLimit}}">保存编辑</button>
+    <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="saveEdit" disabled="{{atLimit}}">保存编辑</button>
   </view>
 
   <view class="card">
@@ -62,8 +64,10 @@
     </view>
     <textarea class="comment" value="{{myComment}}" placeholder="口感如何？（如：偏淡了）"
               bindinput="onCommentInput" maxlength="512" />
-    <button size="mini" bindtap="submitFeedback">提交反馈</button>
-    <button size="mini" type="warn" plain bindtap="iterate" disabled="{{atLimit}}">按反馈优化菜谱</button>
+    <view class="btn-row">
+      <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="submitFeedback">提交反馈</button>
+      <button size="mini" class="btn btn-danger" hover-class="button-hover" bindtap="iterate" disabled="{{atLimit}}">按反馈优化菜谱</button>
+    </view>
     <view wx:if="{{atLimit}}" class="meta">已达版本上限，请先回滚旧版本</view>
   </view>
 
@@ -81,7 +85,7 @@
     <view class="section-title">个性化命名</view>
     <input class="name-input" value="{{nameInput}}" placeholder="如：我妈的红烧肉"
            bindinput="onNameInput" maxlength="64" />
-    <button size="mini" bindtap="saveName">保存命名</button>
+    <button size="mini" class="btn btn-primary" hover-class="button-hover" bindtap="saveName">保存命名</button>
   </view>
 </view>
 <view wx:else class="page"><text>加载中…</text></view>

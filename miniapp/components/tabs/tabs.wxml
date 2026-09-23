@@ -1,0 +1,17 @@
+<view class="tabs" role="tablist">
+  <view
+    class="tab-ind"
+    style="width: calc(100% / {{count}}); transform: translateX(calc({{idx}} * 100%));"
+  ></view>
+  <view
+    wx:for="{{items}}"
+    wx:key="key"
+    class="tab-btn {{item.key === current ? 'active' : ''}}"
+    role="tab"
+    aria-selected="{{item.key === current}}"
+    data-key="{{item.key}}"
+    hover-class="tab-btn-hover"
+    bindtap="onTap"
+    >{{item.label}}</view
+  >
+</view>

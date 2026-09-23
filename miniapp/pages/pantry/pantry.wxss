@@ -1,11 +1,67 @@
-.page { padding: 24rpx; }
-.add-box { display: flex; align-items: center; gap: 16rpx; margin-bottom: 24rpx; }
-.picker { background: #fff; padding: 16rpx 24rpx; border-radius: var(--radius-sm); font-size: 28rpx; }
-.input { flex: 1; background: #fff; padding: 16rpx 24rpx; border-radius: var(--radius-sm); font-size: 28rpx; }
-.item { background: #fff; border-radius: var(--radius); padding: 24rpx; margin-bottom: 16rpx;
-  display: flex; justify-content: space-between; align-items: center; font-size: 28rpx; }
-.tag { font-size: 20rpx; padding: 4rpx 12rpx; border-radius: 6rpx; margin-right: 12rpx; }
-.tag-s { background: #e8f8ef; color: var(--primary); }
-.tag-i { background: #e8f1fd; color: #1989fa; }
-.del { color: var(--danger); }
-.empty { color: #999; text-align: center; padding: 80rpx 0; font-size: 26rpx; }
+.page {
+  padding: var(--space-3);
+}
+
+.add-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.picker {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.add-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.add-input .field {
+  margin-bottom: 0;
+}
+
+.add-btn {
+  flex-shrink: 0;
+}
+
+.item {
+  margin-bottom: var(--space-2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.item-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.item-name {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-pill.is-seasoning {
+  background: var(--primary-weak);
+  color: var(--primary-deep);
+}
+
+.badge-pill.is-ingredient {
+  background: var(--glass-bg-strong);
+  color: var(--text-secondary);
+  border: 2rpx solid var(--border);
+}

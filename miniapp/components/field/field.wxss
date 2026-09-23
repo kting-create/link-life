@@ -1,0 +1,12 @@
+/* field — 对照 web/src/components/Field.vue（rpx = web px × 2） */
+
+.field {
+  margin-bottom: var(--space-3);
+}
+.field-label {
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+}

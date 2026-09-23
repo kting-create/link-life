@@ -1,19 +1,24 @@
 <view class="page">
-  <view class="add-box">
+  <view class="card add-box">
     <picker range="{{types}}" value="{{typeIndex}}" bindchange="onTypeChange">
       <view class="picker">{{types[typeIndex]}}</view>
     </picker>
-    <input class="input" value="{{name}}" placeholder="如：生抽 / 五花肉"
-           bindinput="onNameInput" />
-    <button size="mini" type="primary" bindtap="add">添加</button>
-  </view>
-  <view class="item" wx:for="{{items}}" wx:key="id">
-    <view>
-      <text class="tag {{item.type === 'SEASONING' ? 'tag-s' : 'tag-i'}}">
-        {{item.type === 'SEASONING' ? '调料' : '食材'}}</text>
-      <text>{{item.name}}</text>
+    <view class="add-input">
+      <field value="{{name}}" placeholder="如：生抽 / 五花肉" bindinput="onNameInput" />
     </view>
-    <text class="del" bindtap="del" data-id="{{item.id}}">删除</text>
+    <button class="btn btn-primary add-btn" size="mini" hover-class="button-hover" bindtap="add">添加</button>
   </view>
-  <view wx:if="{{!items.length}}" class="empty">还没有条目，添加后 AI 会优先使用它们调味</view>
+  <skeleton wx:if="{{loading && !items.length}}" rows="3" />
+  <view wx:elif="{{items.length}}" class="stagger-list {{listRun ? 'run' : ''}}">
+    <view class="item card stagger-item" style="--i: {{index}}" wx:for="{{items}}" wx:key="id">
+      <view class="item-main">
+        <text class="badge-pill {{item.type === 'SEASONING' ? 'is-seasoning' : 'is-ingredient'}}">
+          {{item.type === 'SEASONING' ? '调料' : '食材'}}</text>
+        <text class="item-name">{{item.name}}</text>
+      </view>
+      <icon-btn name="trash" title="删除" data-id="{{item.id}}" bindtap="del" />
+    </view>
+  </view>
+  <empty-state wx:else title="还没有条目，添加后 AI 会优先使用它们调味" />
 </view>
+<glass-toast id="gtoast" />

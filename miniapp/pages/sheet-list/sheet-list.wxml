@@ -1,26 +1,33 @@
 <view class="sheet-list-page">
   <view class="header">
     <view class="circle-name">{{circleName || '点单清单'}}</view>
-    <view class="add-btn" bindtap="addSheet">＋</view>
   </view>
 
-  <view wx:if="{{loading}}" class="hint">加载中...</view>
-  <block wx:elif="{{!sheets.length}}">
-    <view class="hint">还没有点单，点右上角 ＋ 发起一个吧</view>
-  </block>
-  <block wx:else>
+  <skeleton wx:if="{{loading}}" rows="3" />
+  <empty-state
+    wx:elif="{{!sheets.length}}"
+    title="还没有点单清单"
+    desc="发起一单，让家人来认领拿手菜"
+  />
+  <view wx:else class="stagger-list {{listRun ? 'run' : ''}}">
     <view
-      class="sheet-item"
+      class="sheet-item card clickable stagger-item"
+      style="--i: {{index}}"
       wx:for="{{sheets}}"
       wx:key="id"
       data-id="{{item.id}}"
+      hover-class="button-hover"
+      hover-stay-time="80"
       bindtap="openSheet"
     >
       <view class="sheet-title">{{item.title}}</view>
       <view class="sheet-meta">
-        <view class="badge {{item.statusClass}}">{{item.statusText}}</view>
+        <view class="badge-pill {{item.statusClass}}">{{item.statusText}}</view>
         <view class="progress">{{item.claimedCount}}/{{item.totalCount}} 已认领</view>
       </view>
     </view>
-  </block>
+  </view>
+
+  <view class="fab btn btn-primary" hover-class="button-hover" bindtap="addSheet">发起点单</view>
 </view>
+<glass-toast id="gtoast" />

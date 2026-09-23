@@ -1,0 +1,15 @@
+<view wx:if="{{open}}" class="dlg-mask" bindtap="onMask">
+  <view class="dlg dlg-in" catchtap="noop">
+    <view class="dlg-title">{{title}}</view>
+    <view class="dlg-desc">{{message}}</view>
+    <view class="dlg-acts">
+      <button class="btn btn-secondary" hover-class="button-hover" catchtap="onCancel">取消</button>
+      <button
+        class="btn {{danger ? 'btn-danger' : 'btn-primary'}}"
+        hover-class="button-hover"
+        catchtap="onConfirm"
+        >{{confirmText}}</button
+      >
+    </view>
+  </view>
+</view>
