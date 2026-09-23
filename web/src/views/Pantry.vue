@@ -2,8 +2,10 @@
 import { onMounted, ref } from 'vue'
 import { addPantry, deletePantry, listPantry } from '../api/recipe'
 import { showToast } from '../utils/toast'
+
 import EmptyState from '../components/EmptyState.vue'
 import Skeleton from '../components/Skeleton.vue'
+import Field from '../components/Field.vue'
 import IconButton from '../components/IconButton.vue'
 
 const items = ref([])
@@ -47,7 +49,7 @@ async function del(id) {
         <option value="SEASONING">调料</option>
         <option value="INGREDIENT">食材</option>
       </select>
-      <input v-model="name" class="input" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
+      <Field v-model="name" label="名称" placeholder="如：生抽 / 五花肉" @keyup.enter="add" />
       <button class="btn btn-primary" @click="add">添加</button>
     </div>
     <Skeleton v-if="loading && !items.length" :rows="3" />
@@ -76,8 +78,12 @@ async function del(id) {
 }
 .add-card {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-2);
+}
+.add-card .field {
+  flex: 1;
+  margin-bottom: 0;
 }
 .type-select {
   width: 96px;

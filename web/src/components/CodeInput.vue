@@ -12,7 +12,9 @@ const emit = defineEmits(['update:modelValue'])
 const cells = ref(props.modelValue.split(''))
 const chars = computed(() => cells.value)
 watch(() => props.modelValue, (v) => {
-  cells.value = String(v ?? '').split('').slice(0, props.length)
+  const next = String(v ?? '')
+  if (next === cells.value.join('')) return
+  cells.value = next.split('').slice(0, props.length)
 })
 function sync() { emit('update:modelValue', cells.value.join('')) }
 function onInput(i, e) {
