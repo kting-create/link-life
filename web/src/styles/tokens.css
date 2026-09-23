@@ -1,23 +1,64 @@
+/* web/src/styles/tokens.css */
 :root {
+  /* 色 · 陶土橙唯一强调 */
   --primary: #c2410c;
+  --primary-hot: #ea580c;
   --primary-deep: #9a3412;
   --primary-weak: #fff1e6;
+  --grad-flame: linear-gradient(135deg, #c2410c, #ea580c);
   --accent: #059669;
   --accent-deep: #047857;
   --accent-weak: #ecfdf5;
+  --grad-done: linear-gradient(135deg, #047857, #059669);
+  --grad-cooking: linear-gradient(135deg, #1d4ed8, #3b82f6);
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-tertiary: #94a3b8;
-  --bg-page: #fffbeb;
+  --bg-page: linear-gradient(165deg, #faf6f1 0%, #fff7ed 45%, #f3ece5 100%);
   --bg-card: #ffffff;
   --border: #f2e6e2;
   --danger: #dc2626;
+  --danger-hot: #ef4444;
+  --grad-danger: linear-gradient(135deg, #dc2626, #ef4444);
   --warning: #f59e0b;
   --ring: #9a3412;
+  /* 玻璃（全局唯一参数，页面禁改） */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-strong: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(255, 255, 255, 0.85);
+  --glass-blur: blur(16px);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  /* 光晕/阴影 */
+  --shadow-card: 0 8px 28px rgba(154, 52, 18, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --shadow-press: 0 1px 2px rgba(154, 52, 18, 0.1);
+  --shadow-glow: 0 2px 8px rgba(194, 65, 12, 0.35);
+  --shadow-lift: 0 14px 34px rgba(154, 52, 18, 0.14);
+  --glow-terracotta: radial-gradient(circle, rgba(194, 65, 12, 0.18), transparent 70%);
+  /* 几何 */
   --radius-lg: 24px;
   --radius: 16px;
   --radius-sm: 10px;
-  --shadow-card: 0 2px 8px rgba(154, 52, 18, 0.06), 0 8px 24px rgba(154, 52, 18, 0.08);
-  --shadow-press: 0 1px 2px rgba(154, 52, 18, 0.1);
-  --gap: 12px;
+  --radius-pill: 999px;
+  /* 间距阶梯 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  /* 字阶 */
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 28px;
+  --text-3xl: 32px;
+  /* 动效（与 motion.js 数值一致） */
+  --duration-exit: 200ms;
+  --duration-page: 450ms;
+  --stagger-item: 60ms;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring-tap: cubic-bezier(0.34, 1.56, 0.64, 1);
 }
