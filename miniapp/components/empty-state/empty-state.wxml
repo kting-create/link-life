@@ -1,0 +1,6 @@
+<view class="empty">
+  <view class="empty-art"></view>
+  <view class="empty-title">{{title}}</view>
+  <view class="muted">{{desc}}</view>
+  <slot name="action"></slot>
+</view>

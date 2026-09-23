@@ -1,0 +1,10 @@
+<view class="field">
+  <view wx:if="{{label}}" class="field-label">{{label}}</view>
+  <input
+    class="input"
+    value="{{value}}"
+    placeholder="{{placeholder}}"
+    placeholder-class="input-placeholder"
+    bindinput="onInput"
+  />
+</view>

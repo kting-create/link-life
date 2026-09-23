@@ -1,0 +1,72 @@
+/* glass-toast — 对照 web/src/style.css .toast + AppToast.vue（rpx = web px × 2）
+   弹跳进 t-pop，2.2s 后上浮出 t-out（与 web 2200ms 一致） */
+
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 300;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 2rpx solid var(--glass-border);
+  box-shadow: var(--shadow-lift);
+  color: var(--text-primary);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.toast-ok {
+  color: var(--accent-deep);
+}
+.toast-err {
+  color: var(--danger);
+}
+.toast-text {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.toast-icon {
+  width: 36rpx;
+  height: 36rpx;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.icon-check {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23047857' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");
+}
+.icon-x {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23dc2626' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6L6 18'/%3E%3Cpath d='M6 6l12 12'/%3E%3C/svg%3E");
+}
+.t-in {
+  animation: t-pop 0.4s var(--ease-spring-tap);
+}
+.t-out {
+  animation: t-exit var(--duration-exit) ease forwards;
+}
+@keyframes t-pop {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(32rpx) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+@keyframes t-exit {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-12rpx) scale(0.96);
+  }
+}

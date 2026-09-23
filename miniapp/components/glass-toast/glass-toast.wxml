@@ -1,0 +1,5 @@
+<view wx:if="{{visible}}" class="toast toast-{{type}} {{anim}}">
+  <view wx:if="{{type === 'ok'}}" class="toast-icon icon-check"></view>
+  <view wx:if="{{type === 'err'}}" class="toast-icon icon-x"></view>
+  <text class="toast-text">{{text}}</text>
+</view>
