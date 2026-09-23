@@ -35,24 +35,31 @@
         <span>我的</span>
       </router-link>
     </nav>
-    <div v-if="toast.visible" class="toast">{{ toast.text }}</div>
+    <AppToast />
+    <ConfirmDialog ref="cdRef" />
   </div>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { request, clearTokens } from './api/request'
 import { fetchUnreadCount } from './api/notifications'
-import { toast } from './utils/toast'
+import { registerConfirm } from './utils/confirm'
 import PageTransition from './components/PageTransition.vue'
+import AppToast from './components/AppToast.vue'
+import ConfirmDialog from './components/ConfirmDialog.vue'
 
 export default {
-  components: { PageTransition },
+  components: { PageTransition, AppToast, ConfirmDialog },
   setup() {
     const route = useRoute()
     const router = useRouter()
     const user = ref(null)
+    const cdRef = ref(null)
+    onMounted(() => {
+      registerConfirm(cdRef.value.confirm)
+    })
 
     const showNav = computed(() => route.meta.requiresAuth === true)
 
@@ -118,7 +125,7 @@ export default {
       { immediate: true }
     )
 
-    return { route, user, showNav, unread, logout, toast, tabIndex }
+    return { route, user, showNav, unread, logout, tabIndex, cdRef }
   },
 }
 </script>

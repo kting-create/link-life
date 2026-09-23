@@ -48,6 +48,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { getByDish } from '../api/recipe'
 import { showToast } from '../utils/toast'
+import { confirm } from '../utils/confirm'
 import { sheetStatusText, claimedCount } from '../utils/sheet'
 
 const itemStatusText = {
@@ -129,8 +130,8 @@ export default {
       act('/api/order/items/' + it.id + '/release', '已释放')
     }
 
-    function completeSheet() {
-      if (!window.confirm('收单后所有人不能再操作菜品，确定收单吗？')) return
+    async function completeSheet() {
+      if (!(await confirm({ title: '确定收单？', message: '收单后所有人不能再操作菜品', danger: true }))) return
       act('/api/order/sheets/' + route.params.id + '/complete', '已收单')
     }
 
