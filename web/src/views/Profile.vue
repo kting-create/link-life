@@ -19,10 +19,17 @@ request('/api/me/taste-profile')
   })
   .catch((e) => showToast(e.message || '加载失败'))
 
+let loggingOut = false
 async function logout() {
-  try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
-  clearTokens()
-  router.push('/login')
+  if (loggingOut) return
+  loggingOut = true
+  try {
+    try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
+    clearTokens()
+    await router.replace('/login')
+  } finally {
+    loggingOut = false
+  }
 }
 </script>
 
