@@ -20,7 +20,7 @@
       </PageTransition>
     </main>
     <nav v-if="showNav" class="tabbar" :style="{ '--tab-i': tabIndex }">
-      <span v-if="user" class="tabbar-ind"></span>
+      <span v-if="user && tabIndex !== null" class="tabbar-ind"></span>
       <router-link to="/circles" class="tabbar-item">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span>首页</span>
@@ -78,7 +78,8 @@ export default {
     watch(
       () => route.path,
       () => {
-        tabIndex.value = route.path.startsWith('/notifications') ? 1 : route.path.startsWith('/me') ? 2 : 0
+        const p = route.path
+        tabIndex.value = p.startsWith('/notifications') ? 1 : p.startsWith('/me') ? 2 : p.startsWith('/circles') ? 0 : null
       },
       { immediate: true }
     )

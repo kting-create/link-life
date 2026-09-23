@@ -1,17 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { streamRequest } from '../api/sse'
 import { showToast } from '../utils/toast'
+import Icon from '../components/Icon.vue'
 
 const route = useRoute()
 const router = useRouter()
-const streamText = ref('')
+const segs = ref([])
+const streaming = ref(false)
 const failed = ref(false)
 const errorText = ref('')
+const streamEl = ref(null)
 
 function start() {
-  streamText.value = ''
+  segs.value = []
+  streaming.value = true
   failed.value = false
   errorText.value = ''
   const isIterate = !!route.query.recipeId
@@ -22,9 +26,26 @@ function start() {
     ? { comment: route.query.comment || '' }
     : { circleId: Number(route.query.circleId), dishName: route.query.dishName }
   streamRequest(path, body, {
-    onDelta: (text) => { streamText.value += text },
-    onDone: (payload) => router.replace('/recipes/' + payload.recipeId),
+    onDelta: (text) => { segs.value = segs.value.concat([text]) },
+    onDone: (payload) => {
+      streaming.value = false
+      const go = () => router.replace('/recipes/' + payload.recipeId)
+      const el = streamEl.value
+      if (el && typeof document !== 'undefined' && document.startViewTransition) {
+        el.style.viewTransitionName = 'recipe-hero'
+        const t = document.startViewTransition(async () => {
+          go()
+          await nextTick()
+        })
+        if (t && t.finished && t.finished.finally) {
+          t.finished.finally(() => { el.style.viewTransitionName = '' })
+        }
+      } else {
+        go()
+      }
+    },
     onError: (err) => {
+      streaming.value = false
       failed.value = true
       errorText.value = err.message || '生成失败，请重试'
     },
@@ -43,9 +64,11 @@ if (!circleId || !dishName) {
 
 <template>
   <div class="generate">
-    <pre class="card stream" :class="{ breathing: !streamText && !failed }">{{ streamText || '正在生成菜谱…' }}</pre>
+    <pre ref="streamEl" class="card stream" :class="{ breathing: !segs.length && !failed }"><template v-if="segs.length"><span v-for="(seg, i) in segs" :key="i" class="seg">{{ seg }}</span><span v-if="streaming" class="cursor">▍</span></template><template v-else-if="!failed">正在生成菜谱…<span v-if="streaming" class="cursor">▍</span></template></pre>
     <p v-if="errorText" class="error">{{ errorText }}</p>
-    <button v-if="failed" class="btn btn-primary retry" @click="start">重试</button>
+    <button v-if="failed" class="btn btn-primary retry" @click="start">
+      <Icon name="sparkle" />重试
+    </button>
   </div>
 </template>
 
@@ -56,13 +79,24 @@ if (!circleId || !dishName) {
 }
 .stream {
   margin: 0;
-  padding: 24px;
+  padding: var(--space-5);
   min-height: 320px;
   white-space: pre-wrap;
   word-break: break-all;
-  font-size: 14px;
+  font-size: var(--text-sm);
   line-height: 1.8;
   font-family: inherit;
+}
+.seg {
+  animation: st-in .3s var(--ease-out-soft) both;
+}
+.cursor {
+  display: inline-block;
+  color: var(--primary);
+  animation: blink 1s infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
 }
 .breathing {
   animation: breathe 2000ms ease-in-out infinite;
@@ -78,10 +112,11 @@ if (!circleId || !dishName) {
 }
 .error {
   color: var(--danger);
-  margin-top: 12px;
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
 }
 .retry {
   width: 100%;
-  margin-top: 12px;
+  margin-top: var(--space-3);
 }
 </style>

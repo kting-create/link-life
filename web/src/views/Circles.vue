@@ -82,7 +82,7 @@
           :key="s.id"
           class="card clickable sheet-card stagger-item"
           :style="{ '--i': index }"
-          @click="$router.push('/sheets/' + s.id)"
+          @click="openSheet(s, $event)"
         >
           <div class="row">
             <strong>{{ s.title }}</strong>
@@ -100,19 +100,15 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { request } from '../api/request'
 import { showToast } from '../utils/toast'
-import { sheetStatusText } from '../utils/sheet'
+import { sheetStatusText, sheetBadgeClass } from '../utils/sheet'
 import EmptyState from '../components/EmptyState.vue'
 import Skeleton from '../components/Skeleton.vue'
 import Field from '../components/Field.vue'
 import Icon from '../components/Icon.vue'
-
-function sheetBadgeClass(status) {
-  return String(status || '') === 'COMPLETED' ? 'is-done' : 'is-cooking'
-}
 
 export default {
   components: { EmptyState, Skeleton, Field, Icon },
@@ -181,6 +177,23 @@ export default {
       selectedId.value = id
       loadMembers()
       loadSheets()
+    }
+
+    function openSheet(s, e) {
+      const el = e && e.currentTarget
+      const go = () => router.push('/sheets/' + s.id)
+      if (el && typeof document !== 'undefined' && document.startViewTransition) {
+        el.style.viewTransitionName = 'sheet-hero'
+        const t = document.startViewTransition(async () => {
+          go()
+          await nextTick()
+        })
+        if (t && t.finished && t.finished.finally) {
+          t.finished.finally(() => { el.style.viewTransitionName = '' })
+        }
+      } else {
+        go()
+      }
     }
 
     async function createCircle() {
@@ -296,6 +309,7 @@ export default {
       sheetStatusText,
       sheetBadgeClass,
       selectCircle,
+      openSheet,
       loadMembers,
       createCircle,
       joinCircle,

@@ -1,10 +1,20 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, nextTick, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { getRecipe, getVersions, submitFeedback, editRecipe, rollback, listPhotos, deletePhoto, uploadPhoto } from '../api/recipe'
 import { showToast } from '../utils/toast'
+import { animate } from 'motion-v'
+import { SPRING_BOUNCE, prefersReducedMotion } from '../styles/motion.js'
+import EmptyState from '../components/EmptyState.vue'
+import Skeleton from '../components/Skeleton.vue'
+import Field from '../components/Field.vue'
+import Icon from '../components/Icon.vue'
+import IconButton from '../components/IconButton.vue'
+import PhotoThumb from '../components/PhotoThumb.vue'
+import Lightbox from '../components/Lightbox.vue'
 
 const route = useRoute()
+const router = useRouter()
 const id = route.params.id
 const recipe = ref(null)
 const versions = ref([])
@@ -16,6 +26,7 @@ const atLimit = computed(() => versions.value.length >= 5)
 const SOURCE_TEXT = { AI_GENERATE: 'AI 生成', AI_ITERATE: 'AI 迭代', MANUAL_EDIT: '手动编辑', PHOTO_ANALYSIS: '拍照修正' }
 
 const loadFailed = ref(false)
+const loading = ref(true)
 
 async function load() {
   try {
@@ -31,6 +42,8 @@ async function load() {
   } catch (e) {
     loadFailed.value = true
     showToast(e.message || '加载失败')
+  } finally {
+    loading.value = false
   }
 }
 load()
@@ -112,6 +125,13 @@ async function saveName() {
 }
 
 const photos = ref([])
+const lightboxOpen = ref(false)
+const lightboxSrc = ref('')
+
+function openLightbox(src) {
+  lightboxSrc.value = src
+  lightboxOpen.value = true
+}
 
 async function loadPhotos() {
   try { photos.value = await listPhotos(id) } catch (e) { /* 静默 */ }
@@ -137,17 +157,53 @@ async function doDeletePhoto(photoId) {
 }
 
 function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepNo) }
+
+function stepNoText(no) { return String(no).padStart(2, '0') }
+
+const fileInputs = ref({})
+function setFileRef(el, no) {
+  if (el) fileInputs.value[no] = el
+}
+function triggerFile(no) {
+  const el = fileInputs.value[no]
+  if (el) el.click()
+}
+
+const starEls = ref([])
+function setStarRef(el, n) {
+  if (el) starEls.value[n - 1] = el
+}
+
+function onStar(n) {
+  myScore.value = n
+  const el = starEls.value[n - 1]
+  if (!el || prefersReducedMotion()) return
+  animate(el, { scale: [1, 1.45, 1], rotate: [0, -8, 0] }, { ...SPRING_BOUNCE })
+}
+
+function openCook() {
+  router.push(`/recipes/${id}/cook`)
+}
+
+function openGenerate() {
+  router.push({ path: '/recipes/generate', query: { recipeId: id } })
+}
 </script>
 
 <template>
-  <div class="detail" v-if="loadFailed && !recipe">
-    <div class="card">
-      <p class="meta">加载失败，请稍后再试</p>
-      <button class="btn btn-secondary btn-small" @click="load">重试</button>
-    </div>
+  <div class="detail" v-if="loading && !recipe && !loadFailed">
+    <div class="card"><Skeleton :rows="4" /></div>
+  </div>
+  <div class="detail" v-else-if="loadFailed && !recipe">
+    <EmptyState title="加载失败，请稍后再试">
+      <template #action>
+        <button class="btn btn-secondary btn-small" @click="load">重试</button>
+      </template>
+    </EmptyState>
   </div>
   <div class="detail" v-else-if="recipe">
-    <div class="card head-card">
+    <div class="card hero head-card" style="view-transition-name: recipe-hero">
+      <span class="glow-orb head-glow" />
       <h2>{{ recipe.customName || recipe.dishName }}</h2>
       <p v-if="recipe.customName" class="meta">原名：{{ recipe.dishName }}</p>
       <p class="meta">版本 v{{ recipe.currentVersion }} ·
@@ -155,34 +211,46 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
       <div class="btns head-btns">
         <button class="btn btn-secondary btn-small" @click="editMode ? (editMode = false) : startEdit()">
           {{ editMode ? '取消编辑' : '编辑菜谱' }}</button>
-        <button class="btn btn-primary btn-small" @click="$router.push(`/recipes/${id}/cook`)">开始烹饪</button>
+        <button class="btn btn-primary btn-small" @click="openCook">开始烹饪</button>
       </div>
     </div>
 
     <div class="card" v-if="editMode && editForm">
       <h3>编辑菜谱内容</h3>
       <div class="edit-grid">
-        <label>份数 <input class="input" type="number" v-model.number="editForm.servings" /></label>
-        <label>总分钟 <input class="input" type="number" v-model.number="editForm.totalMinutes" /></label>
+        <label class="num-field">份数 <input class="input" type="number" v-model.number="editForm.servings" /></label>
+        <label class="num-field">总分钟 <input class="input" type="number" v-model.number="editForm.totalMinutes" /></label>
       </div>
-      <h4>食材 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.ingredients)">+ 加一行</a></h4>
+      <h4>食材
+        <button type="button" class="add-btn" @click="addIngredientRow(editForm.ingredients)">
+          <Icon name="plus" />加一行
+        </button>
+      </h4>
       <div class="edit-row" v-for="(r, idx) in editForm.ingredients" :key="'ig' + idx">
-        <input class="input" v-model="r.name" placeholder="名称" />
-        <input class="input" v-model="r.amount" placeholder="数量" />
-        <a class="del" href="#" @click.prevent="editForm.ingredients.splice(idx, 1)">删除</a>
+        <Field v-model="r.name" placeholder="名称" />
+        <Field v-model="r.amount" placeholder="数量" />
+        <IconButton name="trash" title="删除" @click="editForm.ingredients.splice(idx, 1)" />
       </div>
-      <h4>调料 <a class="add" href="#" @click.prevent="addIngredientRow(editForm.seasonings)">+ 加一行</a></h4>
+      <h4>调料
+        <button type="button" class="add-btn" @click="addIngredientRow(editForm.seasonings)">
+          <Icon name="plus" />加一行
+        </button>
+      </h4>
       <div class="edit-row" v-for="(r, idx) in editForm.seasonings" :key="'se' + idx">
-        <input class="input" v-model="r.name" placeholder="名称" />
-        <input class="input" v-model="r.amount" placeholder="数量" />
-        <a class="del" href="#" @click.prevent="editForm.seasonings.splice(idx, 1)">删除</a>
+        <Field v-model="r.name" placeholder="名称" />
+        <Field v-model="r.amount" placeholder="数量" />
+        <IconButton name="trash" title="删除" @click="editForm.seasonings.splice(idx, 1)" />
       </div>
-      <h4>步骤 <a class="add" href="#" @click.prevent="addStepRow()">+ 加一步</a></h4>
+      <h4>步骤
+        <button type="button" class="add-btn" @click="addStepRow()">
+          <Icon name="plus" />加一步
+        </button>
+      </h4>
       <div class="edit-row step-row" v-for="(s, idx) in editForm.steps" :key="'st' + idx">
-        <span class="no">{{ idx + 1 }}</span>
-        <input class="input" v-model="s.text" placeholder="做法" />
+        <span class="no">{{ stepNoText(idx + 1) }}</span>
+        <Field v-model="s.text" placeholder="做法" />
         <input class="input dur" type="number" v-model.number="s.durationSec" placeholder="秒" />
-        <a class="del" href="#" @click.prevent="editForm.steps.splice(idx, 1)">删除</a>
+        <IconButton name="trash" title="删除" @click="editForm.steps.splice(idx, 1)" />
       </div>
       <h4>小贴士</h4>
       <textarea class="input" v-model="editForm.tips" placeholder="可选" maxlength="255" />
@@ -206,23 +274,23 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
     <div class="card">
       <h3>步骤</h3>
       <div class="step" v-for="s in recipe.content.steps" :key="s.no">
-        <span class="no">{{ s.no }}</span>
-        <div>
-          <p>{{ s.text }}</p>
+        <span class="no">{{ stepNoText(s.no) }}</span>
+        <div class="step-body">
+          <p class="step-text">{{ s.text }}</p>
           <p class="duration" v-if="s.durationSec">约
             {{ s.durationSec >= 60 ? Math.round(s.durationSec / 60) + ' 分钟' : s.durationSec + ' 秒' }}</p>
-        </div>
-        <div class="photos" v-if="photosOf(s.no).length">
-          <div class="photo-item" v-for="p in photosOf(s.no)" :key="p.id">
-            <img :src="p.url" />
-            <a href="#" @click.prevent="doDeletePhoto(p.id)">删</a>
+          <div class="photos" v-if="photosOf(s.no).length">
+            <div class="photo-item" v-for="p in photosOf(s.no)" :key="p.id">
+              <PhotoThumb :src="p.url" :width="72" @open="openLightbox(p.url)" />
+              <IconButton name="trash" title="删除" @click="doDeletePhoto(p.id)" />
+            </div>
+          </div>
+          <div class="photo-upload">
+            <IconButton name="camera" title="拍照" @click="triggerFile(s.no)" />
+            <input :ref="(el) => setFileRef(el, s.no)" type="file" accept="image/*" capture="environment" hidden
+                   @change="onPhotoFile($event, s.no)" />
           </div>
         </div>
-        <label class="photo-upload">
-          + 拍照
-          <input type="file" accept="image/*" capture="environment" hidden
-                 @change="onPhotoFile($event, s.no)" />
-        </label>
       </div>
       <p v-if="recipe.content.tips" class="meta">小贴士：{{ recipe.content.tips }}</p>
     </div>
@@ -230,8 +298,21 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
     <div class="card">
       <h3>我的反馈</h3>
       <div class="stars">
-        <span v-for="n in 5" :key="n" :class="['star', { on: n <= myScore }]"
-              @click="myScore = n">★</span>
+        <button
+          v-for="n in 5"
+          :key="n"
+          type="button"
+          class="star-btn"
+          :class="{ on: n <= myScore }"
+          :ref="(el) => setStarRef(el, n)"
+          :aria-label="'评 ' + n + ' 星'"
+          @click="onStar(n)"
+        >
+          <svg viewBox="0 0 24 24" width="28" height="28" :fill="n <= myScore ? 'currentColor' : 'none'"
+               stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z" />
+          </svg>
+        </button>
       </div>
       <textarea class="input" v-model="myComment" placeholder="口感如何？（如：偏淡了）" maxlength="512" />
       <div class="btns">
@@ -245,62 +326,78 @@ function photosOf(stepNo) { return photos.value.filter((p) => p.stepNo === stepN
       <div class="version" v-for="v in versions" :key="v.version">
         <span>v{{ v.version }} · {{ v.sourceText }} · {{ v.createdAtText }}
           <template v-if="v.changeNote">（{{ v.changeNote }}）</template></span>
-        <a v-if="v.version !== recipe.currentVersion"
-           @click.prevent="doRollback(v.version)" href="#">回滚到此版</a>
+        <IconButton
+          v-if="v.version !== recipe.currentVersion"
+          name="rotate"
+          title="回滚到此版"
+          @click="doRollback(v.version)"
+        />
       </div>
     </div>
 
     <div class="card">
       <h3>个性化命名</h3>
-      <input class="input" v-model="nameInput" placeholder="如：我妈的红烧肉" maxlength="64" />
+      <Field v-model="nameInput" placeholder="如：我妈的红烧肉" />
       <div class="btns name-btns">
         <button class="btn btn-primary" @click="saveName">保存命名</button>
       </div>
     </div>
 
     <div class="cta-bar">
-      <button class="btn btn-primary cta" :disabled="atLimit"
-              @click="$router.push({ path: '/recipes/generate', query: { recipeId: id } })">
-        按反馈优化菜谱</button>
+      <button class="btn btn-primary cta" :disabled="atLimit" @click="openGenerate">
+        <Icon name="sparkle" />按反馈优化菜谱
+      </button>
     </div>
+
+    <Lightbox :src="lightboxSrc" :open="lightboxOpen" @update:open="lightboxOpen = $event" />
   </div>
 </template>
 
 <style scoped>
-.detail { max-width: 720px; margin: 0 auto; padding: 16px; padding-bottom: 96px; }
-.head-card { border-radius: var(--radius-lg); }
-.detail h2 { margin: 0 0 8px; font-size: 24px; }
-.meta { color: var(--text-secondary); font-size: 13px; }
-.row { display: flex; justify-content: space-between; padding: 4px 0; }
+.detail { max-width: 720px; margin: 0 auto; padding: var(--space-4); padding-bottom: calc(var(--space-7) * 2); display: flex; flex-direction: column; gap: var(--gap); }
+.head-glow { width: 170px; height: 170px; top: -40px; right: -40px; }
+.detail h2 { margin: 0 0 var(--space-2); font-size: var(--text-2xl); letter-spacing: -0.01em; }
+.detail h3 { margin: 0 0 var(--space-2); }
+.meta { color: var(--text-secondary); font-size: var(--text-xs); }
+.row { display: flex; justify-content: space-between; padding: var(--space-1) 0; }
 .amount { color: var(--text-secondary); }
-.step { display: flex; gap: 12px; margin: 12px 0; padding: 12px;
-  border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-card); }
+.step { display: flex; gap: var(--space-3); margin: var(--space-3) 0; padding: var(--space-3);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm); background: var(--glass-bg); }
 .step:last-of-type { margin-bottom: 0; }
-.no { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-weak); color: var(--primary-deep);
-  text-align: center; line-height: 24px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
-.duration { color: var(--text-secondary); font-size: 12px; }
-.stars { font-size: 28px; color: var(--text-secondary); cursor: pointer; }
-.star.on { color: var(--warning); }
-textarea.input { width: 100%; min-height: 80px; margin: 12px 0; box-sizing: border-box; }
-.btns { display: flex; gap: 12px; }
-.head-btns { margin-top: 12px; }
-.name-btns { margin-top: 12px; }
-.version { display: flex; justify-content: space-between; font-size: 13px;
-  color: var(--text-secondary); padding: 4px 0; }
-.version a { color: var(--primary); cursor: pointer; }
-.edit-grid { display: flex; gap: 16px; margin-bottom: 8px; }
-.edit-grid label { font-size: 13px; color: var(--text-secondary); }
-.edit-grid input { width: 80px; }
-.edit-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-.edit-row .input { flex: 1; min-width: 0; width: auto; }
+.step-body { flex: 1; min-width: 0; }
+.step-text { margin: 0; font-size: var(--text-md); line-height: 1.6; }
+.no { width: 28px; flex-shrink: 0; font-size: var(--text-xs); font-weight: 800; color: var(--primary);
+  letter-spacing: 0.06em; line-height: 1.6; }
+.duration { color: var(--text-secondary); font-size: var(--text-xs); margin: var(--space-1) 0 0; }
+.stars { display: flex; gap: var(--space-1); margin-bottom: var(--space-2); }
+.star-btn {
+  padding: var(--space-1); border: none; background: transparent; cursor: pointer;
+  color: var(--text-tertiary); line-height: 0; border-radius: var(--radius-sm);
+  transition: color 0.2s ease;
+}
+.star-btn.on { color: var(--warning); }
+textarea.input { width: 100%; min-height: 80px; margin: var(--space-3) 0; box-sizing: border-box; }
+.btns { display: flex; gap: var(--space-3); }
+.head-btns { margin-top: var(--space-3); }
+.name-btns { margin-top: var(--space-3); }
+.version { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2);
+  font-size: var(--text-xs); color: var(--text-secondary); padding: var(--space-1) 0; }
+.edit-grid { display: flex; gap: var(--space-4); margin-bottom: var(--space-2); }
+.edit-grid .num-field { flex: 1; font-size: var(--text-xs); color: var(--text-secondary); }
+.edit-grid .num-field .input { margin-top: var(--space-1); }
+.edit-row { display: flex; gap: var(--space-2); align-items: flex-end; margin: var(--space-2) 0; }
+.edit-row .field { flex: 1; min-width: 0; margin-bottom: 0; }
 .edit-row .dur { flex: 0 0 70px; }
-.edit-row .no { width: 22px; text-align: center; color: var(--primary-deep); flex-shrink: 0; }
-.edit-row .del, h4 .add { color: var(--primary); font-size: 12px; flex-shrink: 0; }
-h4 { margin: 12px 0 4px; }
-.photos { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.photo-item img { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); display: block; }
-.photo-item a { color: var(--danger); font-size: 12px; }
-.photo-upload { color: var(--primary); font-size: 12px; cursor: pointer; align-self: center; }
-.cta-bar { position: sticky; bottom: 16px; display: flex; justify-content: center; margin-top: 16px; }
-.cta { padding: 14px 32px; box-shadow: var(--shadow-card); }
+.edit-row .no { width: 24px; text-align: center; color: var(--primary); flex-shrink: 0; line-height: 40px; }
+.add-btn {
+  display: inline-flex; align-items: center; gap: var(--space-1);
+  border: none; background: transparent; color: var(--primary);
+  font-size: var(--text-xs); font-weight: 700; cursor: pointer; padding: 0;
+}
+h4 { margin: var(--space-3) 0 var(--space-1); display: flex; align-items: center; gap: var(--space-2); }
+.photos { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); align-items: center; }
+.photo-item { display: flex; align-items: center; gap: var(--space-1); }
+.photo-upload { margin-top: var(--space-2); }
+.cta-bar { position: sticky; bottom: var(--space-4); display: flex; justify-content: center; margin-top: var(--space-4); z-index: 5; }
+.cta { padding: var(--space-3) var(--space-6); box-shadow: var(--shadow-glow); }
 </style>

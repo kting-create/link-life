@@ -42,7 +42,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { publicRequest } from '../api/request'
-import { sheetStatusText, claimedCount } from '../utils/sheet'
+import { sheetStatusText, claimedCount, sheetBadgeClass } from '../utils/sheet'
 import EmptyState from '../components/EmptyState.vue'
 import Skeleton from '../components/Skeleton.vue'
 
@@ -51,10 +51,6 @@ const itemStatusText = {
   CLAIMED: '已认领',
   COOKING: '烹饪中',
   DONE: '已完成',
-}
-
-function sheetBadgeClass(status) {
-  return String(status || '') === 'COMPLETED' ? 'is-done' : 'is-cooking'
 }
 
 export default {
