@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { streamRequest } from '../api/sse'
 import { showToast } from '../utils/toast'
@@ -14,18 +14,24 @@ const failed = ref(false)
 const errorText = ref('')
 const streamEl = ref(null)
 
-function start() {
+const circleId = computed(() => route.query.circleId || null)
+const dishName = computed(() => route.query.dishName || null)
+const recipeId = computed(() => route.query.recipeId || null)
+const comment = computed(() => route.query.comment || '')
+const isIterate = computed(() => !!recipeId.value)
+
+function startGenerate() {
   segs.value = []
   streaming.value = true
   failed.value = false
   errorText.value = ''
-  const isIterate = !!route.query.recipeId
-  const path = isIterate
-    ? '/api/recipes/' + route.query.recipeId + '/iterate'
+  const path = isIterate.value
+    ? '/api/recipes/' + recipeId.value + '/iterate'
     : '/api/recipes/generate'
-  const body = isIterate
-    ? { comment: route.query.comment || '' }
-    : { circleId: Number(route.query.circleId), dishName: route.query.dishName }
+  const dish = Array.isArray(dishName.value) ? dishName.value[0] : dishName.value
+  const body = isIterate.value
+    ? { comment: comment.value }
+    : { circleId: Number(circleId.value), dishName: dish }
   streamRequest(path, body, {
     onDelta: (text) => { segs.value = segs.value.concat([text]) },
     onDone: (payload) => {
@@ -40,13 +46,11 @@ function start() {
   })
 }
 
-const circleId = route.query.circleId
-const dishName = Array.isArray(route.query.dishName) ? route.query.dishName[0] : route.query.dishName
-if (!circleId || !dishName) {
-  showToast('缺少菜谱参数')
+if (!isIterate.value && !(circleId.value && dishName.value)) {
+  showToast('缺少菜谱参数', 'err')
   router.replace('/circles')
 } else {
-  start()
+  startGenerate()
 }
 </script>
 
@@ -54,7 +58,7 @@ if (!circleId || !dishName) {
   <div class="generate">
     <pre ref="streamEl" class="card stream" :class="{ breathing: !segs.length && !failed }"><template v-if="segs.length"><span v-for="(seg, i) in segs" :key="i" class="seg">{{ seg }}</span><span v-if="streaming" class="cursor">▍</span></template><template v-else-if="!failed">正在生成菜谱…<span v-if="streaming" class="cursor">▍</span></template></pre>
     <p v-if="errorText" class="error">{{ errorText }}</p>
-    <button v-if="failed" class="btn btn-primary retry" @click="start">
+    <button v-if="failed" class="btn btn-primary retry" @click="startGenerate">
       <Icon name="sparkle" />重试
     </button>
   </div>

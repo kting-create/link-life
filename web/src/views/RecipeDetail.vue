@@ -186,7 +186,7 @@ function openCook() {
 }
 
 function openGenerate() {
-  router.push({ path: '/recipes/generate', query: { recipeId: id } })
+  router.push({ path: '/recipes/generate', query: { recipeId: recipe.value.id, comment: myComment.value || '' } })
 }
 </script>
 

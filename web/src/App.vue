@@ -105,12 +105,19 @@ export default {
       unread.value = 0
     }
 
+    let loggingOut = false
     async function logout() {
-      try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
-      clearTokens()
-      stopPolling()
-      user.value = null
-      router.push('/login')
+      if (loggingOut) return
+      loggingOut = true
+      try {
+        try { await request('/api/auth/logout', { method: 'POST' }) } catch (e) { /* 已失效也算登出 */ }
+        clearTokens()
+        stopPolling()
+        user.value = null
+        await router.replace('/login')
+      } finally {
+        loggingOut = false
+      }
     }
 
     watch(

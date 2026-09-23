@@ -122,6 +122,7 @@ function toggleTimer() {
   startTimer()
 }
 function skipTimer() {
+  if (current.value + 1 >= steps.value.length) { showToast('已是最后一步'); return }
   stopTimer()
   goStep(1)
 }
