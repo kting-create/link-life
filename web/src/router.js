@@ -12,16 +12,16 @@ import Profile from './views/Profile.vue'
 
 const routes = [
   { path: '/', redirect: '/circles' },
-  { path: '/login', component: Login },
-  { path: '/circles', component: Circles, meta: { requiresAuth: true } },
-  { path: '/sheets/:id', component: SheetDetail, meta: { requiresAuth: true } },
-  { path: '/notifications', component: Notifications, meta: { requiresAuth: true } },
-  { path: '/recipes/generate', component: RecipeGenerate, meta: { requiresAuth: true } },
-  { path: '/recipes/:id/cook', component: CookMode, meta: { requiresAuth: true } },
-  { path: '/recipes/:id', component: RecipeDetail, meta: { requiresAuth: true } },
-  { path: '/pantry', component: Pantry, meta: { requiresAuth: true } },
-  { path: '/me', component: Profile, meta: { requiresAuth: true } },
-  { path: '/s/:token', component: ShareView },
+  { path: '/login', component: Login, meta: { depth: 0 } },
+  { path: '/circles', component: Circles, meta: { requiresAuth: true, depth: 1 } },
+  { path: '/sheets/:id', component: SheetDetail, meta: { requiresAuth: true, depth: 2 } },
+  { path: '/notifications', component: Notifications, meta: { requiresAuth: true, depth: 1 } },
+  { path: '/recipes/generate', component: RecipeGenerate, meta: { requiresAuth: true, depth: 2 } },
+  { path: '/recipes/:id/cook', component: CookMode, meta: { requiresAuth: true, depth: 3 } },
+  { path: '/recipes/:id', component: RecipeDetail, meta: { requiresAuth: true, depth: 2 } },
+  { path: '/pantry', component: Pantry, meta: { requiresAuth: true, depth: 1 } },
+  { path: '/me', component: Profile, meta: { requiresAuth: true, depth: 1 } },
+  { path: '/s/:token', component: ShareView, meta: { depth: 0 } },
 ]
 
 const router = createRouter({
@@ -34,6 +34,12 @@ router.beforeEach((to) => {
   if (to.meta.requiresAuth && !hasToken) return { path: '/login' }
   if (to.path === '/login' && hasToken) return { path: '/circles' }
   return true
+})
+
+router.afterEach((to, from) => {
+  const toDepth = to.meta.depth ?? 1
+  const fromDepth = from.meta.depth ?? 1
+  to.meta.transition = toDepth === fromDepth ? 'fade' : toDepth > fromDepth ? 'forward' : 'back'
 })
 
 export default router
